@@ -1,0 +1,91 @@
+<Window x:Class="NutritionPlannerApp.FoodExchangeQueryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="📖 衛福部國民健康署詳細食物代換表 ＆ 智慧搜尋查詢" Height="680" Width="1020"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource WindowBgBrush}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource HeaderBlueBrush}" CornerRadius="10" Padding="14,10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Background="#3A86FF" CornerRadius="8" Width="36" Height="36" Margin="0,0,12,0" VerticalAlignment="Center">
+                    <TextBlock Text="🔍" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="衛福部國健署詳細食物代換表 ＆ 智慧搜尋查詢" FontSize="15" FontWeight="Bold" Foreground="#1E40AF"/>
+                    <TextBlock Text="依據衛福部 2019.5 最新食物代換手冊，輸入食物名稱即可查得每份重量與營養規格 (例：文蛤 160g 為 1 份)" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Search Toolbar -->
+        <Border Grid.Row="1" Style="{StaticResource ExcelTableCard}" Padding="10,8" Margin="0,0,0,10">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                    <TextBlock Text="快速搜尋食物：" FontSize="12" FontWeight="Bold" Foreground="#1E293B" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox x:Name="TxtFoodSearch" Width="200" Height="32" Padding="6,4" FontSize="12" VerticalContentAlignment="Center"
+                             BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" TextChanged="TxtFoodSearch_TextChanged"
+                             ToolTip="輸入食物名稱，例如：文蛤、香蕉、豆腐、雞胸肉"/>
+                    <TextBlock Text="大分類：" FontSize="12" FontWeight="Bold" Foreground="#1E293B" VerticalAlignment="Center" Margin="12,0,6,0"/>
+                    <ComboBox x:Name="CboFoodCategoryFilter" Width="140" Height="32" VerticalContentAlignment="Center" SelectionChanged="CboFoodCategoryFilter_SelectionChanged">
+                        <ComboBoxItem Content="全部類別" IsSelected="True"/>
+                        <ComboBoxItem Content="乳品類"/>
+                        <ComboBoxItem Content="豆魚蛋肉"/>
+                        <ComboBoxItem Content="全穀雜糧"/>
+                        <ComboBoxItem Content="蔬菜類"/>
+                        <ComboBoxItem Content="水果類"/>
+                        <ComboBoxItem Content="油脂與堅果種子"/>
+                    </ComboBox>
+                    <Button Content="❌ 清除條件" Style="{StaticResource CuteButtonAmber}" Padding="10,4" Margin="8,0,0,0" Click="BtnClearSearch_Click"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtResultCount" Text="共有 261 項食物代換資料" FontSize="12" FontWeight="SemiBold" Foreground="#2563EB" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Button Content="➕ 帶入當前菜單食材" Style="{StaticResource CuteButtonGreen}" Padding="12,6" FontSize="12" Click="BtnAddToMenu_Click"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- DataGrid Table -->
+        <Border Grid.Row="2" Style="{StaticResource ExcelTableCard}" Padding="4">
+            <DataGrid x:Name="GridOfficialFoods" AutoGenerateColumns="False" CanUserAddRows="False"
+                      GridLinesVisibility="All" HeadersVisibility="Column"
+                      BorderThickness="0" Background="White" RowHeight="32"
+                      IsReadOnly="True" SelectionMode="Single"
+                      MouseDoubleClick="GridOfficialFoods_MouseDoubleClick">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="食物大類" Binding="{Binding Category}" FontWeight="Bold" Width="110"/>
+                    <DataGridTextColumn Header="細項分類" Binding="{Binding SubCategory}" Foreground="#475569" Width="110"/>
+                    <DataGridTextColumn Header="食物名稱" Binding="{Binding FoodName}" FontWeight="Bold" Foreground="#1E293B" Width="160"/>
+                    <DataGridTextColumn Header="【每 1 份】份量與計量說明" Binding="{Binding PortionDesc}" FontWeight="Bold" Foreground="#2A9D8F" Width="200"/>
+                    <DataGridTextColumn Header="生重 (g)" Binding="{Binding RawWeightGrams, StringFormat='{}{0:0.#} g'}" FontWeight="SemiBold" Foreground="#3A86FF" Width="85"/>
+                    <DataGridTextColumn Header="熱量 (kcal)" Binding="{Binding Calories, StringFormat='{}{0:0.#}'}" FontWeight="Bold" Foreground="#E63946" Width="90"/>
+                    <DataGridTextColumn Header="蛋白質 (g)" Binding="{Binding Protein, StringFormat='{}{0:0.#}'}" Width="85"/>
+                    <DataGridTextColumn Header="脂肪 (g)" Binding="{Binding Fat, StringFormat='{}{0:0.#}'}" Width="80"/>
+                    <DataGridTextColumn Header="醣類 (g)" Binding="{Binding Carbs, StringFormat='{}{0:0.#}'}" Width="80"/>
+                    <DataGridTextColumn Header="備註 / 臨床叮嚀" Binding="{Binding Notes}" Foreground="#64748B" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Footer -->
+        <DockPanel Grid.Row="3" Margin="0,10,0,0">
+            <TextBlock Text="💡 提示：點擊列表中的食物後點選「帶入當前菜單食材」或「雙擊該列」，即可直接加入菜單！"
+                       VerticalAlignment="Center" Foreground="{StaticResource TextMutedBrush}" FontSize="12"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="✔️ 完成關閉" Style="{StaticResource CuteButton}" Padding="16,6" Click="BtnClose_Click"/>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
