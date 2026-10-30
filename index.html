@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧臨床營養評估與菜單設計系統</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 頂部標頭與導航列 -->
+  <header class="navbar">
+    <div class="brand">
+      <span class="brand-icon">🥗</span>
+      <div class="brand-titles">
+        <h1>智慧臨床營養評估與菜單設計系統</h1>
+        <p>Clinical Nutrition Care & Menu Design System</p>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
+      <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
+      <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- PAGE 1: 個案評估與熱量設定 -->
+    <section id="tab-assessment" class="tab-content active">
+      
+      <!-- 個案資料與體位測量 -->
+      <div class="card">
+        <div class="card-header bg-teal">
+          <span class="icon">📋</span>
+          <h2>個案基本資料與體位測量表（身高、體重、BMI、IBW）</h2>
+        </div>
+        <div class="card-body grid-2col">
+          <!-- 基本輸入 -->
+          <div class="table-container">
+            <table class="form-table">
+              <tr>
+                <td class="lbl">個案姓名 / 暱稱</td>
+                <td><input type="text" id="inName" class="form-input" value="小明"></td>
+                <td class="unit">必填</td>
+              </tr>
+              <tr>
+                <td class="lbl">病歷號 / 編號</td>
+                <td><input type="text" id="inChartNo" class="form-input" value="P001"></td>
+                <td class="unit">編號</td>
+              </tr>
+              <tr>
+                <td class="lbl">生理性別</td>
+                <td>
+                  <select id="inGender" class="form-select">
+                    <option value="男" selected>男</option>
+                    <option value="女">女</option>
+                  </select>
+                </td>
+                <td class="unit">男 / 女</td>
+              </tr>
+              <tr>
+                <td class="lbl">年齡</td>
+                <td><input type="number" id="inAge" class="form-input" value="30" min="1" max="130"></td>
+                <td class="unit">歲</td>
+              </tr>
+              <tr>
+                <td class="lbl">實際身高 (BH)</td>
+                <td><input type="number" id="inHeight" class="form-input" value="170" step="0.1"></td>
+                <td class="unit">cm (公分)</td>
+              </tr>
+              <tr>
+                <td class="lbl">實際體重 (BW)</td>
+                <td><input type="number" id="inWeight" class="form-input" value="68" step="0.1"></td>
+                <td class="unit">kg (公斤)</td>
+              </tr>
+              <tr>
+                <td class="lbl">理想體重 (IBW)</td>
+                <td class="val-highlight green"><strong id="valIbw">63.58 kg</strong></td>
+                <td class="unit">kg (公斤)</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- 體位計算與 BMI 指標表 -->
+          <div class="table-container">
+            <table class="form-table">
+              <tr>
+                <td class="lbl">BMI = BW / BH²</td>
+                <td class="val-highlight red"><strong id="valBmi">23.53</strong></td>
+                <td><span class="badge badge-normal" id="badgeBmiStatus">體重正常 (理想)</span></td>
+              </tr>
+              <tr>
+                <td class="lbl">體重佔理想體重比 (IBW%)</td>
+                <td class="val-bold" id="valIbwPercent">107.0 %</td>
+                <td class="unit">正常 90~110%</td>
+              </tr>
+              <tr>
+                <td class="lbl">正常體重範圍 (BMI 18.5~24)</td>
+                <td class="val-highlight green" id="valBmiRange">53.5 ~ 69.4 kg</td>
+                <td class="unit">標準區間</td>
+              </tr>
+            </table>
+
+            <!-- BMI 尺標指標卡片 -->
+            <div class="bmi-indicator-box">
+              <div class="bmi-bar-title">
+                <span>📎 <strong>BMI 身體質量指數指標表</strong>（體重 kg / 身高² m²）</span>
+              </div>
+              
+              <!-- 5 區塊相連彩色尺標 -->
+              <div class="bmi-ruler-track" id="bmiRulerTrack">
+                <div class="bmi-seg seg-under">體重過輕<br>&lt; 18.5</div>
+                <div class="bmi-seg seg-normal">正常體重<br>18.5 ~ 24</div>
+                <div class="bmi-seg seg-over">體重過重<br>24 ~ 27</div>
+                <div class="bmi-seg seg-mild">輕度肥胖<br>27 ~ 30</div>
+                <div class="bmi-seg seg-severe">中重度肥胖<br>&ge; 30</div>
+              </div>
+              <!-- 尺刻度線條 -->
+              <div class="bmi-ticks-row">
+                <div class="seg-ticks"><span></span><span></span></div>
+                <div class="seg-ticks"><span></span><span></span></div>
+                <div class="seg-ticks"><span></span><span></span></div>
+                <div class="seg-ticks"><span></span><span></span></div>
+                <div class="seg-ticks"><span></span><span></span></div>
+              </div>
+              <!-- 動態滑動指標箭頭 -->
+              <div class="bmi-pointer-track" id="bmiPointerTrack">
+                <div class="bmi-arrow-indicator" id="bmiPointer">
+                  ▲ 個案指標
+                </div>
+              </div>
+              <div class="bmi-footer-note">
+                ※ 體脂、肌肉量等因素亦會影響評估，此表僅供參考。維持規律運動與均衡飲食，是保持健康體態的不二法門！
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 臨床熱量評估 (左右雙欄) -->
+      <div class="grid-2col mt-4">
+        <!-- 臨床速算熱量對照表 -->
+        <div class="card">
+          <div class="card-header bg-orange">
+            <span class="icon">⚡</span>
+            <h2>臨床速算熱量對照表（點擊直接套用為目標熱量）</h2>
+          </div>
+          <div class="card-body">
+            <p class="section-desc">點選下方數值按鈕，可直接快速帶入上方目標熱量</p>
+            <div class="calc-group">
+              <div class="calc-title">📌 理想體重 (IBW) 速算：</div>
+              <div class="quick-btn-grid" id="ibwQuickBtns">
+                <!-- 動態注入 -->
+              </div>
+            </div>
+            <div class="calc-group mt-3">
+              <div class="calc-title">📌 實際體重 (CBW) 速算：</div>
+              <div class="quick-btn-grid" id="cbwQuickBtns">
+                <!-- 動態注入 -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BEE 與 TDEE -->
+        <div class="card">
+          <div class="card-header bg-blue">
+            <span class="icon">💧</span>
+            <h2>BEE 基礎代謝率 與 TDEE 每日熱量需求表</h2>
+          </div>
+          <div class="card-body">
+            <table class="form-table full-width">
+              <tr>
+                <td class="lbl">BEE 基本熱量 (HB公式)</td>
+                <td class="val-highlight red"><strong id="valBee">1644 kcal</strong></td>
+              </tr>
+              <tr>
+                <td class="lbl">活動因子 (Activity)</td>
+                <td>
+                  <select id="inActivity" class="form-select">
+                    <option value="1.2">臥床 / 極輕度 (1.2)</option>
+                    <option value="1.3" selected>輕度活動 - 久坐/上班族 (1.3)</option>
+                    <option value="1.5">中度活動 - 站立/規律運動 (1.5)</option>
+                    <option value="1.75">重度活動 - 勞動工作 (1.75)</option>
+                    <option value="2.0">極重度活動 - 職業運動 (2.0)</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="lbl">壓力因子 (Stress)</td>
+                <td>
+                  <select id="inStress" class="form-select">
+                    <option value="1.0" selected>正常無壓力 (1.0)</option>
+                    <option value="1.1">輕微發燒 / 骨折 (1.1)</option>
+                    <option value="1.2">輕度手術 / 感染 (1.2)</option>
+                    <option value="1.3">骨折 / 中度手術 (1.3)</option>
+                    <option value="1.5">敗血症 / 重度感染 (1.5)</option>
+                    <option value="1.75">嚴重多重創傷 (1.75)</option>
+                    <option value="2.0">大面積燒燙傷 (2.0)</option>
+                  </select>
+                </td>
+              </tr>
+              <tr class="highlight-row">
+                <td class="lbl"><strong class="teal">TDEE 每日熱量需求</strong></td>
+                <td>
+                  <div class="tdee-action-row">
+                    <strong class="tdee-number teal" id="valTdee">2137 kcal</strong>
+                    <button class="btn btn-teal" id="btnApplyTdee">✨ 套用為目標熱量</button>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 臨床腎功能推估與行動不便推估 -->
+      <div class="card mt-4">
+        <div class="card-header bg-slate">
+          <span class="icon">📐</span>
+          <h2>臨床腎功能推估與行動不便推估公式（肌酸酐、eGFR、膝長、尺骨長、圈度推算）</h2>
+        </div>
+        <div class="card-body overflow-x">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 200px;">推估項目</th>
+                <th style="width: 200px;">測量輸入數值</th>
+                <th>推估公式說明</th>
+                <th style="width: 140px;">推估結果</th>
+                <th style="width: 120px;">操作狀態</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>腎功能評估 (eGFR)</strong><br><small class="text-muted">CKD-EPI / MDRD</small></td>
+                <td>
+                  <div class="input-with-unit">
+                    <label>血清肌酸酐 (Cr)：</label>
+                    <input type="number" id="inCreatinine" class="form-input" value="0.9" step="0.1">
+                    <span class="unit">mg/dL</span>
+                  </div>
+                </td>
+                <td class="text-muted">2021 CKD-EPI 公式：依性別、年齡及肌酸酐精準估算腎絲球過濾率</td>
+                <td><strong class="text-teal" id="valEgfr">98.5</strong> ml/min</td>
+                <td><span class="badge badge-normal" id="badgeEgfr">正常</span></td>
+              </tr>
+              <tr>
+                <td><strong>膝長推估身高 (Chumlea)</strong><br><small class="text-muted">臥床/駝背者身高估算</small></td>
+                <td>
+                  <div class="input-with-unit">
+                    <label>膝長 (Knee Height)：</label>
+                    <input type="number" id="inKneeHeight" class="form-input" value="50" step="0.5">
+                    <span class="unit">cm</span>
+                  </div>
+                </td>
+                <td class="text-muted">Chumlea 公式：男 64.19 - (0.04×年齡) + (2.02×膝長) / 女 84.88 - (0.24×年齡) + (1.83×膝長)</td>
+                <td><strong class="text-teal" id="valEstKneeHeight">164.0</strong> cm</td>
+                <td><button class="btn btn-outline" onclick="applyEstHeight('knee')">套用為身高</button></td>
+              </tr>
+              <tr>
+                <td><strong>尺骨長推估身高 (Ulna)</strong><br><small class="text-muted">手肘彎曲量測至手腕骨</small></td>
+                <td>
+                  <div class="input-with-unit">
+                    <label>尺骨長 (Ulna Length)：</label>
+                    <input type="number" id="inUlnaLength" class="form-input" value="25" step="0.5">
+                    <span class="unit">cm</span>
+                  </div>
+                </td>
+                <td class="text-muted">依 MUST 臨床營養篩檢指引尺骨長與身高對照換算標準</td>
+                <td><strong class="text-teal" id="valEstUlnaHeight">168.0</strong> cm</td>
+                <td><button class="btn btn-outline" onclick="applyEstHeight('ulna')">套用為身高</button></td>
+              </tr>
+              <tr>
+                <td><strong>圈度推估體重 (Chumlea)</strong><br><small class="text-muted">無法站立量秤體重之推估</small></td>
+                <td>
+                  <div class="input-with-unit">
+                    <label>小腿圍：</label>
+                    <input type="number" id="inCalfCirc" class="form-input" value="34" step="0.5">
+                    <span class="unit">cm</span>
+                  </div>
+                  <div class="input-with-unit mt-1">
+                    <label>臂圍 (MAC)：</label>
+                    <input type="number" id="inArmCirc" class="form-input" value="28" step="0.5">
+                    <span class="unit">cm</span>
+                  </div>
+                </td>
+                <td class="text-muted">Chumlea 圈度估算法：結合膝長、小腿圍、臂圍及肩胛下皮褶綜合估算</td>
+                <td><strong class="text-teal" id="valEstCircWeight">65.2</strong> kg</td>
+                <td><button class="btn btn-outline" onclick="applyEstWeight()">套用為體重</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- PAGE 2: 六大類食物代換設計 -->
+    <section id="tab-exchange" class="tab-content">
+      
+      <!-- 目標熱量與三大營養素設定條 -->
+      <div class="target-bar">
+        <div class="target-item">
+          <label>目標熱量：</label>
+          <input type="number" id="inTargetKcal" class="form-input highlight" value="2137" step="50">
+          <span>kcal</span>
+        </div>
+        <div class="target-item">
+          <label>碳水 (C)：</label>
+          <input type="number" id="inRatioC" class="form-input" value="50" min="0" max="100">
+          <span>%</span>
+        </div>
+        <div class="target-item">
+          <label>蛋白質 (P)：</label>
+          <input type="number" id="inRatioP" class="form-input" value="20" min="0" max="100">
+          <span>%</span>
+        </div>
+        <div class="target-item">
+          <label>脂肪 (F)：</label>
+          <input type="number" id="inRatioF" class="form-input" value="30" min="0" max="100">
+          <span>%</span>
+        </div>
+        <div class="target-actions">
+          <button class="btn btn-secondary" id="btnDiseaseMode">疾病飲食模式 (解除百分比限制)</button>
+          <button class="btn btn-primary" id="btnDiabeticMode">糖尿病、低蛋白飲食</button>
+          <button class="btn btn-purple" id="btnOpenFormulaWindow">💊 商業配方庫</button>
+        </div>
+      </div>
+
+      <!-- 六大類食物代換規劃表格 -->
+      <div class="card mt-3">
+        <div class="card-body p-0 overflow-x">
+          <table class="exchange-table" id="exchangeTable">
+            <thead>
+              <tr class="header-main">
+                <th rowspan="2" class="col-cat">食物大類</th>
+                <th rowspan="2" class="col-unit">每份單位規格</th>
+                <th colspan="4" class="col-macros-spec">每份三大營養素 (g)</th>
+                <th rowspan="2" class="col-ex">設計份數</th>
+                <th colspan="6" class="col-meals">各餐次分配份數 (可輸入小數點如 1.5、2.5)</th>
+                <th rowspan="2" class="col-total-p">總蛋白質 (g)</th>
+                <th rowspan="2" class="col-total-f">總脂肪 (g)</th>
+                <th rowspan="2" class="col-total-c">總醣類 (g)</th>
+                <th rowspan="2" class="col-total-kcal">總熱量 (kcal)</th>
+              </tr>
+              <tr class="header-sub">
+                <th>豆/蛋/肉(P)</th>
+                <th>脂(F)</th>
+                <th>醣(C)</th>
+                <th>熱量</th>
+                <th>早</th>
+                <th>早點</th>
+                <th>午</th>
+                <th>午點</th>
+                <th>晚</th>
+                <th>晚點</th>
+              </tr>
+            </thead>
+            <tbody id="exchangeTableBody">
+              <!-- JS 動態生成食物類別列 -->
+            </tbody>
+            <!-- 緊鄰堅果種子下方的加總列 -->
+            <tbody class="subtotal-tbody">
+              <tr class="subtotal-row grams-row">
+                <td colspan="6" class="subtotal-title"><strong>三大營養素加總克數</strong></td>
+                <td class="val-blue" id="sumTotalEx">23</td>
+                <td id="sumB">5</td>
+                <td id="sumMs">1</td>
+                <td id="sumL">11</td>
+                <td id="sumAs">2</td>
+                <td id="sumD">11</td>
+                <td id="sumNs">1</td>
+                <td class="val-green" id="sumProteinGrams">65.0 g</td>
+                <td class="val-orange" id="sumFatGrams">43.0 g</td>
+                <td class="val-red" id="sumCarbGrams">187.0 g</td>
+                <td class="val-blue" id="sumTotalCalories">1425 kcal</td>
+              </tr>
+              <tr class="subtotal-row percent-row">
+                <td colspan="6" class="subtotal-title"><strong>三大營養素百分比</strong></td>
+                <td class="text-muted">—</td>
+                <td colspan="6" class="text-center font-sm" id="caloricFormulaDesc">
+                  4-9-4熱量：醣 187g×4 (748 kcal) + 蛋 65g×4 (260 kcal) + 脂 43g×9 (387 kcal) = 1395 kcal
+                </td>
+                <td class="val-green" id="pctProtein">18.6 %</td>
+                <td class="val-orange" id="pctFat">27.7 %</td>
+                <td class="val-red" id="pctCarb">53.6 %</td>
+                <td class="val-blue" id="pctTotal">100.0 %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- PAGE 3: 菜單開立與食材辨識 -->
+    <section id="tab-menu" class="tab-content">
+      
+      <!-- 頂部餐次篩選工具列 -->
+      <div class="menu-toolbar">
+        <div class="toolbar-left">
+          <span class="icon">📝</span>
+          <strong>菜單開立 &amp; AI 食材顏色智慧辨識</strong>
+          <small class="text-muted">（相同菜名自動合併顯示｜AI 自動辨識食材純色膠囊標籤）</small>
+        </div>
+        <div class="toolbar-right">
+          <label>預設餐次：</label>
+          <select id="cboMealFilter" class="form-select">
+            <option value="全部">全部餐次 (顯示所有)</option>
+            <option value="早餐" selected>早餐</option>
+            <option value="早點">早點</option>
+            <option value="午餐">午餐</option>
+            <option value="午點">午點</option>
+            <option value="晚餐">晚餐</option>
+            <option value="晚點">晚點</option>
+          </select>
+          <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
+          <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
+        </div>
+      </div>
+
+      <!-- 餐次設計份數卡片（點擊可快速切換篩選） -->
+      <div class="meal-chips-bar" id="mealChipsBar">
+        <!-- 動態由第2頁份數聯動更新 -->
+      </div>
+
+      <!-- 菜單列表 -->
+      <div class="card mt-3">
+        <div class="card-body p-0 overflow-x">
+          <table class="data-table menu-grid" id="menuRecipeTable">
+            <thead>
+              <tr>
+                <th style="width: 120px;">餐次</th>
+                <th style="width: 200px;">菜名</th>
+                <th style="width: 180px;">食材名稱</th>
+                <th style="width: 140px;">食物類別</th>
+                <th style="width: 100px;">份數 (Ex)</th>
+                <th style="width: 110px;">生重克數 (g)</th>
+                <th style="width: 120px;">食材顏色</th>
+                <th style="width: 80px;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="menuRecipeTableBody">
+              <!-- 動態生成食材列 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 彈出視窗 1：衛福部食物代換表查詢 (261項) -->
+  <div class="modal-overlay" id="modalExchangeQuery">
+    <div class="modal-box modal-lg">
+      <div class="modal-header bg-blue">
+        <div class="modal-title">
+          <span>🔍 衛福部國健署詳細食物代換表 &amp; 智慧搜尋查詢</span>
+          <small>依據衛福部 2019.5 最新食物代換手冊，輸入關鍵字即時查詢每份重量與營養規格（雙擊即可直接加入菜單）</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalExchangeQuery')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="query-search-bar">
+          <input type="text" id="inFoodSearch" class="form-input flex-1" placeholder="快速搜尋食物（例：文蛤、燕麥、雞胸肉、豆腐...）">
+          <select id="cboCategoryFilter" class="form-select" style="width: 180px;">
+            <option value="全部">全部類別</option>
+            <option value="乳品類">乳品類</option>
+            <option value="豆魚蛋肉">豆魚蛋肉</option>
+            <option value="全穀雜糧">全穀雜糧</option>
+            <option value="蔬菜類">蔬菜類</option>
+            <option value="水果類">水果類</option>
+            <option value="油脂與堅果種子">油脂與堅果種子</option>
+          </select>
+          <button class="btn btn-warning" onclick="clearFoodSearch()">❌ 清除</button>
+        </div>
+        <div class="query-info-banner">
+          <span>📋 共有 <strong id="lblQueryCount">261</strong> 項衛福部國健署標準食物代換資料</span>
+          <span class="text-orange">💡 提示：點擊「加入菜單」按鈕或直接雙擊該列，可快速將食材加入目前選取的餐次菜單！</span>
+        </div>
+        <div class="table-scroll-container">
+          <table class="data-table" id="queryResultTable">
+            <thead>
+              <tr>
+                <th>食物大類</th>
+                <th>細項分類</th>
+                <th>食物名稱</th>
+                <th>【每 1 份】份量與計量說明</th>
+                <th>生重 (g)</th>
+                <th>熱量 (kcal)</th>
+                <th>蛋白質 (g)</th>
+                <th>脂肪 (g)</th>
+                <th>醣類 (g)</th>
+                <th>備註 / 說明</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="queryResultBody">
+              <!-- 動態生成 261 筆資料 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 彈出視窗 2：商業營養配方庫 -->
+  <div class="modal-overlay" id="modalFormulas">
+    <div class="modal-box modal-lg">
+      <div class="modal-header bg-purple">
+        <div class="modal-title">
+          <span>💊 臨床商業營養配方庫 (Commercial Formulas)</span>
+          <small>支援管灌與口飲營養補充品快速查詢與熱量換算</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalFormulas')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="table-scroll-container">
+          <table class="data-table" id="formulaTable">
+            <thead>
+              <tr>
+                <th>配方品名</th>
+                <th>規格包裝</th>
+                <th>蛋白質 (g)</th>
+                <th>脂肪 (g)</th>
+                <th>醣類 (g)</th>
+                <th>熱量 (kcal)</th>
+                <th>適用對象與臨床備註</th>
+              </tr>
+            </thead>
+            <tbody id="formulaTableBody">
+              <!-- 動態生成 26 項配方 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 資料腳本 -->
+  <script src="food_exchange_db.js"></script>
+  <script src="app_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
