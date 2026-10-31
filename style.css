@@ -25,6 +25,19 @@ body {
   font-size: 14px;
 }
 
+/* 手機版首頁橫幅 */
+.hero-banner {
+  display: none;
+  background: #fff4dc;
+  overflow: hidden;
+}
+
+.hero-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* 頂部導航 */
 .navbar {
   background: #ffffff;
@@ -1127,11 +1140,12 @@ body {
 }
 
 .sidebar-header {
-  height: 150px;
+  height: 188px;
   padding: 0;
   background-image: url("Assets/dietlplanner-banner.jpg");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   border: 0;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -1176,6 +1190,15 @@ body {
 /* 手機版模式 (隱藏左側選單，分頁像 Excel / Google 試算表般固定在螢幕最底端) */
 body.mobile-mode .sidebar-desktop {
   display: none !important;
+}
+
+body.mobile-mode .hero-banner {
+  display: block;
+  padding: 12px 10px 0;
+}
+
+body.mobile-mode .hero-banner img {
+  border-radius: 12px;
 }
 
 body.mobile-mode .app-layout {
