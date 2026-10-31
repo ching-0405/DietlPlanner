@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261031-1300">
+  <link rel="stylesheet" href="style.css?v=20261031-1310">
 </head>
 <body>
 
@@ -426,7 +426,18 @@
                 <th rowspan="2" class="col-cat">食物大類</th>
                 <th colspan="4" class="col-macros-spec">每份三大營養素 (g)</th>
                 <th rowspan="2" class="col-ex">設計份數</th>
-                <th colspan="6" class="col-meals">各餐次分配份數 (可輸入小數點如 1.5、2.5)</th>
+                <th colspan="6" class="col-meals">
+                  各餐次分配份數
+                  <label class="meal-count-selector">餐次：
+                    <select id="mealCountSelect" class="meal-count-select" aria-label="選擇餐次數量">
+                      <option value="3">3 餐</option>
+                      <option value="4">4 餐</option>
+                      <option value="5">5 餐</option>
+                      <option value="6" selected>6 餐</option>
+                    </select>
+                  </label>
+                  <small>(可輸入小數點如 1.5、2.5)</small>
+                </th>
                 <th rowspan="2" class="col-total-p">總蛋白質 (g)</th>
                 <th rowspan="2" class="col-total-f">總脂肪 (g)</th>
                 <th rowspan="2" class="col-total-c">總醣類 (g)</th>
@@ -437,12 +448,12 @@
                 <th>脂肪 (F)</th>
                 <th>醣類 (C)</th>
                 <th>熱量</th>
-                <th>早</th>
-                <th>早點</th>
-                <th>午</th>
-                <th>午點</th>
-                <th>晚</th>
-                <th>晚點</th>
+                <th class="meal-col meal-b">早</th>
+                <th class="meal-col meal-ms">早點</th>
+                <th class="meal-col meal-l">午</th>
+                <th class="meal-col meal-as">午點</th>
+                <th class="meal-col meal-d">晚</th>
+                <th class="meal-col meal-ns">晚點</th>
               </tr>
             </thead>
             <tbody id="exchangeTableBody">
@@ -453,12 +464,12 @@
               <tr class="subtotal-row grams-row">
                 <td colspan="5" class="subtotal-title"><strong>三大營養素加總克數</strong></td>
                 <td class="val-blue" id="sumTotalEx">23</td>
-                <td id="sumB">5</td>
-                <td id="sumMs">1</td>
-                <td id="sumL">11</td>
-                <td id="sumAs">2</td>
-                <td id="sumD">11</td>
-                <td id="sumNs">1</td>
+                <td class="meal-summary-cell meal-summary-b" id="sumB">5</td>
+                <td class="meal-summary-cell meal-summary-ms" id="sumMs">1</td>
+                <td class="meal-summary-cell meal-summary-l" id="sumL">11</td>
+                <td class="meal-summary-cell meal-summary-as" id="sumAs">2</td>
+                <td class="meal-summary-cell meal-summary-d" id="sumD">11</td>
+                <td class="meal-summary-cell meal-summary-ns" id="sumNs">1</td>
                 <td class="val-green" id="sumProteinGrams">65.0 g</td>
                 <td class="val-orange" id="sumFatGrams">43.0 g</td>
                 <td class="val-red" id="sumCarbGrams">187.0 g</td>
@@ -467,7 +478,7 @@
               <tr class="subtotal-row percent-row">
                 <td colspan="5" class="subtotal-title"><strong>三大營養素百分比</strong></td>
                 <td class="text-muted">—</td>
-                <td colspan="6" class="text-center font-sm text-muted"></td>
+                <td id="mealSummaryPlaceholder" colspan="6" class="text-center font-sm text-muted"></td>
                 <td class="val-green" id="pctProtein">18.6 %</td>
                 <td class="val-orange" id="pctFat">27.7 %</td>
                 <td class="val-red" id="pctCarb">53.6 %</td>
@@ -723,9 +734,9 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261031-1300"></script>
-  <script src="food_exchange_db.js?v=20261031-1300"></script>
-  <script src="app_data.js?v=20261031-1300"></script>
-  <script src="app.js?v=20261031-1300"></script>
+  <script src="food_composition_2025.js?v=20261031-1310"></script>
+  <script src="food_exchange_db.js?v=20261031-1310"></script>
+  <script src="app_data.js?v=20261031-1310"></script>
+  <script src="app.js?v=20261031-1310"></script>
 </body>
 </html>
