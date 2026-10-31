@@ -1180,8 +1180,8 @@ body {
   height: 188px;
   padding: 0;
   background-image: url("Assets/dietlplanner-banner.jpg");
-  background-size: contain;
-  background-position: center;
+  background-size: cover;
+  background-position: center top;
   background-repeat: no-repeat;
   background-color: #fff4dc;
   border: 0;
@@ -1238,7 +1238,7 @@ body.mobile-mode .hero-banner {
   display: block;
   width: 100%;
   padding: 0;
-  margin: 0 0 10px 0;
+  margin: 0;
   background: #fff4dc;
   line-height: 0;
   overflow: hidden;
@@ -1251,7 +1251,7 @@ body.mobile-mode .hero-banner img {
   height: auto !important;
   max-height: none !important;
   border-radius: 0;
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center top;
 }
 
