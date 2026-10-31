@@ -818,6 +818,25 @@ body {
   display: none !important;
 }
 
+.meal-count-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.meal-count-select {
+  min-width: 62px;
+  padding: 3px 4px;
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #1e293b;
+  font-weight: 700;
+}
+
 .exchange-table tr.allocation-invalid {
   background: #fef2f2;
 }
@@ -836,7 +855,7 @@ body {
 .subtotal-row {
   background: #f8fafc;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .subtotal-row.grams-row {
@@ -844,7 +863,7 @@ body {
 }
 
 .subtotal-row.grams-row td {
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .subtotal-row.percent-row {
@@ -852,14 +871,14 @@ body {
 }
 
 .subtotal-row.percent-row td {
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .subtotal-title {
   text-align: left !important;
   padding-left: 16px !important;
   color: #0f172a;
-  font-size: 16px !important;
+  font-size: 19px !important;
 }
 
 /* 警示橫幅 Alert Banner */
