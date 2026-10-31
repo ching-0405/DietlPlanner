@@ -128,37 +128,43 @@ function calcAssessment() {
 
   // 畫面更新
   document.getElementById("valBmi").innerText = bmi.toFixed(2);
-  document.getElementById("valIbw").innerText = `${ibw.toFixed(2)} kg`;
+  document.getElementById("valIbw").innerText = `${ibw.toFixed(2)}`;
   document.getElementById("valIbwPercent").innerText = `${ibwPercent.toFixed(1)} %`;
   document.getElementById("valBmiRange").innerText = `${minNormalWeight.toFixed(1)} ~ ${maxNormalWeight.toFixed(1)} kg`;
 
-  // BMI 分級標籤
+  // BMI 數值顏色與分級標籤 (正常不顯示紅色，改為健康深綠色)
   const badge = document.getElementById("badgeBmiStatus");
+  const cellBmiVal = document.getElementById("cellBmiVal");
   if (bmi < 18.5) {
     badge.innerText = "體重過輕";
     badge.className = "badge";
     badge.style.background = "#e0f2fe";
     badge.style.color = "#0284c7";
+    if (cellBmiVal) { cellBmiVal.className = "val-highlight"; cellBmiVal.querySelector("strong").style.color = "#0284c7"; }
   } else if (bmi < 24) {
     badge.innerText = "體重正常 (理想)";
     badge.className = "badge badge-normal";
     badge.style.background = "";
     badge.style.color = "";
+    if (cellBmiVal) { cellBmiVal.className = "val-highlight green"; cellBmiVal.querySelector("strong").style.color = "#16a34a"; }
   } else if (bmi < 27) {
     badge.innerText = "體重過重";
     badge.className = "badge";
     badge.style.background = "#fef3c7";
     badge.style.color = "#d97706";
+    if (cellBmiVal) { cellBmiVal.className = "val-highlight"; cellBmiVal.querySelector("strong").style.color = "#d97706"; }
   } else if (bmi < 30) {
     badge.innerText = "輕度肥胖";
     badge.className = "badge";
     badge.style.background = "#ffedd5";
     badge.style.color = "#ea580c";
+    if (cellBmiVal) { cellBmiVal.className = "val-highlight"; cellBmiVal.querySelector("strong").style.color = "#ea580c"; }
   } else {
     badge.innerText = "中重度肥胖";
     badge.className = "badge";
     badge.style.background = "#fee2e2";
     badge.style.color = "#dc2626";
+    if (cellBmiVal) { cellBmiVal.className = "val-highlight red"; cellBmiVal.querySelector("strong").style.color = "#dc2626"; }
   }
 
   // BMI 指標尺標滑動位置更新 (5個區塊連續計算)
