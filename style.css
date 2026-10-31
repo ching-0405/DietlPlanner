@@ -1246,10 +1246,13 @@ body.mobile-mode .hero-banner {
 
 body.mobile-mode .hero-banner img {
   display: block;
-  width: 100%;
-  height: auto;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
   border-radius: 0;
-  object-fit: contain;
+  object-fit: contain !important;
+  object-position: center top;
 }
 
 body.mobile-mode .app-layout {
