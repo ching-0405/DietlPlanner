@@ -698,11 +698,11 @@ body {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .exchange-table th, .exchange-table td {
-  padding: 6px 4px;
+  padding: 5px 3px;
   border: 1px solid #cbd5e1;
   text-align: center;
   white-space: normal;
@@ -713,17 +713,17 @@ body {
   background: #f1f5f9;
   color: #1e293b;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .exchange-table thead .header-main th {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .exchange-table td.cat-cell {
   text-align: left;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
   color: #0f172a;
 }
 
@@ -734,7 +734,7 @@ body {
 }
 
 .exchange-table input.cell-input {
-  width: 48px;
+  width: 56px;
   max-width: 100%;
   text-align: center;
   padding: 5px 2px;
@@ -989,7 +989,7 @@ body.mobile-mode .quick-btn-grid {
 }
 
 body.mobile-mode .exchange-table {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .exchange-table input.cell-input:focus {
