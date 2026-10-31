@@ -1208,6 +1208,21 @@ body.mobile-mode .brand-icon {
   font-size: 20px;
 }
 
+body.mobile-mode .tdee-action-row {
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+body.mobile-mode .tdee-number {
+  white-space: nowrap;
+  flex: 0 0 auto;
+  font-size: 18px;
+}
+
+body.mobile-mode .bmi-footer-note {
+  display: none;
+}
+
 body.mobile-mode .nav-controls {
   flex-direction: row;
   align-items: center;
