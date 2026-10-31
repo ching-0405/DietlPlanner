@@ -175,6 +175,12 @@ body {
   border-collapse: collapse;
 }
 
+.ratio-calc-grid td:nth-child(2),
+.ratio-calc-grid th:nth-child(2) {
+  min-width: 155px;
+  white-space: nowrap;
+}
+
 .ratio-calc-grid th, .ratio-calc-grid td {
   padding: 8px 12px;
   border: 1px solid #e2e8f0;
@@ -691,30 +697,33 @@ body {
 .exchange-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 15px; /* 原 13px 放大至 15px */
+  table-layout: fixed;
+  font-size: 13px;
 }
 
 .exchange-table th, .exchange-table td {
-  padding: 10px 12px;
+  padding: 6px 4px;
   border: 1px solid #cbd5e1;
   text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .exchange-table thead th {
   background: #f1f5f9;
   color: #1e293b;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .exchange-table thead .header-main th {
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .exchange-table td.cat-cell {
   text-align: left;
   font-weight: 700;
-  font-size: 16px; /* 類別標題加大 */
+  font-size: 13px;
   color: #0f172a;
 }
 
@@ -725,22 +734,49 @@ body {
 }
 
 .exchange-table input.cell-input {
-  width: 58px;
+  width: 48px;
+  max-width: 100%;
   text-align: center;
-  padding: 6px 4px;
+  padding: 5px 2px;
   border: 1px solid #94a3b8;
   border-radius: 4px;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 13px;
 }
 
-.exchange-table th,
-.exchange-table td {
-  white-space: nowrap;
+.exchange-table th:nth-child(1),
+.exchange-table td:nth-child(1) {
+  width: 14%;
+}
+
+.exchange-table th:nth-child(2),
+.exchange-table td:nth-child(2),
+.exchange-table th:nth-child(3),
+.exchange-table td:nth-child(3),
+.exchange-table th:nth-child(4),
+.exchange-table td:nth-child(4),
+.exchange-table th:nth-child(5),
+.exchange-table td:nth-child(5) {
+  width: 5%;
+}
+
+.exchange-table th:nth-child(6),
+.exchange-table td:nth-child(6) {
+  width: 7%;
+}
+
+.exchange-table th:nth-child(n+7):nth-child(-n+12),
+.exchange-table td:nth-child(n+7):nth-child(-n+12) {
+  width: 6%;
+}
+
+.exchange-table th:nth-child(n+13),
+.exchange-table td:nth-child(n+13) {
+  width: 5.75%;
 }
 
 .exchange-table .design-ex-cell {
-  min-width: 108px;
+  min-width: 0;
 }
 
 .exchange-table .meal-ex-input:disabled {
@@ -758,6 +794,10 @@ body {
   font-size: 11px;
   line-height: 1.2;
   white-space: normal;
+}
+
+.exchange-table .allocation-status[hidden] {
+  display: none !important;
 }
 
 .exchange-table tr.allocation-invalid {
