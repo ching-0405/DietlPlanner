@@ -535,7 +535,11 @@ function renderExchangeTable() {
         <td>${item.f}</td>
         <td>${item.c}</td>
         <td>${item.kcal}</td>
-        <td class="val-blue"><strong id="ex_total_${idx}">${item.ex}</strong></td>
+        <td>
+          <input type="number" class="cell-input design-ex-input" step="0.5" min="0"
+            value="${item.ex}" aria-label="${item.category}設計份數"
+            oninput="onDesignExChanged(${idx}, this.value)">
+        </td>
         <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.b}" oninput="onMealExChanged(${idx}, 'b', this.value)"></td>
         <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.ms}" oninput="onMealExChanged(${idx}, 'ms', this.value)"></td>
         <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.l}" oninput="onMealExChanged(${idx}, 'l', this.value)"></td>
@@ -556,10 +560,14 @@ function renderExchangeTable() {
 function onMealExChanged(idx, mealKey, val) {
   const num = parseFloat(val) || 0;
   exchangesData[idx][mealKey] = num;
-  exchangesData[idx].ex = exchangesData[idx].b + exchangesData[idx].ms + exchangesData[idx].l + exchangesData[idx].as + exchangesData[idx].d + exchangesData[idx].ns;
-  document.getElementById(`ex_total_${idx}`).innerText = exchangesData[idx].ex;
   calcExchangeTotals();
   updateMealChipsBar();
+}
+
+function onDesignExChanged(idx, val) {
+  const num = parseFloat(val);
+  exchangesData[idx].ex = Number.isFinite(num) && num >= 0 ? num : 0;
+  calcExchangeTotals();
 }
 
 function calcExchangeTotals() {
