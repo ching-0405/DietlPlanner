@@ -803,10 +803,10 @@ body {
   margin-left: 10px;
 }
 
-/* 手機版模式 (強制或自動螢幕切換) */
+/* 手機版模式 (像 Excel / Google 試算表般固定在螢幕最底端) */
 body.mobile-mode .container {
   max-width: 100%;
-  padding: 0 10px 40px;
+  padding: 0 10px 85px; /* 留出底部工作表分頁高度，避免被遮擋 */
 }
 
 body.mobile-mode .grid-2col {
@@ -814,32 +814,83 @@ body.mobile-mode .grid-2col {
 }
 
 body.mobile-mode .navbar {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-  padding: 10px 14px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #0d9488;
+}
+
+body.mobile-mode .brand-titles h1 {
+  font-size: 16px;
+}
+
+body.mobile-mode .brand-icon {
+  font-size: 20px;
 }
 
 body.mobile-mode .nav-controls {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
 }
 
 body.mobile-mode .device-switch-group {
-  align-self: center;
+  padding: 2px;
 }
 
+body.mobile-mode .btn-device-toggle {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+/* 試算表底部分頁切換欄 (Bottom Sheet Tabs) */
 body.mobile-mode .nav-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #ffffff;
+  border-top: 1px solid #cbd5e1;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  z-index: 999;
+  padding: 4px 6px;
 }
 
 body.mobile-mode .nav-tab {
-  text-align: center;
-  padding: 10px;
-  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 2px;
+  line-height: 1.2;
+  box-shadow: none;
+}
+
+body.mobile-mode .nav-tab.active {
+  background: #e6f6f3;
+  color: #0d9488;
+  font-weight: 700;
+  border-bottom: 3px solid #0d9488;
+  border-radius: 4px 4px 0 0;
+}
+
+body.mobile-mode .alert-banner {
+  bottom: 66px; /* 移到試算表底部分頁之上，不被遮擋 */
+  right: 12px;
+  left: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
 }
 
 body.mobile-mode .card-header {
