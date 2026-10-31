@@ -734,6 +734,36 @@ body {
   font-size: 15px;
 }
 
+.exchange-table th,
+.exchange-table td {
+  white-space: nowrap;
+}
+
+.exchange-table .design-ex-cell {
+  min-width: 108px;
+}
+
+.exchange-table .meal-ex-input:disabled {
+  background: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.exchange-table .allocation-status {
+  display: block;
+  max-width: 130px;
+  margin-top: 3px;
+  color: #b91c1c;
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.exchange-table tr.allocation-invalid {
+  background: #fef2f2;
+}
+
 .exchange-table input.cell-input:focus {
   border-color: #0d9488;
   outline: none;

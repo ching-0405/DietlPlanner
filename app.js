@@ -535,17 +535,18 @@ function renderExchangeTable() {
         <td>${item.f}</td>
         <td>${item.c}</td>
         <td>${item.kcal}</td>
-        <td>
+        <td class="design-ex-cell">
           <input type="number" class="cell-input design-ex-input" step="0.5" min="0"
             value="${item.ex}" aria-label="${item.category}設計份數"
             oninput="onDesignExChanged(${idx}, this.value)">
+          <span class="allocation-status" id="row_allocation_status_${idx}" hidden></span>
         </td>
-        <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.b}" oninput="onMealExChanged(${idx}, 'b', this.value)"></td>
-        <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.ms}" oninput="onMealExChanged(${idx}, 'ms', this.value)"></td>
-        <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.l}" oninput="onMealExChanged(${idx}, 'l', this.value)"></td>
-        <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.as}" oninput="onMealExChanged(${idx}, 'as', this.value)"></td>
-        <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.d}" oninput="onMealExChanged(${idx}, 'd', this.value)"></td>
-        <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.ns}" oninput="onMealExChanged(${idx}, 'ns', this.value)"></td>
+        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.b}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'b', this.value)"></td>
+        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.ms}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'ms', this.value)"></td>
+        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.l}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'l', this.value)"></td>
+        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.as}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'as', this.value)"></td>
+        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.d}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'd', this.value)"></td>
+        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.ns}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'ns', this.value)"></td>
         <td class="val-green" id="row_p_${idx}">0</td>
         <td class="val-orange" id="row_f_${idx}">0</td>
         <td class="val-red" id="row_c_${idx}">0</td>
@@ -554,12 +555,14 @@ function renderExchangeTable() {
     `;
   }).join("");
 
+  exchangesData.forEach((_, idx) => validateMealAllocation(idx));
   calcExchangeTotals();
 }
 
 function onMealExChanged(idx, mealKey, val) {
   const num = parseFloat(val) || 0;
   exchangesData[idx][mealKey] = num;
+  validateMealAllocation(idx);
   calcExchangeTotals();
   updateMealChipsBar();
 }
@@ -567,7 +570,38 @@ function onMealExChanged(idx, mealKey, val) {
 function onDesignExChanged(idx, val) {
   const num = parseFloat(val);
   exchangesData[idx].ex = Number.isFinite(num) && num >= 0 ? num : 0;
+  const item = exchangesData[idx];
+  const mealKeys = ["b", "ms", "l", "as", "d", "ns"];
+  const row = document.querySelectorAll("#exchangeTableBody tr")[idx];
+  if (row) {
+    row.querySelectorAll(".meal-ex-input").forEach(input => {
+      input.disabled = item.ex <= 0;
+    });
+  }
+  if (item.ex <= 0) {
+    mealKeys.forEach(key => {
+      item[key] = 0;
+      const input = row?.querySelector(`input[oninput*="'${key}'"]`);
+      if (input) input.value = "0";
+    });
+  }
+  validateMealAllocation(idx);
   calcExchangeTotals();
+}
+
+function validateMealAllocation(idx) {
+  const item = exchangesData[idx];
+  const mealTotal = item.b + item.ms + item.l + item.as + item.d + item.ns;
+  const isValid = item.ex <= 0 || Math.abs(mealTotal - item.ex) < 0.001;
+  const row = document.querySelectorAll("#exchangeTableBody tr")[idx];
+  const status = document.getElementById(`row_allocation_status_${idx}`);
+  if (row) row.classList.toggle("allocation-invalid", !isValid);
+  if (status) {
+    status.hidden = isValid;
+    status.textContent = `餐次合計 ${mealTotal} ≠ 設計份數 ${item.ex}`;
+    status.title = "早、早點、午、午點、晚、晚點的合計必須等於設計份數";
+  }
+  return isValid;
 }
 
 function calcExchangeTotals() {
@@ -597,9 +631,9 @@ function calcExchangeTotals() {
     const elF = document.getElementById(`row_f_${idx}`);
     const elC = document.getElementById(`row_c_${idx}`);
     const elK = document.getElementById(`row_kcal_${idx}`);
-    if (elP) elP.innerText = rowP.toFixed(1);
-    if (elF) elF.innerText = rowF.toFixed(1);
-    if (elC) elC.innerText = rowC.toFixed(1);
+    if (elP) elP.innerText = Math.round(rowP);
+    if (elF) elF.innerText = Math.round(rowF);
+    if (elC) elC.innerText = Math.round(rowC);
     if (elK) elK.innerText = Math.round(rowKcal);
   });
 
@@ -612,9 +646,9 @@ function calcExchangeTotals() {
   document.getElementById("sumD").innerText = sumD.toFixed(1);
   document.getElementById("sumNs").innerText = sumNs.toFixed(1);
 
-  document.getElementById("sumProteinGrams").innerText = `${totalP.toFixed(1)} g`;
-  document.getElementById("sumFatGrams").innerText = `${totalF.toFixed(1)} g`;
-  document.getElementById("sumCarbGrams").innerText = `${totalC.toFixed(1)} g`;
+  document.getElementById("sumProteinGrams").innerText = `${Math.round(totalP)} g`;
+  document.getElementById("sumFatGrams").innerText = `${Math.round(totalF)} g`;
+  document.getElementById("sumCarbGrams").innerText = `${Math.round(totalC)} g`;
   document.getElementById("sumTotalCalories").innerText = `${Math.round(totalKcal)} kcal`;
 
   // 4-9-4 修正熱量與百分比
