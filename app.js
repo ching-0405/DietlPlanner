@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initMenu();
   initFormulas();
   initFoodExchangeQuery();
+  initFoodComposition();
 });
 
 // ==========================================
@@ -747,4 +748,201 @@ function openModal(id) {
 function closeModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.remove("show");
+}
+
+// ==========================================
+// 7. 台灣食品營養成分資料庫 (2025版，共2,213項)
+// ==========================================
+function initFoodComposition() {
+  const inSearch = document.getElementById("inCompositionSearch");
+  const cboCat = document.getElementById("cboCompositionCategory");
+  if (!inSearch || !cboCat) return;
+
+  inSearch.addEventListener("input", filterFoodComposition);
+  cboCat.addEventListener("change", filterFoodComposition);
+
+  filterFoodComposition();
+}
+
+function filterFoodComposition() {
+  if (typeof FOOD_COMPOSITION_2025 === "undefined") return;
+
+  const keyword = (document.getElementById("inCompositionSearch").value || "").trim().toLowerCase();
+  const cat = document.getElementById("cboCompositionCategory").value;
+
+  const filtered = FOOD_COMPOSITION_2025.filter(item => {
+    const matchCat = cat === "全部" || item.Category === cat;
+    const matchText = !keyword || 
+      (item.Name && item.Name.toLowerCase().includes(keyword)) ||
+      (item.CommonName && item.CommonName.toLowerCase().includes(keyword)) ||
+      (item.Code && item.Code.toLowerCase().includes(keyword));
+    return matchCat && matchText;
+  });
+
+  const countEl = document.getElementById("lblCompositionCount");
+  if (countEl) countEl.innerText = filtered.length.toLocaleString();
+
+  const tbody = document.getElementById("compositionTableBody");
+  if (!tbody) return;
+
+  // 渲染前 200 筆以保證極致流暢度
+  const displayItems = filtered.slice(0, 200);
+
+  tbody.innerHTML = displayItems.map(item => `
+    <tr>
+      <td><code>${item.Code}</code></td>
+      <td class="text-teal font-bold">${item.Category}</td>
+      <td><strong>${item.Name}</strong></td>
+      <td class="text-muted">${item.CommonName || "—"}</td>
+      <td class="val-red font-bold">${item.Calories ? item.Calories.toFixed(1) : 0}</td>
+      <td class="val-green font-bold">${item.Protein ? item.Protein.toFixed(1) : 0}</td>
+      <td class="val-orange font-bold">${item.Fat ? item.Fat.toFixed(1) : 0}</td>
+      <td>${item.SaturatedFat ? item.SaturatedFat.toFixed(1) : 0}</td>
+      <td class="font-blue font-bold">${item.Carbs ? item.Carbs.toFixed(1) : 0}</td>
+      <td>${item.DietaryFiber ? item.DietaryFiber.toFixed(1) : 0}</td>
+      <td>${item.Sugars ? item.Sugars.toFixed(1) : 0}</td>
+      <td>${item.Water ? item.Water.toFixed(1) : 0}</td>
+      <td>
+        <button class="btn btn-outline" onclick="addCompositionToMenu('${item.Name.replace(/'/g, "\\'")}', '${item.Category}')">加菜單</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function clearCompositionSearch() {
+  const inSearch = document.getElementById("inCompositionSearch");
+  const cboCat = document.getElementById("cboCompositionCategory");
+  if (inSearch) inSearch.value = "";
+  if (cboCat) cboCat.value = "全部";
+  filterFoodComposition();
+}
+
+function addCompositionToMenu(name, category) {
+  let meal = document.getElementById("cboMealFilter").value;
+  if (meal === "全部") meal = "午餐";
+
+  menuRecipes.push({
+    meal: meal,
+    dish: "",
+    food: name,
+    category: category,
+    ex: 1,
+    rawWeight: 100,
+    color: "白色"
+  });
+
+  renderMenuRecipes();
+  alert(`已將「${name}」加入【${meal}】菜單！`);
+}
+
+// ==========================================
+// 8. 列印衛教處方單張功能 (Print Report)
+// ==========================================
+function printPrescriptionReport() {
+  const name = document.getElementById("inName").value || "個案";
+  const chartNo = document.getElementById("inChartNo").value || "—";
+  const gender = document.getElementById("inGender").value;
+  const age = document.getElementById("inAge").value;
+  const height = document.getElementById("inHeight").value;
+  const weight = document.getElementById("inWeight").value;
+  const bmi = document.getElementById("valBmi").innerText;
+  const ibw = document.getElementById("valIbw").innerText;
+  const targetKcal = document.getElementById("inTargetKcal").value;
+  const carbGrams = document.getElementById("lblTargetCarbGrams").innerText;
+  const fatGrams = document.getElementById("lblTargetFatGrams").innerText;
+  const protGrams = document.getElementById("lblTargetProteinGrams").innerText;
+  const egfr = document.getElementById("valEgfr").innerText;
+
+  // 取得各餐菜單
+  const mealGroups = {};
+  menuRecipes.forEach(r => {
+    if (!mealGroups[r.meal]) mealGroups[r.meal] = [];
+    mealGroups[r.meal].push(`${r.dish ? r.dish + '-' : ''}${r.food} (${r.ex}份)`);
+  });
+
+  let menuHtml = "";
+  for (let m in mealGroups) {
+    menuHtml += `<tr><td style="font-weight:bold;width:90px;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;">${m}</td><td style="padding:8px;border:1px solid #cbd5e1;">${mealGroups[m].join("、 ")}</td></tr>`;
+  }
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>臨床營養諮詢衛教處方單 - ${name}</title>
+      <style>
+        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; padding: 24px; color: #1e293b; line-height: 1.6; }
+        .header { text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 16px; }
+        .header h1 { margin: 0; color: #0f766e; font-size: 24px; }
+        .section-title { font-size: 16px; font-weight: bold; color: #0d9488; margin: 16px 0 8px; border-left: 4px solid #0d9488; padding-left: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; font-size: 14px; }
+        th { background: #f1f5f9; }
+        .highlight { font-weight: bold; color: #0f766e; }
+        .footer { margin-top: 30px; text-align: right; font-size: 13px; color: #64748b; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>🏥 飲食營養諮詢評估與菜單處方單</h1>
+        <p>專業臨床營養照護記錄 ｜ 衛教指導單張</p>
+      </div>
+
+      <div class="section-title">一、個案基本體位與生理評估</div>
+      <table>
+        <tr>
+          <th>姓名 / 暱稱</th><td>${name}</td>
+          <th>病歷號</th><td>${chartNo}</td>
+          <th>性別 / 年齡</th><td>${gender} / ${age} 歲</td>
+        </tr>
+        <tr>
+          <th>身高</th><td>${height} cm</td>
+          <th>體重</th><td>${weight} kg</td>
+          <th>BMI 指數</th><td class="highlight">${bmi}</td>
+        </tr>
+        <tr>
+          <th>理想體重 (IBW)</th><td>${ibw}</td>
+          <th>腎功能 (eGFR)</th><td>${egfr} ml/min</td>
+          <th>目標規劃熱量</th><td class="highlight" style="color:#e11d48;font-size:16px;">${targetKcal} kcal</td>
+        </tr>
+      </table>
+
+      <div class="section-title">二、三大營養素目標熱量與克數分配</div>
+      <table>
+        <tr>
+          <th>醣類 (碳水化合物)</th>
+          <th>脂質 (Lipids)</th>
+          <th>蛋白質 (Protein)</th>
+        </tr>
+        <tr>
+          <td style="color:#e11d48;font-weight:bold;font-size:16px;">${carbGrams}</td>
+          <td style="color:#d97706;font-weight:bold;font-size:16px;">${fatGrams}</td>
+          <td style="color:#16a34a;font-weight:bold;font-size:16px;">${protGrams}</td>
+        </tr>
+      </table>
+
+      <div class="section-title">三、客製化飲食菜單規劃</div>
+      <table>
+        ${menuHtml || '<tr><td colspan="2" style="text-align:center;color:#94a3b8;">尚未開立菜單食材</td></tr>'}
+      </table>
+
+      <div class="section-title">四、營養師專業指導與衛教叮嚀</div>
+      <div style="border:1px solid #cbd5e1;padding:12px;border-radius:6px;background:#f8fafc;font-size:14px;">
+        1. 每日維持規律三餐與點心，補充足量水分（建議每日至少 2000 ml）。<br>
+        2. 烹調宜清淡，以蒸、煮、滷、涼拌為原則，避免油炸及高鈉加工食品。<br>
+        3. 如有任何身體不適或體重急遽變化，請立即向營養諮詢門診洽詢。
+      </div>
+
+      <div class="footer">
+        評估日期：${new Date().toLocaleDateString()} ｜ 營養師簽章：____________________
+      </div>
+      <script>
+        window.onload = function() { window.print(); };
+      </script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
