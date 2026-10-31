@@ -701,6 +701,13 @@ body {
   font-size: 12px;
 }
 
+.exchange-table .col-category { width: 18%; }
+.exchange-table .col-macro { width: 4%; }
+.exchange-table .col-design-ex { width: 8%; }
+.exchange-table .col-meal-ex { width: 6%; }
+.exchange-table .col-total-macro { width: 5.5%; }
+.exchange-table .col-total-kcal { width: 6%; }
+
 .exchange-table th, .exchange-table td {
   padding: 5px 3px;
   border: 1px solid #cbd5e1;
@@ -734,7 +741,8 @@ body {
 }
 
 .exchange-table input.cell-input {
-  width: 56px;
+  width: 100%;
+  max-width: 54px;
   max-width: 100%;
   text-align: center;
   padding: 5px 2px;
@@ -742,6 +750,16 @@ body {
   border-radius: 4px;
   font-weight: 700;
   font-size: 13px;
+}
+
+@media (min-width: 768px) {
+  .exchange-table .meal-ex-input {
+    width: 54px;
+  }
+
+  .exchange-table .design-ex-input {
+    width: 58px;
+  }
 }
 
 .exchange-table th:nth-child(1),
