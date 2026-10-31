@@ -1236,16 +1236,20 @@ body.mobile-mode .sidebar-desktop {
 
 body.mobile-mode .hero-banner {
   display: block;
-  padding: 10px 10px 0;
-  background: transparent;
+  width: 100%;
+  padding: 0;
+  margin: 0 0 10px 0;
+  background: #fff4dc;
+  line-height: 0;
+  overflow: hidden;
 }
 
 body.mobile-mode .hero-banner img {
-  border-radius: 12px;
+  display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  object-position: center;
+  height: auto;
+  border-radius: 0;
+  object-fit: contain;
 }
 
 body.mobile-mode .app-layout {
@@ -1256,7 +1260,7 @@ body.mobile-mode .app-layout {
   padding: 16px 0 80px;
 }
 
-/* 9:16 直立手機螢幕容器限制 (寬 400px，外框仿 iPhone 直立視覺) */
+/* 9:16 直立手機螢幕容器限制 (寬 420px，外框仿 iPhone 直立視覺) */
 body.mobile-mode .main-workspace {
   width: 100%;
   max-width: 420px;
@@ -1267,6 +1271,13 @@ body.mobile-mode .main-workspace {
   overflow: hidden;
   position: relative;
   border: 1px solid #334155;
+}
+
+/* 手機版頂部標頭不遮擋，與橫幅維持流暢間距 */
+body.mobile-mode .navbar {
+  position: relative;
+  top: auto;
+  z-index: 50;
 }
 
 body.mobile-mode .container {
