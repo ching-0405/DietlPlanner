@@ -667,7 +667,7 @@ function calcExchangeTotals() {
   document.getElementById("pctCarb").innerText = `${pctC.toFixed(1)} %`;
   document.getElementById("pctProtein").innerText = `${pctP.toFixed(1)} %`;
   document.getElementById("pctFat").innerText = `${pctF.toFixed(1)} %`;
-  document.getElementById("pctTotal").innerText = `${(pctC + pctP + pctF).toFixed(1)} %`;
+  document.getElementById("pctTotal").innerText = `${Math.round(macroKcal)} kcal`;
 
   const formulaEl = document.getElementById("caloricFormulaDesc");
   if (formulaEl) formulaEl.innerText = "";
