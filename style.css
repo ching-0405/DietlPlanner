@@ -1180,9 +1180,10 @@ body {
   height: 188px;
   padding: 0;
   background-image: url("Assets/dietlplanner-banner.jpg");
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  background-color: #fff4dc;
   border: 0;
   border-radius: 8px;
   margin-bottom: 16px;
