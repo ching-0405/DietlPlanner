@@ -201,7 +201,7 @@ function calcAssessment() {
   // 畫面更新
   document.getElementById("valBmi").innerText = bmi.toFixed(2);
   document.getElementById("valIbw").innerText = `${ibw.toFixed(2)}`;
-  document.getElementById("valIbwPercent").innerText = `${ibwPercent.toFixed(1)} %`;
+  document.getElementById("valIbwPercent").innerText = `${Math.round(ibwPercent)} %`;
   document.getElementById("valBmiRange").innerText = `${minNormalWeight.toFixed(1)} ~ ${maxNormalWeight.toFixed(1)} kg`;
 
   // BMI 數值顏色與分級標籤 (正常不顯示紅色，改為健康深綠色)

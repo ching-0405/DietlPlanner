@@ -635,11 +635,16 @@ body {
 
 .val-highlight {
   font-size: 17px;
+  white-space: nowrap;
 }
 
 .val-highlight.red strong { color: #dc2626; }
 .val-highlight.green strong { color: #16a34a; }
-.val-bold { font-weight: 700; color: #1f2937; }
+.val-bold {
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+}
 
 /* 徽章 Badge */
 .badge {
@@ -1244,6 +1249,30 @@ body.mobile-mode .container {
 
 body.mobile-mode .grid-2col {
   grid-template-columns: 1fr;
+}
+
+body.mobile-mode .form-table td.lbl {
+  width: auto;
+  min-width: 130px;
+  padding: 6px 4px;
+  font-size: 13px;
+}
+
+body.mobile-mode .form-table td.unit {
+  width: auto;
+  min-width: 60px;
+  padding: 6px 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+body.mobile-mode .val-bold,
+body.mobile-mode .val-highlight {
+  white-space: nowrap;
+}
+
+body.mobile-mode .form-table td {
+  padding: 6px 4px;
 }
 
 body.mobile-mode .navbar {
