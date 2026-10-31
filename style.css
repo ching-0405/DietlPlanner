@@ -1273,3 +1273,39 @@ body.mobile-mode .exchange-table {
 .overflow-x {
   overflow-x: auto;
 }
+
+
+/* 輸入框與單位橫向同一行排版 (禁止單位被折行擠到第 2 行) */
+.input-with-unit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.input-with-unit label {
+  width: 100%;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 2px;
+}
+
+.input-with-unit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.input-with-unit-row .form-input {
+  flex: 1;
+  min-width: 80px;
+}
+
+.input-with-unit-row .unit {
+  white-space: nowrap;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
