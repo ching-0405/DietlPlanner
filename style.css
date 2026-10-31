@@ -25,6 +25,21 @@ body {
   font-size: 14px;
 }
 
+/* 系統首頁主視覺 */
+.hero-banner {
+  width: 100%;
+  background: #fff4dc;
+  overflow: hidden;
+}
+
+.hero-banner img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  object-position: center;
+}
+
 /* 頂部導航 */
 .navbar {
   background: #ffffff;
@@ -1178,6 +1193,10 @@ body.mobile-mode .brand-titles h1 {
 
 body.mobile-mode .brand-icon {
   font-size: 20px;
+}
+
+body.mobile-mode .hero-banner img {
+  height: 110px;
 }
 
 body.mobile-mode .nav-controls {
