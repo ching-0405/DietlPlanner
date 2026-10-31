@@ -1,8 +1,9 @@
-// 智慧臨床營養評估與菜單設計系統 - 前端核心邏輯
+// 飲食營養菜單設計系統 - 前端核心邏輯
 
 // 全域狀態
 let isDiabeticMode = false;
 let isDiseaseMode = false;
+let currentDeviceMode = "auto";
 let exchangesData = [];
 let menuRecipes = [
   { meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 95, color: "黃色" },
@@ -18,6 +19,7 @@ let menuRecipes = [
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
+  initDeviceMode();
   initTabs();
   initAssessment();
   initExchanges();
@@ -25,6 +27,43 @@ document.addEventListener("DOMContentLoaded", () => {
   initFormulas();
   initFoodExchangeQuery();
 });
+
+// ==========================================
+// 0. 手機版 / 電腦版自動辨識與切換
+// ==========================================
+function initDeviceMode() {
+  const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  setDeviceMode(isMobileDevice ? "mobile" : "desktop", false);
+
+  window.addEventListener("resize", () => {
+    if (currentDeviceMode === "auto") {
+      const isMobile = window.innerWidth < 768;
+      applyDeviceModeClass(isMobile);
+    }
+  });
+}
+
+function setDeviceMode(mode, userExplicit = true) {
+  if (userExplicit) currentDeviceMode = mode;
+  const isMobile = mode === "mobile";
+
+  applyDeviceModeClass(isMobile);
+
+  const btnDesktop = document.getElementById("btnModeDesktop");
+  const btnMobile = document.getElementById("btnModeMobile");
+  if (btnDesktop && btnMobile) {
+    btnDesktop.classList.toggle("active", !isMobile);
+    btnMobile.classList.toggle("active", isMobile);
+  }
+}
+
+function applyDeviceModeClass(isMobile) {
+  if (isMobile) {
+    document.body.classList.add("mobile-mode");
+  } else {
+    document.body.classList.remove("mobile-mode");
+  }
+}
 
 // ==========================================
 // 1. 頁籤切換
@@ -341,18 +380,52 @@ function calcMacroTargets() {
   if (elProcP) elProcP.innerText = `${Math.round(protKcal)} ÷ 4 = ${protGrams.toFixed(1)} g`;
   if (elTargetP) elTargetP.innerText = `${protGrams.toFixed(1)} g`;
 
-  // 4. 比例總和與檢核
+  // 4. 比例總和與超標檢核 (若超標彈出警示)
   const totalRatio = Math.round(ratioC + ratioF + ratioP);
   const lblWarning = document.getElementById("lblRatioSumWarning");
+  
+  // 檢查個別營養素是否超出建議區間 (醣類 50~60%, 脂質 20~30%, 蛋白質 10~20%)
+  const warnings = [];
+  if (!isDiseaseMode) {
+    if (ratioC < 50 || ratioC > 60) warnings.push(`醣類 (${ratioC}%) 超出建議區間 50~60%`);
+    if (ratioF < 20 || ratioF > 30) warnings.push(`脂質 (${ratioF}%) 超出建議區間 20~30%`);
+    if (ratioP < 10 || ratioP > 20) warnings.push(`蛋白質 (${ratioP}%) 超出建議區間 10~20%`);
+  }
+
   if (lblWarning) {
-    if (totalRatio === 100) {
+    if (totalRatio === 100 && warnings.length === 0) {
       lblWarning.className = "text-green font-bold";
       lblWarning.innerText = `✨ 比例總和：${totalRatio}% (正常平衡 ｜ 符合標準熱量百分比建議)`;
-    } else {
+      hideRatioAlert();
+    } else if (totalRatio !== 100) {
       lblWarning.className = "text-red font-bold";
       lblWarning.innerText = `⚠️ 比例總和：${totalRatio}% (未滿或超出 100%，請調整)`;
+      showRatioAlert(`比例總和為 ${totalRatio}%（未達或超出 100%），請檢查並重新調整！`);
+    } else {
+      lblWarning.className = "text-orange font-bold";
+      lblWarning.innerText = `⚠️ 比例總和：100%（但 ${warnings.join('；')}）`;
+      showRatioAlert(`三大營養素百分比超出標準建議範圍：${warnings.join('、')}`);
     }
   }
+}
+
+// 警示橫幅彈窗控制
+function showRatioAlert(msg) {
+  const banner = document.getElementById("ratioAlertBanner");
+  const msgEl = document.getElementById("ratioAlertMsg");
+  if (banner && msgEl) {
+    msgEl.innerText = msg;
+    banner.style.display = "flex";
+  }
+}
+
+function hideRatioAlert() {
+  const banner = document.getElementById("ratioAlertBanner");
+  if (banner) banner.style.display = "none";
+}
+
+function closeRatioAlert() {
+  hideRatioAlert();
 }
 
 function renderExchangeTable() {

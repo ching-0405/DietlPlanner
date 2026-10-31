@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智慧臨床營養評估與菜單設計系統</title>
+  <title>飲食營養菜單設計系統</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,14 +13,19 @@
     <div class="brand">
       <span class="brand-icon">🥗</span>
       <div class="brand-titles">
-        <h1>智慧臨床營養評估與菜單設計系統</h1>
-        <p>Clinical Nutrition Care & Menu Design System</p>
+        <h1>飲食營養菜單設計系統</h1>
       </div>
     </div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
-      <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
-      <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
+    <div class="nav-controls">
+      <div class="device-switch-group">
+        <button class="btn-device-toggle active" id="btnModeDesktop" onclick="setDeviceMode('desktop')">💻 電腦版</button>
+        <button class="btn-device-toggle" id="btnModeMobile" onclick="setDeviceMode('mobile')">📱 手機版</button>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
+        <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
+        <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
+      </div>
     </div>
   </header>
 
@@ -602,6 +607,13 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 警告提示橫幅 Modal/Toast -->
+  <div id="ratioAlertBanner" class="alert-banner" style="display: none;">
+    <span class="alert-icon">⚠️</span>
+    <span id="ratioAlertMsg">三大營養素熱量百分比超出建議範圍！</span>
+    <button class="alert-close" onclick="closeRatioAlert()">&times;</button>
   </div>
 
   <!-- 資料腳本 -->

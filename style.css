@@ -37,6 +37,8 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -50,14 +52,50 @@ body {
 }
 
 .brand-titles h1 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #0f766e;
 }
 
-.brand-titles p {
-  font-size: 12px;
-  color: var(--text-muted);
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* 手機版 / 電腦版切換開關 */
+.device-switch-group {
+  display: inline-flex;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 20px;
+  gap: 2px;
+}
+
+.btn-device-toggle {
+  border: none;
+  background: transparent;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-device-toggle.active {
+  background: #ffffff;
+  color: #0d9488;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.btn-device-toggle:hover:not(.active) {
+  color: #0f766e;
 }
 
 .nav-tabs {
@@ -640,43 +678,188 @@ body {
   margin-left: auto;
 }
 
-/* 代換表格設計 */
+/* 代換表格設計 (整體字體放大 & 舒適間距) */
 .exchange-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 15px; /* 原 13px 放大至 15px */
 }
 
 .exchange-table th, .exchange-table td {
-  padding: 8px 10px;
-  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
   text-align: center;
 }
 
 .exchange-table thead th {
-  background: #f8fafc;
-  color: #334155;
+  background: #f1f5f9;
+  color: #1e293b;
   font-weight: 700;
+  font-size: 14px;
+}
+
+.exchange-table thead .header-main th {
+  font-size: 15px;
 }
 
 .exchange-table td.cat-cell {
   text-align: left;
-  font-weight: 600;
-  color: #1e293b;
+  font-weight: 700;
+  font-size: 16px; /* 類別標題加大 */
+  color: #0f172a;
 }
 
 .exchange-table td.unit-cell {
   text-align: left;
-  color: var(--text-muted);
+  font-size: 14px;
+  color: #475569;
 }
 
 .exchange-table input.cell-input {
-  width: 50px;
+  width: 58px;
   text-align: center;
-  padding: 4px;
-  border: 1px solid #cbd5e1;
+  padding: 6px 4px;
+  border: 1px solid #94a3b8;
   border-radius: 4px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.exchange-table input.cell-input:focus {
+  border-color: #0d9488;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
+}
+
+/* 緊鄰堅果種子下方的加總列 (字體顯眼放大) */
+.subtotal-tbody {
+  border-top: 3px solid #0d9488;
+}
+
+.subtotal-row {
+  background: #f8fafc;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.subtotal-row.grams-row {
+  background: #f0fdf4;
+}
+
+.subtotal-row.grams-row td {
+  font-size: 15px;
+}
+
+.subtotal-row.percent-row {
+  background: #fefce8;
+}
+
+.subtotal-row.percent-row td {
+  font-size: 15px;
+}
+
+.subtotal-title {
+  text-align: left !important;
+  padding-left: 16px !important;
+  color: #0f172a;
+  font-size: 16px !important;
+}
+
+/* 警示橫幅 Alert Banner */
+.alert-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #ef4444;
+  color: #ffffff;
+  padding: 14px 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  font-size: 15px;
   font-weight: 600;
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.alert-banner .alert-icon {
+  font-size: 20px;
+}
+
+.alert-banner .alert-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  margin-left: 10px;
+}
+
+/* 手機版模式 (強制或自動螢幕切換) */
+body.mobile-mode .container {
+  max-width: 100%;
+  padding: 0 10px 40px;
+}
+
+body.mobile-mode .grid-2col {
+  grid-template-columns: 1fr;
+}
+
+body.mobile-mode .navbar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px 14px;
+}
+
+body.mobile-mode .nav-controls {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+body.mobile-mode .device-switch-group {
+  align-self: center;
+}
+
+body.mobile-mode .nav-tabs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+body.mobile-mode .nav-tab {
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+}
+
+body.mobile-mode .card-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+body.mobile-mode .header-actions-right {
+  margin-left: 0;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+body.mobile-mode .quick-btn-grid {
+  grid-template-columns: 1fr;
+}
+
+body.mobile-mode .exchange-table {
+  font-size: 14px;
 }
 
 .exchange-table input.cell-input:focus {
