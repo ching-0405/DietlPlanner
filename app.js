@@ -3,6 +3,8 @@
 // 全域狀態
 let isDiabeticMode = false;
 let isDiseaseMode = false;
+let lastRatioLimitSignature = "";
+let ratioLimitDialogReturnFocus = null;
 let currentDeviceMode = "auto";
 let exchangesData = [];
 let menuRecipes = [
@@ -26,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initMenu();
   initFormulas();
   initFoodExchangeQuery();
-  initFoodComposition();
 });
 
 // ==========================================
@@ -317,20 +318,6 @@ function initExchanges() {
     renderExchangeTable();
   });
 
-  const btnDisease = document.getElementById("btnDiseaseMode");
-  btnDisease.addEventListener("click", () => {
-    isDiseaseMode = !isDiseaseMode;
-    btnDisease.classList.toggle("active", isDiseaseMode);
-    if (isDiseaseMode) {
-      btnDisease.innerText = "疾病飲食模式 (已解除百分比限制)";
-      document.body.classList.add("disease-mode-active");
-    } else {
-      btnDisease.innerText = "疾病飲食模式 (解除百分比限制)";
-      document.body.classList.remove("disease-mode-active");
-    }
-    calcMacroTargets();
-  });
-
   // 目標熱量與比例監聽
   ["inTargetKcal", "inRatioC", "inRatioP", "inRatioF"].forEach(id => {
     const el = document.getElementById(id);
@@ -341,6 +328,37 @@ function initExchanges() {
   });
 
   calcMacroTargets();
+}
+
+function toggleDiseaseMode() {
+  const button = document.getElementById("btnDiseaseMode");
+  isDiseaseMode = !isDiseaseMode;
+  if (button) button.classList.toggle("active", isDiseaseMode);
+  updateDiseaseModeUI(button);
+  calcMacroTargets();
+  calcExchangeTotals();
+}
+
+function updateDiseaseModeUI(button) {
+  const ratioTable = document.querySelector(".ratio-calc-grid");
+  const status = document.getElementById("lblDiseaseDietStatus");
+  const recommendationCells = document.querySelectorAll(".macro-recommendation");
+
+  if (ratioTable) ratioTable.classList.toggle("disease-mode", isDiseaseMode);
+  recommendationCells.forEach(cell => {
+    cell.hidden = isDiseaseMode;
+    cell.setAttribute("aria-hidden", isDiseaseMode ? "true" : "false");
+  });
+  if (button) {
+    button.innerText = isDiseaseMode
+      ? "疾病飲食模式 (已解除百分比限制)"
+      : "疾病飲食模式 (解除百分比限制)";
+  }
+  if (status) {
+    status.innerText = isDiseaseMode
+      ? "疾病飲食模式：不受熱量百分比建議限制"
+      : "";
+  }
 }
 
 // 快速套用預設比例
@@ -389,45 +407,103 @@ function calcMacroTargets() {
   if (elProcP) elProcP.innerText = `${Math.round(protKcal)} ÷ 4 = ${protGrams.toFixed(1)} g`;
   if (elTargetP) elTargetP.innerText = `${protGrams.toFixed(1)} g`;
 
-  // 4. 比例總和與超標檢核 (若超標彈出警示)
+  // 4. 比例總和與超標檢核
   const totalRatio = Math.round(ratioC + ratioF + ratioP);
   const lblWarning = document.getElementById("lblRatioSumWarning");
   
   // 檢查個別營養素是否超出建議區間 (醣類 50~60%, 脂質 20~30%, 蛋白質 10~20%)
   const warnings = [];
+  const limitWarnings = [];
   if (!isDiseaseMode) {
-    if (ratioC < 50 || ratioC > 60) warnings.push(`醣類 (${ratioC}%) 超出建議區間 50~60%`);
-    if (ratioF < 20 || ratioF > 30) warnings.push(`脂質 (${ratioF}%) 超出建議區間 20~30%`);
-    if (ratioP < 10 || ratioP > 20) warnings.push(`蛋白質 (${ratioP}%) 超出建議區間 10~20%`);
+    if (ratioC < 50 || ratioC > 60) warnings.push(`醣類 (${ratioC}%) 未達或超出建議區間 50~60%`);
+    if (ratioF < 20 || ratioF > 30) warnings.push(`脂質 (${ratioF}%) 未達或超出建議區間 20~30%`);
+    if (ratioP < 10 || ratioP > 20) warnings.push(`蛋白質 (${ratioP}%) 未達或超出建議區間 10~20%`);
+    if (ratioC > 60) limitWarnings.push({ key: "carb", label: "醣類", ratio: ratioC, max: 60 });
+    if (ratioF > 30) limitWarnings.push({ key: "fat", label: "脂質", ratio: ratioF, max: 30 });
+    if (ratioP > 20) limitWarnings.push({ key: "protein", label: "蛋白質", ratio: ratioP, max: 20 });
   }
 
+  updateRatioLimitDialog(limitWarnings);
+
   if (lblWarning) {
-    if (isDiseaseMode) {
-      if (totalRatio === 100) {
-        lblWarning.className = "text-green font-bold";
-        lblWarning.innerText = `✨ 疾病飲食模式生效中：比例總和 100%（已解除單項百分比建議限制）`;
-        hideRatioAlert();
-      } else {
-        lblWarning.className = "text-red font-bold";
-        lblWarning.innerText = `⚠️ 疾病飲食模式：三大營養素比例總和為 ${totalRatio}%（仍不能超過或未滿 100%，請調整）`;
-        showRatioAlert(`疾病飲食模式下，比例總和為 ${totalRatio}%（必須等於 100%），請檢查並重新調整！`);
-      }
-    } else {
-      if (totalRatio === 100 && warnings.length === 0) {
-        lblWarning.className = "text-green font-bold";
-        lblWarning.innerText = `✨ 比例總和：${totalRatio}% (正常平衡 ｜ 符合標準熱量百分比建議)`;
-        hideRatioAlert();
-      } else if (totalRatio !== 100) {
-        lblWarning.className = "text-red font-bold";
-        lblWarning.innerText = `⚠️ 比例總和：${totalRatio}% (未滿或超出 100%，請調整)`;
+    if (totalRatio === 100 && warnings.length === 0) {
+      lblWarning.className = "text-green font-bold";
+      lblWarning.innerText = isDiseaseMode
+        ? `✨ 比例總和：${totalRatio}% (疾病飲食模式 ｜ 不受標準熱量百分比建議限制)`
+        : `✨ 比例總和：${totalRatio}% (正常平衡 ｜ 符合標準熱量百分比建議)`;
+      hideRatioAlert();
+    } else if (totalRatio !== 100) {
+      lblWarning.className = "text-red font-bold";
+      lblWarning.innerText = `⚠️ 比例總和：${totalRatio}% (未滿或超出 100%，請調整)`;
+      if (limitWarnings.length === 0) {
         showRatioAlert(`比例總和為 ${totalRatio}%（未達或超出 100%），請檢查並重新調整！`);
       } else {
-        lblWarning.className = "text-orange font-bold";
-        lblWarning.innerText = `⚠️ 比例總和：100%（但 ${warnings.join('；')}）`;
+        hideRatioAlert();
+      }
+    } else {
+      lblWarning.className = "text-orange font-bold";
+      lblWarning.innerText = `⚠️ 比例總和：100%（但 ${warnings.join('；')}）`;
+      if (limitWarnings.length === 0) {
         showRatioAlert(`三大營養素百分比超出標準建議範圍：${warnings.join('、')}`);
+      } else {
+        hideRatioAlert();
       }
     }
   }
+}
+
+function updateRatioLimitDialog(warnings) {
+  const dialog = document.getElementById("ratioLimitDialog");
+  const list = document.getElementById("ratioLimitList");
+  if (!dialog || !list) return;
+
+  const signature = warnings
+    .map(warning => `${warning.key}:${warning.ratio}`)
+    .join(",");
+  if (warnings.length === 0) {
+    lastRatioLimitSignature = "";
+    hideRatioLimitDialog();
+    return;
+  }
+
+  if (signature !== lastRatioLimitSignature) {
+    lastRatioLimitSignature = signature;
+    showRatioLimitDialog();
+  }
+
+  if (dialog.classList.contains("show")) {
+    list.replaceChildren(...warnings.map(warning => {
+      const item = document.createElement("li");
+      item.textContent = `${warning.label}目前設定 ${warning.ratio}%；建議上限為 ${warning.max}%`;
+      return item;
+    }));
+  }
+}
+
+function showRatioLimitDialog() {
+  const dialog = document.getElementById("ratioLimitDialog");
+  if (!dialog) return;
+
+  if (!dialog.classList.contains("show")) {
+    ratioLimitDialogReturnFocus = document.activeElement;
+    dialog.classList.add("show");
+    const closeButton = document.getElementById("ratioLimitCloseButton");
+    if (closeButton) closeButton.focus();
+  }
+}
+
+function hideRatioLimitDialog() {
+  const dialog = document.getElementById("ratioLimitDialog");
+  const wasOpen = dialog && dialog.classList.contains("show");
+  if (dialog) dialog.classList.remove("show");
+
+  const returnFocus = ratioLimitDialogReturnFocus;
+  ratioLimitDialogReturnFocus = null;
+  if (wasOpen && returnFocus && typeof returnFocus.focus === "function") returnFocus.focus();
+}
+
+function closeRatioLimitDialog() {
+  hideRatioLimitDialog();
 }
 
 // 警示橫幅彈窗控制
@@ -459,7 +535,11 @@ function renderExchangeTable() {
         <td>${item.f}</td>
         <td>${item.c}</td>
         <td>${item.kcal}</td>
-        <td class="val-blue"><strong id="ex_total_${idx}">${item.ex}</strong></td>
+        <td>
+          <input type="number" class="cell-input design-ex-input" step="0.5" min="0"
+            value="${item.ex}" aria-label="${item.category}設計份數"
+            oninput="onDesignExChanged(${idx}, this.value)">
+        </td>
         <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.b}" oninput="onMealExChanged(${idx}, 'b', this.value)"></td>
         <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.ms}" oninput="onMealExChanged(${idx}, 'ms', this.value)"></td>
         <td><input type="number" class="cell-input" step="0.5" min="0" value="${item.l}" oninput="onMealExChanged(${idx}, 'l', this.value)"></td>
@@ -480,10 +560,14 @@ function renderExchangeTable() {
 function onMealExChanged(idx, mealKey, val) {
   const num = parseFloat(val) || 0;
   exchangesData[idx][mealKey] = num;
-  exchangesData[idx].ex = exchangesData[idx].b + exchangesData[idx].ms + exchangesData[idx].l + exchangesData[idx].as + exchangesData[idx].d + exchangesData[idx].ns;
-  document.getElementById(`ex_total_${idx}`).innerText = exchangesData[idx].ex;
   calcExchangeTotals();
   updateMealChipsBar();
+}
+
+function onDesignExChanged(idx, val) {
+  const num = parseFloat(val);
+  exchangesData[idx].ex = Number.isFinite(num) && num >= 0 ? num : 0;
+  calcExchangeTotals();
 }
 
 function calcExchangeTotals() {
@@ -768,201 +852,4 @@ function openModal(id) {
 function closeModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.remove("show");
-}
-
-// ==========================================
-// 7. 台灣食品營養成分資料庫 (2025版，共2,213項)
-// ==========================================
-function initFoodComposition() {
-  const inSearch = document.getElementById("inCompositionSearch");
-  const cboCat = document.getElementById("cboCompositionCategory");
-  if (!inSearch || !cboCat) return;
-
-  inSearch.addEventListener("input", filterFoodComposition);
-  cboCat.addEventListener("change", filterFoodComposition);
-
-  filterFoodComposition();
-}
-
-function filterFoodComposition() {
-  if (typeof FOOD_COMPOSITION_2025 === "undefined") return;
-
-  const keyword = (document.getElementById("inCompositionSearch").value || "").trim().toLowerCase();
-  const cat = document.getElementById("cboCompositionCategory").value;
-
-  const filtered = FOOD_COMPOSITION_2025.filter(item => {
-    const matchCat = cat === "全部" || item.Category === cat;
-    const matchText = !keyword || 
-      (item.Name && item.Name.toLowerCase().includes(keyword)) ||
-      (item.CommonName && item.CommonName.toLowerCase().includes(keyword)) ||
-      (item.Code && item.Code.toLowerCase().includes(keyword));
-    return matchCat && matchText;
-  });
-
-  const countEl = document.getElementById("lblCompositionCount");
-  if (countEl) countEl.innerText = filtered.length.toLocaleString();
-
-  const tbody = document.getElementById("compositionTableBody");
-  if (!tbody) return;
-
-  // 渲染前 200 筆以保證極致流暢度
-  const displayItems = filtered.slice(0, 200);
-
-  tbody.innerHTML = displayItems.map(item => `
-    <tr>
-      <td><code>${item.Code}</code></td>
-      <td class="text-teal font-bold">${item.Category}</td>
-      <td><strong>${item.Name}</strong></td>
-      <td class="text-muted">${item.CommonName || "—"}</td>
-      <td class="val-red font-bold">${item.Calories ? item.Calories.toFixed(1) : 0}</td>
-      <td class="val-green font-bold">${item.Protein ? item.Protein.toFixed(1) : 0}</td>
-      <td class="val-orange font-bold">${item.Fat ? item.Fat.toFixed(1) : 0}</td>
-      <td>${item.SaturatedFat ? item.SaturatedFat.toFixed(1) : 0}</td>
-      <td class="font-blue font-bold">${item.Carbs ? item.Carbs.toFixed(1) : 0}</td>
-      <td>${item.DietaryFiber ? item.DietaryFiber.toFixed(1) : 0}</td>
-      <td>${item.Sugars ? item.Sugars.toFixed(1) : 0}</td>
-      <td>${item.Water ? item.Water.toFixed(1) : 0}</td>
-      <td>
-        <button class="btn btn-outline" onclick="addCompositionToMenu('${item.Name.replace(/'/g, "\\'")}', '${item.Category}')">加菜單</button>
-      </td>
-    </tr>
-  `).join("");
-}
-
-function clearCompositionSearch() {
-  const inSearch = document.getElementById("inCompositionSearch");
-  const cboCat = document.getElementById("cboCompositionCategory");
-  if (inSearch) inSearch.value = "";
-  if (cboCat) cboCat.value = "全部";
-  filterFoodComposition();
-}
-
-function addCompositionToMenu(name, category) {
-  let meal = document.getElementById("cboMealFilter").value;
-  if (meal === "全部") meal = "午餐";
-
-  menuRecipes.push({
-    meal: meal,
-    dish: "",
-    food: name,
-    category: category,
-    ex: 1,
-    rawWeight: 100,
-    color: "白色"
-  });
-
-  renderMenuRecipes();
-  alert(`已將「${name}」加入【${meal}】菜單！`);
-}
-
-// ==========================================
-// 8. 列印衛教處方單張功能 (Print Report)
-// ==========================================
-function printPrescriptionReport() {
-  const name = document.getElementById("inName").value || "個案";
-  const chartNo = document.getElementById("inChartNo").value || "—";
-  const gender = document.getElementById("inGender").value;
-  const age = document.getElementById("inAge").value;
-  const height = document.getElementById("inHeight").value;
-  const weight = document.getElementById("inWeight").value;
-  const bmi = document.getElementById("valBmi").innerText;
-  const ibw = document.getElementById("valIbw").innerText;
-  const targetKcal = document.getElementById("inTargetKcal").value;
-  const carbGrams = document.getElementById("lblTargetCarbGrams").innerText;
-  const fatGrams = document.getElementById("lblTargetFatGrams").innerText;
-  const protGrams = document.getElementById("lblTargetProteinGrams").innerText;
-  const egfr = document.getElementById("valEgfr").innerText;
-
-  // 取得各餐菜單
-  const mealGroups = {};
-  menuRecipes.forEach(r => {
-    if (!mealGroups[r.meal]) mealGroups[r.meal] = [];
-    mealGroups[r.meal].push(`${r.dish ? r.dish + '-' : ''}${r.food} (${r.ex}份)`);
-  });
-
-  let menuHtml = "";
-  for (let m in mealGroups) {
-    menuHtml += `<tr><td style="font-weight:bold;width:90px;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;">${m}</td><td style="padding:8px;border:1px solid #cbd5e1;">${mealGroups[m].join("、 ")}</td></tr>`;
-  }
-
-  const printWindow = window.open("", "_blank");
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>臨床營養諮詢衛教處方單 - ${name}</title>
-      <style>
-        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; padding: 24px; color: #1e293b; line-height: 1.6; }
-        .header { text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 16px; }
-        .header h1 { margin: 0; color: #0f766e; font-size: 24px; }
-        .section-title { font-size: 16px; font-weight: bold; color: #0d9488; margin: 16px 0 8px; border-left: 4px solid #0d9488; padding-left: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-        th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; font-size: 14px; }
-        th { background: #f1f5f9; }
-        .highlight { font-weight: bold; color: #0f766e; }
-        .footer { margin-top: 30px; text-align: right; font-size: 13px; color: #64748b; }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>🏥 飲食營養諮詢評估與菜單處方單</h1>
-        <p>專業臨床營養照護記錄 ｜ 衛教指導單張</p>
-      </div>
-
-      <div class="section-title">一、個案基本體位與生理評估</div>
-      <table>
-        <tr>
-          <th>姓名 / 暱稱</th><td>${name}</td>
-          <th>病歷號</th><td>${chartNo}</td>
-          <th>性別 / 年齡</th><td>${gender} / ${age} 歲</td>
-        </tr>
-        <tr>
-          <th>身高</th><td>${height} cm</td>
-          <th>體重</th><td>${weight} kg</td>
-          <th>BMI 指數</th><td class="highlight">${bmi}</td>
-        </tr>
-        <tr>
-          <th>理想體重 (IBW)</th><td>${ibw}</td>
-          <th>腎功能 (eGFR)</th><td>${egfr} ml/min</td>
-          <th>目標規劃熱量</th><td class="highlight" style="color:#e11d48;font-size:16px;">${targetKcal} kcal</td>
-        </tr>
-      </table>
-
-      <div class="section-title">二、三大營養素目標熱量與克數分配</div>
-      <table>
-        <tr>
-          <th>醣類 (碳水化合物)</th>
-          <th>脂質 (Lipids)</th>
-          <th>蛋白質 (Protein)</th>
-        </tr>
-        <tr>
-          <td style="color:#e11d48;font-weight:bold;font-size:16px;">${carbGrams}</td>
-          <td style="color:#d97706;font-weight:bold;font-size:16px;">${fatGrams}</td>
-          <td style="color:#16a34a;font-weight:bold;font-size:16px;">${protGrams}</td>
-        </tr>
-      </table>
-
-      <div class="section-title">三、客製化飲食菜單規劃</div>
-      <table>
-        ${menuHtml || '<tr><td colspan="2" style="text-align:center;color:#94a3b8;">尚未開立菜單食材</td></tr>'}
-      </table>
-
-      <div class="section-title">四、營養師專業指導與衛教叮嚀</div>
-      <div style="border:1px solid #cbd5e1;padding:12px;border-radius:6px;background:#f8fafc;font-size:14px;">
-        1. 每日維持規律三餐與點心，補充足量水分（建議每日至少 2000 ml）。<br>
-        2. 烹調宜清淡，以蒸、煮、滷、涼拌為原則，避免油炸及高鈉加工食品。<br>
-        3. 如有任何身體不適或體重急遽變化，請立即向營養諮詢門診洽詢。
-      </div>
-
-      <div class="footer">
-        評估日期：${new Date().toLocaleDateString()} ｜ 營養師簽章：____________________
-      </div>
-      <script>
-        window.onload = function() { window.print(); };
-      </script>
-    </body>
-    </html>
-  `);
-  printWindow.document.close();
 }

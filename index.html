@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=20261031-0915">
 </head>
 <body>
 
@@ -25,7 +25,6 @@
         <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
         <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
         <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
-        <button class="nav-tab" data-tab="tab-composition">📗 4. 食品營養成分資料庫</button>
       </div>
     </div>
   </header>
@@ -312,7 +311,7 @@
           <span class="icon">⚖️</span>
           <h2>三大營養素比例設定與目標克數計算過程</h2>
           <div class="header-actions-right">
-            <button class="btn btn-secondary" id="btnDiseaseMode">疾病飲食模式 (解除百分比限制)</button>
+            <button type="button" class="btn btn-secondary" id="btnDiseaseMode" onclick="toggleDiseaseMode()">疾病飲食模式 (解除百分比限制)</button>
             <button class="btn btn-primary" id="btnDiabeticMode">糖尿病、低蛋白飲食</button>
             <button class="btn btn-purple" id="btnOpenFormulaWindow">💊 商業配方庫</button>
           </div>
@@ -325,7 +324,7 @@
                 <th style="width: 130px;">目標總熱量</th>
                 <th style="width: 36px; text-align: center;">×</th>
                 <th style="width: 140px; text-align: center;">百分比 (%)</th>
-                <th class="col-suggest-ratio" style="width: 140px; text-align: center;">熱量百分比建議</th>
+                <th class="macro-recommendation" style="width: 140px; text-align: center;">熱量百分比建議</th>
                 <th style="width: 36px; text-align: center;">=</th>
                 <th style="width: 220px; text-align: center;">克數計算過程</th>
                 <th style="width: 140px; text-align: center;">目標克數 (g)</th>
@@ -344,7 +343,7 @@
                     <span>%</span>
                   </div>
                 </td>
-                <td class="text-center col-suggest-ratio"><span class="badge-suggest red">50~60%</span></td>
+                <td class="macro-recommendation text-center"><span class="badge-suggest red">50~60%</span></td>
                 <td class="text-center font-bold">=</td>
                 <td class="text-center font-blue" id="lblCalcProcessCarb">1000 ÷ 4 = 250.0 g</td>
                 <td class="text-center val-highlight red"><strong id="lblTargetCarbGrams">250.0 g</strong></td>
@@ -361,7 +360,7 @@
                     <span>%</span>
                   </div>
                 </td>
-                <td class="text-center col-suggest-ratio"><span class="badge-suggest orange">20~30%</span></td>
+                <td class="macro-recommendation text-center"><span class="badge-suggest orange">20~30%</span></td>
                 <td class="text-center font-bold">=</td>
                 <td class="text-center font-orange" id="lblCalcProcessFat">600 ÷ 9 = 66.7 g</td>
                 <td class="text-center val-highlight orange"><strong id="lblTargetFatGrams">66.7 g</strong></td>
@@ -378,7 +377,7 @@
                     <span>%</span>
                   </div>
                 </td>
-                <td class="text-center col-suggest-ratio"><span class="badge-suggest green">10~20%</span></td>
+                <td class="macro-recommendation text-center"><span class="badge-suggest green">10~20%</span></td>
                 <td class="text-center font-bold">=</td>
                 <td class="text-center font-green" id="lblCalcProcessProt">400 ÷ 4 = 100.0 g</td>
                 <td class="text-center val-highlight green"><strong id="lblTargetProteinGrams">100.0 g</strong></td>
@@ -485,7 +484,6 @@
           </select>
           <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
           <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
-          <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
         </div>
       </div>
 
@@ -517,76 +515,6 @@
         </div>
       </div>
 
-    </section>
-
-    <!-- PAGE 4: 台灣食品營養成分資料庫 (2025版 UPDATE1，共2,213項) -->
-    <section id="tab-composition" class="tab-content">
-      <div class="card">
-        <div class="card-header bg-blue">
-          <div class="composition-header-title">
-            <span class="icon">📗</span>
-            <div>
-              <h2>台灣食品營養成分資料庫 (2025版 UPDATE1)</h2>
-              <small class="text-muted">衛生福利部最新食品成分檢索表 ｜ 每 100g 可食部分之完整營養成分規格</small>
-            </div>
-          </div>
-          <div class="header-actions-right">
-            <input type="text" id="inCompositionSearch" class="form-input" style="width: 220px;" placeholder="快速搜尋食品名稱、俗名、編號...">
-            <select id="cboCompositionCategory" class="form-select" style="width: 170px;">
-              <option value="全部">全部類別</option>
-              <option value="穀物類">穀物類</option>
-              <option value="澱粉類">澱粉類</option>
-              <option value="堅果及種子類">堅果及種子類</option>
-              <option value="豆類">豆類</option>
-              <option value="蔬菜類">蔬菜類</option>
-              <option value="菇類">菇類</option>
-              <option value="藻類">藻類</option>
-              <option value="水果類">水果類</option>
-              <option value="肉類">肉類</option>
-              <option value="魚貝類">魚貝類</option>
-              <option value="蛋類">蛋類</option>
-              <option value="乳品類">乳品類</option>
-              <option value="油脂類">油脂類</option>
-              <option value="糖類">糖類</option>
-              <option value="飲料類">飲料類</option>
-              <option value="糕餅點心類">糕餅點心類</option>
-              <option value="加工調理食品及其他類">加工調理食品及其他類</option>
-              <option value="調味料及香辛料類">調味料及香辛料類</option>
-            </select>
-            <button class="btn btn-warning" onclick="clearCompositionSearch()">❌ 清除</button>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="query-info-banner">
-            <span>📋 檢索結果：共 <strong id="lblCompositionCount" class="text-teal">2,213</strong> 項食品（總收錄 2,213 項官方食品成分）</span>
-            <span class="text-muted">💡 數值單位：每 100 g 可食部分之含量 ｜ 點擊食材亦可加入菜單</span>
-          </div>
-          <div class="table-scroll-container" style="max-height: 65vh;">
-            <table class="data-table" id="compositionTable">
-              <thead>
-                <tr>
-                  <th style="width: 100px;">整合編號</th>
-                  <th style="width: 120px;">食品分類</th>
-                  <th style="width: 160px;">樣品名稱</th>
-                  <th style="width: 160px;">俗名</th>
-                  <th style="width: 90px;">熱量 (kcal)</th>
-                  <th style="width: 90px;">粗蛋白 (g)</th>
-                  <th style="width: 90px;">粗脂肪 (g)</th>
-                  <th style="width: 90px;">飽和脂肪 (g)</th>
-                  <th style="width: 90px;">總碳水 (g)</th>
-                  <th style="width: 90px;">膳食纖維 (g)</th>
-                  <th style="width: 90px;">糖質總量 (g)</th>
-                  <th style="width: 90px;">水分 (g)</th>
-                  <th style="width: 80px;">操作</th>
-                </tr>
-              </thead>
-              <tbody id="compositionTableBody">
-                <!-- 動態注入 2,213 項資料 -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </section>
 
   </main>
@@ -685,10 +613,28 @@
     <button class="alert-close" onclick="closeRatioAlert()">&times;</button>
   </div>
 
+  <div id="ratioLimitDialog" class="modal-overlay ratio-limit-overlay" role="alertdialog" aria-modal="true" aria-labelledby="ratioLimitTitle" aria-describedby="ratioLimitMsg">
+    <div class="modal-box ratio-limit-modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span id="ratioLimitTitle">⚠️ 三大營養素百分比超過建議上限</span>
+        </div>
+        <button class="modal-close" aria-label="關閉警示" onclick="closeRatioLimitDialog()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="ratioLimitMsg">三大營養素的熱量百分比不可超過建議上限，請調整以下項目：</p>
+        <ul id="ratioLimitList" class="ratio-limit-list"></ul>
+        <p class="ratio-limit-note">疾病飲食模式可解除百分比限制，請依醫療專業人員建議使用。</p>
+        <div class="ratio-limit-actions">
+          <button type="button" class="btn btn-warning" id="ratioLimitCloseButton" onclick="closeRatioLimitDialog()">我知道了</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 資料腳本 -->
-  <script src="food_exchange_db.js?v=2"></script>
-  <script src="food_composition_2025.js?v=1"></script>
-  <script src="app_data.js?v=2"></script>
-  <script src="app.js?v=4"></script>
+  <script src="food_exchange_db.js?v=20261031-0915"></script>
+  <script src="app_data.js?v=20261031-0915"></script>
+  <script src="app.js?v=20261031-0915"></script>
 </body>
 </html>
