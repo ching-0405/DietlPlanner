@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --primary: #10b981;
   --primary-hover: #059669;
   --teal-header: #e6f6f3;
@@ -126,6 +126,232 @@ body {
   border-color: #0d9488;
   color: #ffffff;
   box-shadow: 0 2px 4px rgba(13, 148, 136, 0.3);
+}
+
+/* 主要容器與整體 App 雙欄佈局 (電腦版左側深藍選單 + 右側工作區) */
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 60px);
+  width: 100%;
+}
+
+/* 電腦版左側深藍選單欄 (比照系統桌面版 WPF MainWindow) */
+.sidebar-desktop {
+  width: 250px;
+  min-width: 250px;
+  background: #111927;
+  color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  border-right: 1px solid #1e293b;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  z-index: 90;
+  transition: all 0.2s ease;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 16px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.sidebar-brand-icon {
+  font-size: 28px;
+}
+
+.sidebar-app-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-app-sub {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* 當前個案資訊卡片 */
+.sidebar-patient-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 16px 0 20px;
+}
+
+.patient-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.patient-label {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.patient-status-badge {
+  background: #0d9488;
+  color: #ffffff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.patient-name-line {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.patient-kcal-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.patient-kcal-line .val-kcal {
+  color: #38bdf8;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* 側邊欄選單項目 */
+.sidebar-nav-group {
+  flex: 1;
+}
+
+.sidebar-nav-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-left: 6px;
+}
+
+.sidebar-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.sidebar-nav-item.active {
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.4);
+}
+
+.sidebar-nav-item .nav-icon {
+  font-size: 16px;
+  width: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar-nav-item .nav-text {
+  flex: 1;
+}
+
+.sidebar-nav-item .nav-arrow {
+  font-size: 16px;
+  opacity: 0.5;
+  transition: transform 0.2s;
+}
+
+.sidebar-nav-item.active .nav-arrow {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+/* 側邊欄底部快捷操作按鈕 */
+.sidebar-footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #1e293b;
+  margin-top: 14px;
+}
+
+.sidebar-action-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+.sidebar-action-btn:hover {
+  opacity: 0.9;
+}
+
+.sidebar-action-btn.btn-blue { background: #2563eb; }
+.sidebar-action-btn.btn-green { background: #059669; }
+.sidebar-action-btn.btn-orange { background: #d97706; }
+
+/* 右側工作區域 */
+.main-workspace {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--bg-main);
+  overflow-y: auto;
+}
+
+/* 電腦版時隱藏頂部橫排重複的分頁按鈕 */
+@media (min-width: 769px) {
+  body:not(.mobile-mode) .nav-tabs {
+    display: none !important;
+  }
 }
 
 /* 主要容器 */
@@ -900,7 +1126,15 @@ body {
   margin-left: 10px;
 }
 
-/* 手機版模式 (像 Excel / Google 試算表般固定在螢幕最底端) */
+/* 手機版模式 (隱藏左側選單，分頁像 Excel / Google 試算表般固定在螢幕最底端) */
+body.mobile-mode .sidebar-desktop {
+  display: none !important;
+}
+
+body.mobile-mode .app-layout {
+  display: block;
+}
+
 body.mobile-mode .container {
   max-width: 100%;
   padding: 0 10px 85px; /* 留出底部工作表分頁高度，避免被遮擋 */

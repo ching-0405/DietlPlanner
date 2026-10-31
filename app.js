@@ -1,4 +1,4 @@
-﻿// 飲食營養菜單設計系統 - 前端核心邏輯
+// 飲食營養菜單設計系統 - 前端核心邏輯
 
 // 全域狀態
 let isDiabeticMode = false;
@@ -69,19 +69,35 @@ function applyDeviceModeClass(isMobile) {
 }
 
 // ==========================================
-// 1. 頁籤切換
+// 1. 頁籤切換 (同步頂部頁籤與電腦版左側導航)
 // ==========================================
+function switchTab(target) {
+  // 同步頂部頁籤
+  document.querySelectorAll(".nav-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === target);
+  });
+  // 同步左側面板頁籤
+  document.querySelectorAll(".sidebar-nav-item").forEach(item => {
+    item.classList.toggle("active", item.dataset.tab === target);
+  });
+  // 切換內容容器
+  document.querySelectorAll(".tab-content").forEach(content => {
+    content.classList.toggle("active", content.id === target);
+  });
+}
+
 function initTabs() {
   const tabs = document.querySelectorAll(".nav-tab");
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-      const target = tab.dataset.tab;
-      document.querySelectorAll(".tab-content").forEach(content => {
-        content.classList.remove("active");
-      });
-      document.getElementById(target).classList.add("active");
+      switchTab(tab.dataset.tab);
+    });
+  });
+
+  const sidebarItems = document.querySelectorAll(".sidebar-nav-item");
+  sidebarItems.forEach(item => {
+    item.addEventListener("click", () => {
+      switchTab(item.dataset.tab);
     });
   });
 }
@@ -90,24 +106,70 @@ function initTabs() {
 // 2. 第一頁：個案評估與體位計算
 // ==========================================
 function initAssessment() {
-  const inputs = ["inGender", "inAge", "inHeight", "inWeight", "inActivity", "inStress", "inCreatinine", "inKneeHeight", "inUlnaLength", "inCalfCirc", "inArmCirc"];
+  const inputs = ["inName", "inChartNo", "inGender", "inAge", "inHeight", "inWeight", "inActivity", "inStress", "inCreatinine", "inKneeHeight", "inUlnaLength", "inCalfCirc", "inArmCirc"];
   inputs.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener("input", calcAssessment);
-      el.addEventListener("change", calcAssessment);
+      el.addEventListener("input", () => {
+        calcAssessment();
+        syncSidebarClientCard();
+      });
+      el.addEventListener("change", () => {
+        calcAssessment();
+        syncSidebarClientCard();
+      });
     }
   });
+
+  const inTargetKcal = document.getElementById("inTargetKcal");
+  if (inTargetKcal) {
+    inTargetKcal.addEventListener("input", syncSidebarClientCard);
+  }
 
   document.getElementById("btnApplyTdee").addEventListener("click", () => {
     const tdeeText = document.getElementById("valTdee").innerText;
     const tdee = parseFloat(tdeeText) || 2000;
     document.getElementById("inTargetKcal").value = Math.round(tdee);
     calcExchangeTotals();
+    syncSidebarClientCard();
     alert(`已將 TDEE (${Math.round(tdee)} kcal) 套用至第 2 頁目標熱量！`);
   });
 
   calcAssessment();
+  syncSidebarClientCard();
+}
+
+function syncSidebarClientCard() {
+  const name = document.getElementById("inName")?.value || "個案";
+  const chartNo = document.getElementById("inChartNo")?.value || "P001";
+  const age = document.getElementById("inAge")?.value || "30";
+  const gender = document.getElementById("inGender")?.value || "男";
+  const targetKcal = document.getElementById("inTargetKcal")?.value || "2000";
+
+  const elName = document.getElementById("sidebarClientName");
+  const elKcal = document.getElementById("sidebarTargetKcal");
+  if (elName) elName.innerText = `${name} (${chartNo}, ${age}歲 ${gender})`;
+  if (elKcal) elKcal.innerText = `${targetKcal} kcal`;
+}
+
+function resetNewClient() {
+  if (confirm("確定要建立新個案嗎？將會清空當前輸入內容。")) {
+    document.getElementById("inName").value = "新個案";
+    document.getElementById("inChartNo").value = "P002";
+    document.getElementById("inAge").value = "30";
+    document.getElementById("inHeight").value = "170";
+    document.getElementById("inWeight").value = "65";
+    document.getElementById("inTargetKcal").value = "1800";
+    calcAssessment();
+    calcExchangeTotals();
+    syncSidebarClientCard();
+    switchTab("tab-assessment");
+  }
+}
+
+function saveClientData() {
+  const name = document.getElementById("inName")?.value || "個案";
+  alert(`個案【${name}】的評估與菜單資料已成功儲存！`);
 }
 
 function calcAssessment() {
@@ -730,25 +792,101 @@ function renderMenuRecipes() {
     ? menuRecipes 
     : menuRecipes.filter(r => r.meal === filter);
 
+  const mealOptions = ["早餐", "早點", "午餐", "午點", "晚餐", "晚點"];
+
   tbody.innerHTML = filtered.map((r, i) => {
     const realIndex = menuRecipes.indexOf(r);
+    const mealSelectHtml = `
+      <select class="form-select" style="padding: 4px 6px; font-size: 13px; font-weight: 600;" onchange="updateRecipeMeal(${realIndex}, this.value)">
+        ${mealOptions.map(m => `<option value="${m}" ${m === r.meal ? "selected" : ""}>${m}</option>`).join("")}
+      </select>
+    `;
+
     return `
       <tr>
-        <td><strong>${r.meal}</strong></td>
-        <td><input type="text" class="form-input" value="${r.dish}" placeholder="輸入菜名" onchange="updateDishName(${realIndex}, this.value)"></td>
-        <td><strong>${r.food}</strong></td>
-        <td>${r.category}</td>
-        <td class="val-red"><strong>${r.ex} Ex</strong></td>
-        <td>${r.rawWeight} g</td>
-        <td><span class="color-tag ${r.color}">${r.color}</span></td>
-        <td><button class="btn btn-danger" onclick="deleteRecipeItem(${realIndex})">✖ 刪除</button></td>
+        <td style="width: 110px;">${mealSelectHtml}</td>
+        <td>
+          <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px;" value="${r.dish}" placeholder="輸入菜名" 
+            oninput="updateDishName(${realIndex}, this.value)">
+        </td>
+        <td>
+          <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px; font-weight: 600;" value="${r.food}" placeholder="輸入食材" 
+            oninput="updateFoodName(${realIndex}, this.value)">
+        </td>
+        <td><span class="text-teal font-bold">${r.category}</span></td>
+        <td class="val-red">
+          <input type="number" class="form-input" style="width: 70px; text-align: center; padding: 4px;" step="0.5" min="0.1" 
+            value="${r.ex}" oninput="updateRecipeEx(${realIndex}, this.value)">
+        </td>
+        <td>
+          <input type="number" class="form-input" style="width: 80px; text-align: center; padding: 4px;" step="1" min="1" 
+            value="${r.rawWeight}" oninput="updateRecipeRawWeight(${realIndex}, this.value)">
+        </td>
+        <td>
+          <select class="form-select" style="padding: 4px 6px; font-size: 12px;" onchange="updateRecipeColor(${realIndex}, this.value)">
+            ${["黃色", "白色", "橙色", "綠色", "紅色", "粉綠/嫩綠", "紫色/黑色", "其他"].map(c => `
+              <option value="${c}" ${c === r.color ? "selected" : ""}>${c}</option>
+            `).join("")}
+          </select>
+        </td>
+        <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteRecipeItem(${realIndex})">✖ 刪除</button></td>
       </tr>
     `;
   }).join("");
 }
 
+function updateRecipeMeal(index, val) {
+  if (menuRecipes[index]) {
+    menuRecipes[index].meal = val;
+    const curFilter = document.getElementById("cboMealFilter").value;
+    if (curFilter !== "全部" && curFilter !== val) {
+      renderMenuRecipes();
+    }
+  }
+}
+
 function updateDishName(index, val) {
   if (menuRecipes[index]) menuRecipes[index].dish = val;
+}
+
+function updateFoodName(index, val) {
+  if (menuRecipes[index]) {
+    menuRecipes[index].food = val;
+    menuRecipes[index].color = detectFoodColor(val);
+    renderMenuRecipes();
+  }
+}
+
+function updateRecipeEx(index, val) {
+  const num = parseFloat(val);
+  if (menuRecipes[index] && Number.isFinite(num) && num > 0) {
+    menuRecipes[index].ex = num;
+  }
+}
+
+function updateRecipeRawWeight(index, val) {
+  const num = parseFloat(val);
+  if (menuRecipes[index] && Number.isFinite(num) && num > 0) {
+    menuRecipes[index].rawWeight = num;
+  }
+}
+
+function updateRecipeColor(index, val) {
+  if (menuRecipes[index]) {
+    menuRecipes[index].color = val;
+  }
+}
+
+function detectFoodColor(foodName) {
+  let color = "白色";
+  if (!foodName) return color;
+  if (foodName.includes("黃") || foodName.includes("香蕉") || foodName.includes("蛋") || foodName.includes("玉米") || foodName.includes("起司")) color = "黃色";
+  else if (foodName.includes("白") || foodName.includes("奶") || foodName.includes("豆腐") || foodName.includes("燕麥") || foodName.includes("魚") || foodName.includes("雞胸") || foodName.includes("米飯") || foodName.includes("冬粉")) color = "白色";
+  else if (foodName.includes("紅") || foodName.includes("番茄") || foodName.includes("肉") || foodName.includes("牛") || foodName.includes("豬") || foodName.includes("草莓") || foodName.includes("甜椒")) color = "紅色";
+  else if (foodName.includes("胡蘿蔔") || foodName.includes("南瓜") || foodName.includes("橘") || foodName.includes("地瓜")) color = "橙色";
+  else if (foodName.includes("黑") || foodName.includes("紫") || foodName.includes("木耳") || foodName.includes("海帶") || foodName.includes("紫菜")) color = "紫色/黑色";
+  else if (foodName.includes("高麗菜") || foodName.includes("青江") || foodName.includes("菠菜") || foodName.includes("花椰菜") || foodName.includes("黃瓜") || foodName.includes("菜")) color = "綠色";
+  return color;
 }
 
 function deleteRecipeItem(index) {
@@ -759,22 +897,19 @@ function deleteRecipeItem(index) {
 function addCustomRecipeItem() {
   const currentMeal = document.getElementById("cboMealFilter").value;
   const meal = currentMeal === "全部" ? "早餐" : currentMeal;
-  const food = prompt("請輸入食材名稱：", "蘋果");
-  if (!food) return;
-  const ex = parseFloat(prompt("請輸入份數 (Ex)：", "1")) || 1;
-  const rawW = parseFloat(prompt("請輸入生重 (g)：", "100")) || 100;
-  const color = prompt("請輸入食材顏色（黃色/白色/橙色/綠色/紅色/紫色/黑色/粉綠/嫩綠/其他）：", "紅色") || "其他";
 
-  menuRecipes.push({
+  // 直接新增一列可自由輸入菜名與食材名稱的空白列
+  const newItem = {
     meal: meal,
     dish: "",
-    food: food,
+    food: "新食材",
     category: "自訂食材",
-    ex: ex,
-    rawWeight: rawW,
-    color: color
-  });
+    ex: 1,
+    rawWeight: 100,
+    color: "白色"
+  };
 
+  menuRecipes.unshift(newItem);
   renderMenuRecipes();
 }
 

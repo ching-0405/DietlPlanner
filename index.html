@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- 頂部標頭與導航列 -->
+  <!-- 頂部標頭與導航列 (手機版或簡約頂欄) -->
   <header class="navbar">
     <div class="brand">
       <span class="brand-icon">🥗</span>
@@ -21,7 +21,8 @@
         <button class="btn-device-toggle active" id="btnModeDesktop" onclick="setDeviceMode('desktop')">💻 電腦版</button>
         <button class="btn-device-toggle" id="btnModeMobile" onclick="setDeviceMode('mobile')">📱 手機版</button>
       </div>
-      <div class="nav-tabs">
+      <!-- 導航分頁 (手機版在下方，電腦版於左側面板) -->
+      <div class="nav-tabs" id="mainNavTabs">
         <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
         <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
         <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
@@ -30,6 +31,69 @@
     </div>
   </header>
 
+  <!-- 電腦版整體佈局：左側系統選單 + 右側工作區 -->
+  <div class="app-layout">
+    <!-- 電腦版專屬左側深藍導航面板 (比照系統桌面版) -->
+    <aside class="sidebar-desktop" id="sidebarDesktop">
+      <div class="sidebar-header">
+        <div class="sidebar-brand-icon">🥗</div>
+        <div class="sidebar-brand-info">
+          <div class="sidebar-app-title">營養菜單設計系統</div>
+          <div class="sidebar-app-sub">營養均衡 ｜ 健康每一天</div>
+        </div>
+      </div>
+
+      <!-- 當前個案卡片 (動態連動第1頁輸入) -->
+      <div class="sidebar-patient-card">
+        <div class="patient-card-header">
+          <span class="patient-label">當前個案</span>
+          <span class="patient-status-badge">評估中</span>
+        </div>
+        <div class="patient-name-line" id="sidebarClientName">小明 (P001, 30歲 男)</div>
+        <div class="patient-kcal-line">
+          <span class="lbl">目標熱量</span>
+          <span class="val-kcal" id="sidebarTargetKcal">2000 kcal</span>
+        </div>
+      </div>
+
+      <!-- 系統功能選單列表 -->
+      <div class="sidebar-nav-group">
+        <div class="sidebar-nav-title">系統功能選單</div>
+        <nav class="sidebar-nav-list">
+          <button class="sidebar-nav-item active" data-tab="tab-assessment">
+            <span class="nav-icon">⚡</span>
+            <span class="nav-text">熱量營養素計算</span>
+            <span class="nav-arrow">›</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="tab-exchange">
+            <span class="nav-icon">📖</span>
+            <span class="nav-text">食物代換表</span>
+            <span class="nav-arrow">›</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="tab-menu">
+            <span class="nav-icon">📝</span>
+            <span class="nav-text">菜單開立</span>
+            <span class="nav-arrow">›</span>
+          </button>
+          <button class="sidebar-nav-item" data-tab="tab-composition">
+            <span class="nav-icon">📗</span>
+            <span class="nav-text">營養成分資料庫</span>
+            <span class="nav-arrow">›</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- 底部快捷操作按鈕 -->
+      <div class="sidebar-footer-actions">
+        <div class="sidebar-nav-title">快捷操作</div>
+        <button class="sidebar-action-btn btn-blue" onclick="resetNewClient()">➕ 新增個案</button>
+        <button class="sidebar-action-btn btn-green" onclick="saveClientData()">💾 儲存存檔</button>
+        <button class="sidebar-action-btn btn-orange" onclick="openModal('modalFormulas')">🍼 商業配方庫</button>
+      </div>
+    </aside>
+
+    <!-- 右側主要工作區域 -->
+    <div class="main-workspace">
   <main class="container">
 
     <!-- PAGE 1: 個案評估與熱量設定 -->
@@ -618,6 +682,8 @@
       </div>
     </section>
   </main>
+    </div><!-- /.main-workspace -->
+  </div><!-- /.app-layout -->
 
   <!-- 彈出視窗 1：衛福部食物代換表查詢 (261項) -->
   <div class="modal-overlay" id="modalExchangeQuery">
