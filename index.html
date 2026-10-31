@@ -405,7 +405,6 @@
             <thead>
               <tr class="header-main">
                 <th rowspan="2" class="col-cat">食物大類</th>
-                <th rowspan="2" class="col-unit">每份單位規格</th>
                 <th colspan="4" class="col-macros-spec">每份三大營養素 (g)</th>
                 <th rowspan="2" class="col-ex">設計份數</th>
                 <th colspan="6" class="col-meals">各餐次分配份數 (可輸入小數點如 1.5、2.5)</th>
@@ -415,9 +414,9 @@
                 <th rowspan="2" class="col-total-kcal">總熱量 (kcal)</th>
               </tr>
               <tr class="header-sub">
-                <th>豆/蛋/肉(P)</th>
-                <th>脂(F)</th>
-                <th>醣(C)</th>
+                <th>蛋白質 (P)</th>
+                <th>脂肪 (F)</th>
+                <th>醣類 (C)</th>
                 <th>熱量</th>
                 <th>早</th>
                 <th>早點</th>
@@ -433,7 +432,7 @@
             <!-- 緊鄰堅果種子下方的加總列 -->
             <tbody class="subtotal-tbody">
               <tr class="subtotal-row grams-row">
-                <td colspan="6" class="subtotal-title"><strong>三大營養素加總克數</strong></td>
+                <td colspan="5" class="subtotal-title"><strong>三大營養素加總克數</strong></td>
                 <td class="val-blue" id="sumTotalEx">23</td>
                 <td id="sumB">5</td>
                 <td id="sumMs">1</td>
@@ -447,11 +446,9 @@
                 <td class="val-blue" id="sumTotalCalories">1425 kcal</td>
               </tr>
               <tr class="subtotal-row percent-row">
-                <td colspan="6" class="subtotal-title"><strong>三大營養素百分比</strong></td>
+                <td colspan="5" class="subtotal-title"><strong>三大營養素百分比</strong></td>
                 <td class="text-muted">—</td>
-                <td colspan="6" class="text-center font-sm" id="caloricFormulaDesc">
-                  4-9-4熱量：醣 187g×4 (748 kcal) + 蛋 65g×4 (260 kcal) + 脂 43g×9 (387 kcal) = 1395 kcal
-                </td>
+                <td colspan="6" class="text-center font-sm text-muted"></td>
                 <td class="val-green" id="pctProtein">18.6 %</td>
                 <td class="val-orange" id="pctFat">27.7 %</td>
                 <td class="val-red" id="pctCarb">53.6 %</td>

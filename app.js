@@ -434,7 +434,6 @@ function renderExchangeTable() {
     return `
       <tr>
         <td class="cat-cell">${item.icon} ${item.category}</td>
-        <td class="unit-cell">${item.unit}</td>
         <td>${item.p}</td>
         <td>${item.f}</td>
         <td>${item.c}</td>
@@ -524,8 +523,8 @@ function calcExchangeTotals() {
   document.getElementById("pctFat").innerText = `${pctF.toFixed(1)} %`;
   document.getElementById("pctTotal").innerText = `${(pctC + pctP + pctF).toFixed(1)} %`;
 
-  document.getElementById("caloricFormulaDesc").innerText = 
-    `4-9-4熱量：醣 ${Math.round(totalC)}g×4 (${Math.round(totalC*4)} kcal) + 蛋 ${Math.round(totalP)}g×4 (${Math.round(totalP*4)} kcal) + 脂 ${Math.round(totalF)}g×9 (${Math.round(totalF*9)} kcal) = ${Math.round(macroKcal)} kcal`;
+  const formulaEl = document.getElementById("caloricFormulaDesc");
+  if (formulaEl) formulaEl.innerText = "";
 
   updateMealChipsBar();
 }
