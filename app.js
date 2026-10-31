@@ -7,6 +7,14 @@ let lastRatioLimitSignature = "";
 let ratioLimitDialogReturnFocus = null;
 let currentDeviceMode = "auto";
 let exchangesData = [];
+let activeMealKeys = ["b", "ms", "l", "as", "d", "ns"];
+const mealKeyOrder = ["b", "ms", "l", "as", "d", "ns"];
+const mealCountMap = {
+  3: ["b", "l", "d"],
+  4: ["b", "ms", "l", "d"],
+  5: ["b", "ms", "l", "as", "d"],
+  6: ["b", "ms", "l", "as", "d", "ns"]
+};
 let menuRecipes = [
   { meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 95, color: "黃色" },
   { meal: "早餐", dish: "", food: "牛奶", category: "低脂奶", ex: 1, rawWeight: 240, color: "白色" },
@@ -375,6 +383,7 @@ function applyEstWeight() {
 // ==========================================
 function initExchanges() {
   exchangesData = getDefaultExchanges(false);
+  initMealCountSelector();
   renderExchangeTable();
 
   // 模式切換按鈕
@@ -610,12 +619,12 @@ function renderExchangeTable() {
             oninput="onDesignExChanged(${idx}, this.value)">
           <span class="allocation-status" id="row_allocation_status_${idx}" hidden></span>
         </td>
-        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.b}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'b', this.value)"></td>
-        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.ms}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'ms', this.value)"></td>
-        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.l}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'l', this.value)"></td>
-        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.as}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'as', this.value)"></td>
-        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.d}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'd', this.value)"></td>
-        <td><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item.ns}" ${item.ex > 0 ? "" : "disabled"} oninput="onMealExChanged(${idx}, 'ns', this.value)"></td>
+        ${renderMealInput(item, idx, "b")}
+        ${renderMealInput(item, idx, "ms")}
+        ${renderMealInput(item, idx, "l")}
+        ${renderMealInput(item, idx, "as")}
+        ${renderMealInput(item, idx, "d")}
+        ${renderMealInput(item, idx, "ns")}
         <td class="val-green" id="row_p_${idx}">0</td>
         <td class="val-orange" id="row_f_${idx}">0</td>
         <td class="val-red" id="row_c_${idx}">0</td>
@@ -625,7 +634,43 @@ function renderExchangeTable() {
   }).join("");
 
   exchangesData.forEach((_, idx) => validateMealAllocation(idx));
+  updateMealCountUI();
   calcExchangeTotals();
+}
+
+function renderMealInput(item, idx, mealKey) {
+  return `<td class="meal-col meal-${mealKey}"><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item[mealKey]}" ${item.ex > 0 && activeMealKeys.includes(mealKey) ? "" : "disabled"} oninput="onMealExChanged(${idx}, '${mealKey}', this.value)"></td>`;
+}
+
+function initMealCountSelector() {
+  const selector = document.getElementById("mealCountSelect");
+  if (!selector) return;
+  selector.addEventListener("change", () => {
+    const count = Number(selector.value);
+    activeMealKeys = mealCountMap[count] || mealKeyOrder;
+    exchangesData.forEach(item => {
+      mealKeyOrder.filter(key => !activeMealKeys.includes(key)).forEach(key => {
+        item[key] = 0;
+      });
+    });
+    renderExchangeTable();
+  });
+}
+
+function updateMealCountUI() {
+  const selector = document.getElementById("mealCountSelect");
+  const count = activeMealKeys.length;
+  if (selector && Number(selector.value) !== count) selector.value = String(count);
+  const mealHeader = document.querySelector("#exchangeTable .col-meals");
+  if (mealHeader) mealHeader.colSpan = count;
+  mealKeyOrder.forEach(key => {
+    const visible = activeMealKeys.includes(key);
+    document.querySelectorAll(`.meal-col.meal-${key}, .meal-summary-${key}`).forEach(el => {
+      el.hidden = !visible;
+    });
+  });
+  const placeholder = document.getElementById("mealSummaryPlaceholder");
+  if (placeholder) placeholder.colSpan = count;
 }
 
 function onMealExChanged(idx, mealKey, val) {
@@ -650,7 +695,7 @@ function onDesignExChanged(idx, val) {
   if (item.ex <= 0) {
     mealKeys.forEach(key => {
       item[key] = 0;
-      const input = row?.querySelector(`input[oninput*="'${key}'"]`);
+        const input = row?.querySelector(`input[oninput*="'${key}'"]`);
       if (input) input.value = "0";
     });
   }
@@ -660,14 +705,14 @@ function onDesignExChanged(idx, val) {
 
 function validateMealAllocation(idx) {
   const item = exchangesData[idx];
-  const mealTotal = item.b + item.ms + item.l + item.as + item.d + item.ns;
+  const mealTotal = activeMealKeys.reduce((total, key) => total + item[key], 0);
   const isValid = item.ex <= 0 || Math.abs(mealTotal - item.ex) < 0.001;
   const row = document.querySelectorAll("#exchangeTableBody tr")[idx];
   const status = document.getElementById(`row_allocation_status_${idx}`);
   if (row) row.classList.toggle("allocation-invalid", !isValid);
   if (status) {
     status.hidden = isValid;
-    status.textContent = `餐次合計 ${mealTotal} ≠ 設計份數 ${item.ex}`;
+    status.textContent = `餐次合計需等於設計份數 ${item.ex}`;
     status.title = "早、早點、午、午點、晚、晚點的合計必須等於設計份數";
   }
   return isValid;
@@ -684,12 +729,12 @@ function calcExchangeTotals() {
     const rowKcal = item.ex * item.kcal;
 
     totalEx += item.ex;
-    sumB += item.b;
-    sumMs += item.ms;
-    sumL += item.l;
-    sumAs += item.as;
-    sumD += item.d;
-    sumNs += item.ns;
+    if (activeMealKeys.includes("b")) sumB += item.b;
+    if (activeMealKeys.includes("ms")) sumMs += item.ms;
+    if (activeMealKeys.includes("l")) sumL += item.l;
+    if (activeMealKeys.includes("as")) sumAs += item.as;
+    if (activeMealKeys.includes("d")) sumD += item.d;
+    if (activeMealKeys.includes("ns")) sumNs += item.ns;
 
     totalP += rowP;
     totalF += rowF;
