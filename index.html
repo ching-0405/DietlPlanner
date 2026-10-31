@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -325,7 +325,7 @@
                 <th style="width: 130px;">目標總熱量</th>
                 <th style="width: 36px; text-align: center;">×</th>
                 <th style="width: 140px; text-align: center;">百分比 (%)</th>
-                <th style="width: 140px; text-align: center;">熱量百分比建議</th>
+                <th class="col-suggest-ratio" style="width: 140px; text-align: center;">熱量百分比建議</th>
                 <th style="width: 36px; text-align: center;">=</th>
                 <th style="width: 220px; text-align: center;">克數計算過程</th>
                 <th style="width: 140px; text-align: center;">目標克數 (g)</th>
@@ -344,7 +344,7 @@
                     <span>%</span>
                   </div>
                 </td>
-                <td class="text-center"><span class="badge-suggest red">50~60%</span></td>
+                <td class="text-center col-suggest-ratio"><span class="badge-suggest red">50~60%</span></td>
                 <td class="text-center font-bold">=</td>
                 <td class="text-center font-blue" id="lblCalcProcessCarb">1000 ÷ 4 = 250.0 g</td>
                 <td class="text-center val-highlight red"><strong id="lblTargetCarbGrams">250.0 g</strong></td>
@@ -361,7 +361,7 @@
                     <span>%</span>
                   </div>
                 </td>
-                <td class="text-center"><span class="badge-suggest orange">20~30%</span></td>
+                <td class="text-center col-suggest-ratio"><span class="badge-suggest orange">20~30%</span></td>
                 <td class="text-center font-bold">=</td>
                 <td class="text-center font-orange" id="lblCalcProcessFat">600 ÷ 9 = 66.7 g</td>
                 <td class="text-center val-highlight orange"><strong id="lblTargetFatGrams">66.7 g</strong></td>
@@ -378,7 +378,7 @@
                     <span>%</span>
                   </div>
                 </td>
-                <td class="text-center"><span class="badge-suggest green">10~20%</span></td>
+                <td class="text-center col-suggest-ratio"><span class="badge-suggest green">10~20%</span></td>
                 <td class="text-center font-bold">=</td>
                 <td class="text-center font-green" id="lblCalcProcessProt">400 ÷ 4 = 100.0 g</td>
                 <td class="text-center val-highlight green"><strong id="lblTargetProteinGrams">100.0 g</strong></td>
@@ -689,6 +689,6 @@
   <script src="food_exchange_db.js?v=2"></script>
   <script src="food_composition_2025.js?v=1"></script>
   <script src="app_data.js?v=2"></script>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

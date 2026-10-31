@@ -321,6 +321,14 @@ function initExchanges() {
   btnDisease.addEventListener("click", () => {
     isDiseaseMode = !isDiseaseMode;
     btnDisease.classList.toggle("active", isDiseaseMode);
+    if (isDiseaseMode) {
+      btnDisease.innerText = "疾病飲食模式 (已解除百分比限制)";
+      document.body.classList.add("disease-mode-active");
+    } else {
+      btnDisease.innerText = "疾病飲食模式 (解除百分比限制)";
+      document.body.classList.remove("disease-mode-active");
+    }
+    calcMacroTargets();
   });
 
   // 目標熱量與比例監聽
@@ -394,18 +402,30 @@ function calcMacroTargets() {
   }
 
   if (lblWarning) {
-    if (totalRatio === 100 && warnings.length === 0) {
-      lblWarning.className = "text-green font-bold";
-      lblWarning.innerText = `✨ 比例總和：${totalRatio}% (正常平衡 ｜ 符合標準熱量百分比建議)`;
-      hideRatioAlert();
-    } else if (totalRatio !== 100) {
-      lblWarning.className = "text-red font-bold";
-      lblWarning.innerText = `⚠️ 比例總和：${totalRatio}% (未滿或超出 100%，請調整)`;
-      showRatioAlert(`比例總和為 ${totalRatio}%（未達或超出 100%），請檢查並重新調整！`);
+    if (isDiseaseMode) {
+      if (totalRatio === 100) {
+        lblWarning.className = "text-green font-bold";
+        lblWarning.innerText = `✨ 疾病飲食模式生效中：比例總和 100%（已解除單項百分比建議限制）`;
+        hideRatioAlert();
+      } else {
+        lblWarning.className = "text-red font-bold";
+        lblWarning.innerText = `⚠️ 疾病飲食模式：三大營養素比例總和為 ${totalRatio}%（仍不能超過或未滿 100%，請調整）`;
+        showRatioAlert(`疾病飲食模式下，比例總和為 ${totalRatio}%（必須等於 100%），請檢查並重新調整！`);
+      }
     } else {
-      lblWarning.className = "text-orange font-bold";
-      lblWarning.innerText = `⚠️ 比例總和：100%（但 ${warnings.join('；')}）`;
-      showRatioAlert(`三大營養素百分比超出標準建議範圍：${warnings.join('、')}`);
+      if (totalRatio === 100 && warnings.length === 0) {
+        lblWarning.className = "text-green font-bold";
+        lblWarning.innerText = `✨ 比例總和：${totalRatio}% (正常平衡 ｜ 符合標準熱量百分比建議)`;
+        hideRatioAlert();
+      } else if (totalRatio !== 100) {
+        lblWarning.className = "text-red font-bold";
+        lblWarning.innerText = `⚠️ 比例總和：${totalRatio}% (未滿或超出 100%，請調整)`;
+        showRatioAlert(`比例總和為 ${totalRatio}%（未達或超出 100%），請檢查並重新調整！`);
+      } else {
+        lblWarning.className = "text-orange font-bold";
+        lblWarning.innerText = `⚠️ 比例總和：100%（但 ${warnings.join('；')}）`;
+        showRatioAlert(`三大營養素百分比超出標準建議範圍：${warnings.join('、')}`);
+      }
     }
   }
 }
