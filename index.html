@@ -300,32 +300,96 @@
     <!-- PAGE 2: 六大類食物代換設計 -->
     <section id="tab-exchange" class="tab-content">
       
-      <!-- 目標熱量與三大營養素設定條 -->
-      <div class="target-bar">
-        <div class="target-item">
-          <label>目標熱量：</label>
-          <input type="number" id="inTargetKcal" class="form-input highlight" value="2137" step="50">
-          <span>kcal</span>
+      <!-- 三大營養素熱量百分比與克數計算表 (原系統介面) -->
+      <div class="card mb-3">
+        <div class="card-header bg-teal">
+          <span class="icon">⚖️</span>
+          <h2>三大營養素比例設定與目標克數計算過程</h2>
+          <div class="header-actions-right">
+            <button class="btn btn-secondary" id="btnDiseaseMode">疾病飲食模式 (解除百分比限制)</button>
+            <button class="btn btn-primary" id="btnDiabeticMode">糖尿病、低蛋白飲食</button>
+            <button class="btn btn-purple" id="btnOpenFormulaWindow">💊 商業配方庫</button>
+          </div>
         </div>
-        <div class="target-item">
-          <label>碳水 (C)：</label>
-          <input type="number" id="inRatioC" class="form-input" value="50" min="0" max="100">
-          <span>%</span>
-        </div>
-        <div class="target-item">
-          <label>蛋白質 (P)：</label>
-          <input type="number" id="inRatioP" class="form-input" value="20" min="0" max="100">
-          <span>%</span>
-        </div>
-        <div class="target-item">
-          <label>脂肪 (F)：</label>
-          <input type="number" id="inRatioF" class="form-input" value="30" min="0" max="100">
-          <span>%</span>
-        </div>
-        <div class="target-actions">
-          <button class="btn btn-secondary" id="btnDiseaseMode">疾病飲食模式 (解除百分比限制)</button>
-          <button class="btn btn-primary" id="btnDiabeticMode">糖尿病、低蛋白飲食</button>
-          <button class="btn btn-purple" id="btnOpenFormulaWindow">💊 商業配方庫</button>
+        <div class="card-body p-0 overflow-x">
+          <table class="data-table ratio-calc-grid">
+            <thead>
+              <tr>
+                <th style="width: 170px;">三大營養素</th>
+                <th style="width: 130px;">目標總熱量</th>
+                <th style="width: 36px; text-align: center;">×</th>
+                <th style="width: 140px; text-align: center;">百分比 (%)</th>
+                <th style="width: 140px; text-align: center;">熱量百分比建議</th>
+                <th style="width: 36px; text-align: center;">=</th>
+                <th style="width: 220px; text-align: center;">克數計算過程</th>
+                <th style="width: 140px; text-align: center;">目標克數 (g)</th>
+                <th>快速套用預設</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 醣類 (碳水化合物) -->
+              <tr class="row-macro-carb">
+                <td><strong class="text-red">🍚 醣類 (碳水化合物)</strong></td>
+                <td><input type="number" id="inTargetKcal" class="form-input text-center font-bold" value="2000" step="50" style="width: 100px;"> kcal</td>
+                <td class="text-center font-bold">×</td>
+                <td class="text-center">
+                  <div class="inline-input-group">
+                    <input type="number" id="inRatioC" class="form-input text-center font-bold" value="50" min="0" max="100" style="width: 60px;">
+                    <span>%</span>
+                  </div>
+                </td>
+                <td class="text-center"><span class="badge-suggest red">50~60%</span></td>
+                <td class="text-center font-bold">=</td>
+                <td class="text-center font-blue" id="lblCalcProcessCarb">1000 ÷ 4 = 250.0 g</td>
+                <td class="text-center val-highlight red"><strong id="lblTargetCarbGrams">250.0 g</strong></td>
+                <td><button class="btn btn-outline-teal" onclick="applyRatioPreset(55, 30, 15)">標準均衡 (55:15:30)</button></td>
+              </tr>
+              <!-- 脂質 (Lipids) -->
+              <tr class="row-macro-fat">
+                <td><strong class="text-orange">🥑 脂質 (Lipids)</strong></td>
+                <td id="lblSyncKcalFat">2000 kcal</td>
+                <td class="text-center font-bold">×</td>
+                <td class="text-center">
+                  <div class="inline-input-group">
+                    <input type="number" id="inRatioF" class="form-input text-center font-bold" value="30" min="0" max="100" style="width: 60px;">
+                    <span>%</span>
+                  </div>
+                </td>
+                <td class="text-center"><span class="badge-suggest orange">20~30%</span></td>
+                <td class="text-center font-bold">=</td>
+                <td class="text-center font-orange" id="lblCalcProcessFat">600 ÷ 9 = 66.7 g</td>
+                <td class="text-center val-highlight orange"><strong id="lblTargetFatGrams">66.7 g</strong></td>
+                <td><button class="btn btn-outline-blue" onclick="applyRatioPreset(40, 30, 30)">高蛋白疾病飲食 (40:30:30)</button></td>
+              </tr>
+              <!-- 蛋白質 (Protein) -->
+              <tr class="row-macro-prot">
+                <td><strong class="text-green">🥩 蛋白質 (Protein)</strong></td>
+                <td id="lblSyncKcalProt">2000 kcal</td>
+                <td class="text-center font-bold">×</td>
+                <td class="text-center">
+                  <div class="inline-input-group">
+                    <input type="number" id="inRatioP" class="form-input text-center font-bold" value="20" min="0" max="100" style="width: 60px;">
+                    <span>%</span>
+                  </div>
+                </td>
+                <td class="text-center"><span class="badge-suggest green">10~20%</span></td>
+                <td class="text-center font-bold">=</td>
+                <td class="text-center font-green" id="lblCalcProcessProt">400 ÷ 4 = 100.0 g</td>
+                <td class="text-center val-highlight green"><strong id="lblTargetProteinGrams">100.0 g</strong></td>
+                <td><button class="btn btn-outline-amber" onclick="applyRatioPreset(65, 27, 8)">低蛋白腎病飲食 (65:8:27)</button></td>
+              </tr>
+              <!-- 總計與檢核 -->
+              <tr class="row-macro-total">
+                <td><strong>總計與檢核</strong></td>
+                <td colspan="8">
+                  <div class="ratio-summary-bar">
+                    <span id="lblRatioSumWarning" class="text-green font-bold">✨ 比例總和：100% (正常平衡 ｜ 符合標準熱量百分比建議)</span>
+                    <span id="lblDiseaseDietStatus" class="text-purple font-bold"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 

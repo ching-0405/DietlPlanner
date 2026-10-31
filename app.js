@@ -286,8 +286,73 @@ function initExchanges() {
   // 目標熱量與比例監聽
   ["inTargetKcal", "inRatioC", "inRatioP", "inRatioF"].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener("input", calcExchangeTotals);
+    if (el) el.addEventListener("input", () => {
+      calcMacroTargets();
+      calcExchangeTotals();
+    });
   });
+
+  calcMacroTargets();
+}
+
+// 快速套用預設比例
+function applyRatioPreset(carb, fat, protein) {
+  document.getElementById("inRatioC").value = carb;
+  document.getElementById("inRatioF").value = fat;
+  document.getElementById("inRatioP").value = protein;
+  calcMacroTargets();
+  calcExchangeTotals();
+}
+
+// 計算三大營養素目標克數與檢核 (原系統介面邏輯)
+function calcMacroTargets() {
+  const targetKcal = parseFloat(document.getElementById("inTargetKcal").value) || 2000;
+  const ratioC = parseFloat(document.getElementById("inRatioC").value) || 0;
+  const ratioF = parseFloat(document.getElementById("inRatioF").value) || 0;
+  const ratioP = parseFloat(document.getElementById("inRatioP").value) || 0;
+
+  // 同步顯示脂質與蛋白質的目標熱量文字
+  const lblSyncF = document.getElementById("lblSyncKcalFat");
+  const lblSyncP = document.getElementById("lblSyncKcalProt");
+  if (lblSyncF) lblSyncF.innerText = `${Math.round(targetKcal)} kcal`;
+  if (lblSyncP) lblSyncP.innerText = `${Math.round(targetKcal)} kcal`;
+
+  // 1. 醣類: kcal * (C%) / 4
+  const carbKcal = targetKcal * (ratioC / 100.0);
+  const carbGrams = carbKcal / 4.0;
+  const elProcC = document.getElementById("lblCalcProcessCarb");
+  const elTargetC = document.getElementById("lblTargetCarbGrams");
+  if (elProcC) elProcC.innerText = `${Math.round(carbKcal)} ÷ 4 = ${carbGrams.toFixed(1)} g`;
+  if (elTargetC) elTargetC.innerText = `${carbGrams.toFixed(1)} g`;
+
+  // 2. 脂質: kcal * (F%) / 9
+  const fatKcal = targetKcal * (ratioF / 100.0);
+  const fatGrams = fatKcal / 9.0;
+  const elProcF = document.getElementById("lblCalcProcessFat");
+  const elTargetF = document.getElementById("lblTargetFatGrams");
+  if (elProcF) elProcF.innerText = `${Math.round(fatKcal)} ÷ 9 = ${fatGrams.toFixed(1)} g`;
+  if (elTargetF) elTargetF.innerText = `${fatGrams.toFixed(1)} g`;
+
+  // 3. 蛋白質: kcal * (P%) / 4
+  const protKcal = targetKcal * (ratioP / 100.0);
+  const protGrams = protKcal / 4.0;
+  const elProcP = document.getElementById("lblCalcProcessProt");
+  const elTargetP = document.getElementById("lblTargetProteinGrams");
+  if (elProcP) elProcP.innerText = `${Math.round(protKcal)} ÷ 4 = ${protGrams.toFixed(1)} g`;
+  if (elTargetP) elTargetP.innerText = `${protGrams.toFixed(1)} g`;
+
+  // 4. 比例總和與檢核
+  const totalRatio = Math.round(ratioC + ratioF + ratioP);
+  const lblWarning = document.getElementById("lblRatioSumWarning");
+  if (lblWarning) {
+    if (totalRatio === 100) {
+      lblWarning.className = "text-green font-bold";
+      lblWarning.innerText = `✨ 比例總和：${totalRatio}% (正常平衡 ｜ 符合標準熱量百分比建議)`;
+    } else {
+      lblWarning.className = "text-red font-bold";
+      lblWarning.innerText = `⚠️ 比例總和：${totalRatio}% (未滿或超出 100%，請調整)`;
+    }
+  }
 }
 
 function renderExchangeTable() {
