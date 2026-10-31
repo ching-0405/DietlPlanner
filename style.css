@@ -188,6 +188,15 @@ body {
   font-size: 13px;
 }
 
+.ratio-calc-grid.disease-mode th:nth-child(5),
+.ratio-calc-grid.disease-mode td:nth-child(5) {
+  display: none;
+}
+
+.macro-recommendation[hidden] {
+  display: none !important;
+}
+
 .row-macro-carb { background: #fff5f5; }
 .row-macro-fat { background: #fffbeb; }
 .row-macro-prot { background: #f0fdf4; }
@@ -226,11 +235,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-/* 疾病飲食模式啟動時：自動隱藏「熱量百分比建議」整欄（標題與數值） */
-body.disease-mode-active .col-suggest-ratio {
-  display: none !important;
 }
 
 .btn-outline-teal {
@@ -808,226 +812,394 @@ body.disease-mode-active .col-suggest-ratio {
   margin-left: 10px;
 }
 
-/* 手機版原生 CSS Media Query 支援 (像 Excel / Google 試算表般固定在螢幕最底端) */
-@media (max-width: 768px) {
-  .container {
-    max-width: 100% !important;
-    padding: 0 10px 85px !important;
-  }
-
-  .grid-2col {
-    grid-template-columns: 1fr !important;
-  }
-
-  .navbar {
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 8px !important;
-    padding: 8px 12px !important;
-    border-bottom: 1px solid #0d9488 !important;
-  }
-
-  .brand-titles h1 {
-    font-size: 16px !important;
-  }
-
-  .brand-icon {
-    font-size: 20px !important;
-  }
-
-  .nav-controls {
-    flex-direction: row !important;
-    align-items: center !important;
-  }
-
-  .device-switch-group {
-    padding: 2px !important;
-  }
-
-  .btn-device-toggle {
-    padding: 3px 8px !important;
-    font-size: 11px !important;
-  }
-
-  /* 試算表底部分頁切換欄 (Bottom Sheet Tabs) */
-  .nav-tabs {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: auto !important;
-    height: 56px !important;
-    background: #ffffff !important;
-    border-top: 1px solid #cbd5e1 !important;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.08) !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 0 !important;
-    z-index: 999 !important;
-    padding: 4px 6px !important;
-  }
-
-  .nav-tab {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    border: none !important;
-    border-radius: 6px !important;
-    background: transparent !important;
-    color: #64748b !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    padding: 4px 2px !important;
-    line-height: 1.2 !important;
-    box-shadow: none !important;
-  }
-
-  .nav-tab.active {
-    background: #e6f6f3 !important;
-    color: #0d9488 !important;
-    font-weight: 700 !important;
-    border-bottom: 3px solid #0d9488 !important;
-    border-radius: 4px 4px 0 0 !important;
-  }
-
-  .alert-banner {
-    bottom: 66px !important;
-    right: 12px !important;
-    left: 12px !important;
-    padding: 10px 14px !important;
-    font-size: 13px !important;
-  }
-
-  .card-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .header-actions-right {
-    margin-left: 0 !important;
-    width: 100% !important;
-    flex-wrap: wrap !important;
-  }
-
-  .quick-btn-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .exchange-table {
-    font-size: 14px !important;
-  }
-}
-
-/* 手機版模式 (手動切換開關) */
+/* 手機版模式 (像 Excel / Google 試算表般固定在螢幕最底端) */
 body.mobile-mode .container {
-  max-width: 100% !important;
-  padding: 0 10px 85px !important;
+  max-width: 100%;
+  padding: 0 10px 85px; /* 留出底部工作表分頁高度，避免被遮擋 */
 }
 
 body.mobile-mode .grid-2col {
-  grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr;
 }
 
 body.mobile-mode .navbar {
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 8px !important;
-  padding: 8px 12px !important;
-  border-bottom: 1px solid #0d9488 !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #0d9488;
 }
 
 body.mobile-mode .brand-titles h1 {
-  font-size: 16px !important;
+  font-size: 16px;
 }
 
 body.mobile-mode .brand-icon {
-  font-size: 20px !important;
+  font-size: 20px;
 }
 
 body.mobile-mode .nav-controls {
-  flex-direction: row !important;
-  align-items: center !important;
+  flex-direction: row;
+  align-items: center;
 }
 
 body.mobile-mode .device-switch-group {
-  padding: 2px !important;
+  padding: 2px;
 }
 
 body.mobile-mode .btn-device-toggle {
-  padding: 3px 8px !important;
-  font-size: 11px !important;
+  padding: 3px 8px;
+  font-size: 11px;
 }
 
 /* 試算表底部分頁切換欄 (Bottom Sheet Tabs) */
 body.mobile-mode .nav-tabs {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  top: auto !important;
-  height: 56px !important;
-  background: #ffffff !important;
-  border-top: 1px solid #cbd5e1 !important;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.08) !important;
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: 0 !important;
-  z-index: 999 !important;
-  padding: 4px 6px !important;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #ffffff;
+  border-top: 1px solid #cbd5e1;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  z-index: 999;
+  padding: 4px 6px;
 }
 
 body.mobile-mode .nav-tab {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  align-items: center !important;
-  border: none !important;
-  border-radius: 6px !important;
-  background: transparent !important;
-  color: #64748b !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  padding: 4px 2px !important;
-  line-height: 1.2 !important;
-  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 2px;
+  line-height: 1.2;
+  box-shadow: none;
 }
 
 body.mobile-mode .nav-tab.active {
-  background: #e6f6f3 !important;
-  color: #0d9488 !important;
-  font-weight: 700 !important;
-  border-bottom: 3px solid #0d9488 !important;
-  border-radius: 4px 4px 0 0 !important;
+  background: #e6f6f3;
+  color: #0d9488;
+  font-weight: 700;
+  border-bottom: 3px solid #0d9488;
+  border-radius: 4px 4px 0 0;
 }
 
 body.mobile-mode .alert-banner {
-  bottom: 66px !important;
-  right: 12px !important;
-  left: 12px !important;
-  padding: 10px 14px !important;
-  font-size: 13px !important;
+  bottom: 66px; /* 移到試算表底部分頁之上，不被遮擋 */
+  right: 12px;
+  left: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
 }
 
 body.mobile-mode .card-header {
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 8px !important;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 body.mobile-mode .header-actions-right {
-  margin-left: 0 !important;
-  width: 100% !important;
-  flex-wrap: wrap !important;
+  margin-left: 0;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 body.mobile-mode .quick-btn-grid {
-  grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr;
 }
 
 body.mobile-mode .exchange-table {
-  font-size: 14px !important;
+  font-size: 14px;
+}
+
+.exchange-table input.cell-input:focus {
+  border-color: #0d9488;
+  outline: none;
+}
+
+/* 緊鄰堅果種子下方的加總列 */
+.subtotal-tbody {
+  border-top: 2px solid #0d9488;
+}
+
+.subtotal-row {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+.subtotal-row.grams-row {
+  background: #f0fdf4;
+}
+
+.subtotal-row.percent-row {
+  background: #fefce8;
+}
+
+.subtotal-title {
+  text-align: left !important;
+  padding-left: 14px !important;
+  color: #1f2937;
+}
+
+.val-blue { color: #2563eb; font-weight: 700; }
+.val-green { color: #16a34a; font-weight: 700; }
+.val-orange { color: #d97706; font-weight: 700; }
+.val-red { color: #dc2626; font-weight: 700; }
+.font-sm { font-size: 12px; }
+
+/* 第3頁：菜單開立工具列與卡片 */
+.menu-toolbar {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbar-right select {
+  width: 140px;
+}
+
+.meal-chips-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.meal-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.meal-chip:hover {
+  border-color: #0d9488;
+  transform: translateY(-1px);
+}
+
+.meal-chip.active {
+  background: #f0fdfa;
+  border-color: #0d9488;
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
+}
+
+.meal-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.meal-badge.b { background: #3b82f6; }
+.meal-badge.ms { background: #f59e0b; }
+.meal-badge.l { background: #10b981; }
+.meal-badge.as { background: #8b5cf6; }
+.meal-badge.d { background: #6366f1; }
+.meal-badge.ns { background: #64748b; }
+
+/* 菜單資料表 */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th, .data-table td {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.data-table thead th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 700;
+}
+
+/* 顏色標籤膠囊 */
+.color-tag {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+}
+
+.color-tag.黃色 { background: #eab308; }
+.color-tag.白色 { background: #94a3b8; }
+.color-tag.橙色 { background: #f97316; }
+.color-tag.綠色 { background: #22c55e; }
+.color-tag.紅色 { background: #ef4444; }
+.color-tag.紫色\/黑色 { background: #8b5cf6; }
+.color-tag.粉綠\/嫩綠 { background: #84cc16; }
+.color-tag.其他 { background: #64748b; }
+
+/* 彈窗 Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-box {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-box.modal-lg {
+  max-width: 1100px;
+}
+
+.modal-header {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-title span {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.modal-title small {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.ratio-limit-overlay {
+  z-index: 1100;
+  pointer-events: none;
+}
+
+.ratio-limit-modal {
+  max-width: 480px;
+  pointer-events: auto;
+}
+
+.ratio-limit-modal .modal-header {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.ratio-limit-modal .modal-body {
+  display: grid;
+  gap: 12px;
+}
+
+.ratio-limit-list {
+  margin-left: 22px;
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.ratio-limit-note {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.ratio-limit-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.query-search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.flex-1 { flex: 1; }
+
+.query-info-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.table-scroll-container {
+  max-height: 55vh;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.overflow-x {
+  overflow-x: auto;
 }
