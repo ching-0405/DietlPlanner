@@ -403,8 +403,23 @@ body:not(.mobile-mode) .brand-titles {
 
 .card-header-left {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
+}
+
+.card-header-left .icon {
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.card-header-left h2 {
+  display: inline-block;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .header-actions-right {
@@ -629,16 +644,27 @@ body:not(.mobile-mode) .brand-titles {
 
 /* 徽章 Badge */
 .badge {
-  display: inline-block;
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
   border-radius: 9999px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .badge-normal {
   background: #dcfce7;
   color: #15803d;
+}
+
+.cell-bmi-badge {
+  width: 140px;
+  white-space: nowrap;
+  text-align: center;
 }
 
 /* BMI 彩色相連尺標 */
