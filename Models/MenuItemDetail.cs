@@ -16,6 +16,11 @@ namespace NutritionPlannerApp.Models
         private string _foodColor = "白色";
         private string _colorHex = "#F8F9FA";
         private string _notes = "";
+        private double _calories = 0.0;
+        private double _protein = 0.0;
+        private double _fat = 0.0;
+        private double _carbs = 0.0;
+        private string _matchedFoodName = " \;
 
         // 合併儲存格專用屬性
         private bool _isFirstInDishGroup = true;
@@ -91,6 +96,36 @@ namespace NutritionPlannerApp.Models
         {
             get => _notes;
             set { _notes = value; OnPropertyChanged(); }
+ }
+
+ public double Calories
+ {
+ get => _calories;
+ set { _calories = value; OnPropertyChanged(); }
+ }
+
+ public double Protein
+ {
+ get => _protein;
+ set { _protein = value; OnPropertyChanged(); }
+ }
+
+ public double Fat
+ {
+ get => _fat;
+ set { _fat = value; OnPropertyChanged(); }
+ }
+
+ public double Carbs
+ {
+ get => _carbs;
+ set { _carbs = value; OnPropertyChanged(); }
+ }
+
+ public string MatchedFoodName
+ {
+ get => _matchedFoodName;
+ set { _matchedFoodName = value; OnPropertyChanged(); }
         }
 
         public bool IsFirstInDishGroup

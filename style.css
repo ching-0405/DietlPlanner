@@ -1564,22 +1564,26 @@ body.mobile-mode .exchange-table {
 /* 顏色標籤膠囊 */
 .color-tag {
   display: inline-block;
-  padding: 2px 12px;
+  padding: 3px 12px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 700;
   color: #ffffff;
   text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  white-space: nowrap;
 }
 
-.color-tag.黃色 { background: #eab308; }
-.color-tag.白色 { background: #94a3b8; }
-.color-tag.橙色 { background: #f97316; }
-.color-tag.綠色 { background: #22c55e; }
-.color-tag.紅色 { background: #ef4444; }
-.color-tag.紫色\/黑色 { background: #8b5cf6; }
-.color-tag.粉綠\/嫩綠 { background: #84cc16; }
-.color-tag.其他 { background: #64748b; }
+.color-tag.黃色 { background: #eab308; color: #1f2937; }
+.color-tag.白色 { background: #94a3b8; color: #ffffff; }
+.color-tag.橙色 { background: #f97316; color: #ffffff; }
+.color-tag.綠色 { background: #22c55e; color: #ffffff; }
+.color-tag.紅色 { background: #ef4444; color: #ffffff; }
+.color-tag.紫色\/黑色 { background: #8b5cf6; color: #ffffff; }
+.color-tag.粉綠\/嫩綠 { background: #84cc16; color: #1f2937; }
+.color-tag.嫩綠色 { background: #a8d878; color: #1f2937; }
+.color-tag.棕褐色 { background: #a16207; color: #ffffff; }
+.color-tag.其他 { background: #64748b; color: #ffffff; }
 
 /* 彈窗 Modal */
 .modal-overlay {

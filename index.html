@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261031-2015">
+  <link rel="stylesheet" href="style.css?v=20261102-1940">
 </head>
 <body>
 
@@ -600,20 +600,72 @@
           <table class="data-table menu-grid" id="menuRecipeTable">
             <thead>
               <tr>
-                <th style="width: 120px;">餐次</th>
-                <th style="width: 200px;">菜名</th>
-                <th style="width: 180px;">食材名稱</th>
-                <th style="width: 140px;">食物類別</th>
-                <th style="width: 100px;">份數 (Ex)</th>
-                <th style="width: 110px;">生重克數 (g)</th>
-                <th style="width: 120px;">食材顏色</th>
-                <th style="width: 80px;">操作</th>
+                <th style="width: 100px;">餐次</th>
+                <th style="width: 170px;">菜名</th>
+                <th style="width: 160px;">食材名稱</th>
+                <th style="width: 110px;">食物類別</th>
+                <th style="width: 85px;">份數 (Ex)</th>
+                <th style="width: 95px;">生重克數 (g)</th>
+                <th style="width: 110px; text-align: center;">食材顏色</th>
+                <th style="width: 90px; text-align: right;">熱量 (kcal)</th>
+                <th style="width: 80px; text-align: right;">蛋白質 (g)</th>
+                <th style="width: 80px; text-align: right;">脂肪 (g)</th>
+                <th style="width: 80px; text-align: right;">醣類 (g)</th>
+                <th style="width: 70px; text-align: center;">操作</th>
               </tr>
             </thead>
             <tbody id="menuRecipeTableBody">
               <!-- 動態生成食材列 -->
             </tbody>
+            <tfoot id="menuRecipeTableFoot" style="background: #f8fafc; font-weight: 700; border-top: 2px solid #0d9488;">
+              <tr>
+                <td colspan="4" style="text-align: right; color: #0f766e; font-size: 13px;">
+                  📋 <strong>菜單食材營養加總合計：</strong>
+                </td>
+                <td id="recipeSumEx" style="text-align: center; color: #0f766e; font-weight: 800;">0</td>
+                <td id="recipeSumWeight" style="text-align: center; color: #334155;">0 g</td>
+                <td style="text-align: center; color: #64748b; font-size: 12px;" id="recipeColorSummary">—</td>
+                <td id="recipeSumCalories" style="text-align: right; color: #dc2626; font-size: 14px; font-weight: 800;">0</td>
+                <td id="recipeSumProtein" style="text-align: right; color: #16a34a; font-weight: 800;">0</td>
+                <td id="recipeSumFat" style="text-align: right; color: #d97706; font-weight: 800;">0</td>
+                <td id="recipeSumCarbs" style="text-align: right; color: #2563eb; font-weight: 800;">0</td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
+        </div>
+      </div>
+
+      <!-- 菜單食材營養素即時總結卡片 -->
+      <div class="card mt-2" style="background: linear-gradient(135deg, #f0fdf4 0%, #e6f6f3 100%); border: 1px solid #99dcd0;">
+        <div class="card-body" style="padding: 12px 18px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 22px;">🥗</span>
+              <div>
+                <strong style="color: #0f766e; font-size: 14px;">已由衛福部食品營養成分資料庫 (2025版) 自動比對計算</strong>
+                <div style="font-size: 12px; color: #475569;" id="recipeNutrientRatioDesc">三大營養素熱量佔比：碳水化合物 0% ｜ 蛋白質 0% ｜ 脂肪 0%</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">總熱量</div>
+                <strong id="cardRecipeTotalKcal" style="color: #dc2626; font-size: 16px;">0 kcal</strong>
+              </div>
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">蛋白質</div>
+                <strong id="cardRecipeTotalProtein" style="color: #16a34a; font-size: 16px;">0 g</strong>
+              </div>
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">脂肪</div>
+                <strong id="cardRecipeTotalFat" style="color: #d97706; font-size: 16px;">0 g</strong>
+              </div>
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">醣類 (碳水)</div>
+                <strong id="cardRecipeTotalCarbs" style="color: #2563eb; font-size: 16px;">0 g</strong>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -658,6 +710,83 @@
           </div>
         </div>
         <div class="card-body">
+          <!-- 菜單食材所有營養素自動加總合計面板 -->
+          <div class="card mb-3" style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px;">📊</span>
+                <strong style="color: #166534; font-size: 15px;">菜單開立食材營養素加總分析（依據食材生重克數精確換算）：</strong>
+              </div>
+              <span id="lblCompMenuStats" style="font-size: 12px; color: #15803d; font-weight: 600;">菜單共 10 項食材</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; font-size: 13px;">
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">總熱量 (Calories)</div>
+                <strong id="sumCompKcal" style="color: #dc2626; font-size: 15px;">0 kcal</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">粗蛋白 (Protein)</div>
+                <strong id="sumCompProtein" style="color: #16a34a; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">粗脂肪 (Fat)</div>
+                <strong id="sumCompFat" style="color: #d97706; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">飽和脂肪 (Sat. Fat)</div>
+                <strong id="sumCompSatFat" style="color: #b45309; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">總碳水 (Carbs)</div>
+                <strong id="sumCompCarbs" style="color: #2563eb; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">膳食纖維 (Fiber)</div>
+                <strong id="sumCompFiber" style="color: #059669; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">糖質總量 (Sugars)</div>
+                <strong id="sumCompSugars" style="color: #7c3aed; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">水分 (Water)</div>
+                <strong id="sumCompWater" style="color: #0284c7; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鈉 (Sodium, Na)</div>
+                <strong id="sumCompNa" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鉀 (Potassium, K)</div>
+                <strong id="sumCompK" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鈣 (Calcium, Ca)</div>
+                <strong id="sumCompCa" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鎂 (Magnesium, Mg)</div>
+                <strong id="sumCompMg" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鐵 (Iron, Fe)</div>
+                <strong id="sumCompFe" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鋅 (Zinc, Zn)</div>
+                <strong id="sumCompZn" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">磷 (Phosphorus, P)</div>
+                <strong id="sumCompP" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">膽固醇 (Cholesterol)</div>
+                <strong id="sumCompCholesterol" style="color: #e11d48; font-size: 15px;">0 mg</strong>
+              </div>
+            </div>
+          </div>
+
           <div class="query-info-banner">
             <span>📋 檢索結果：共 <strong id="lblCompositionCount" class="text-teal">2,213</strong> 項食品（總收錄 2,213 項官方食品成分）</span>
             <span class="text-muted">💡 數值單位：每 100 g 可食部分之含量 ｜ 點擊食材亦可加入菜單</span>
@@ -807,9 +936,9 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261031-2015"></script>
-  <script src="food_exchange_db.js?v=20261031-2015"></script>
-  <script src="app_data.js?v=20261031-2015"></script>
-  <script src="app.js?v=20261031-2015"></script>
+  <script src="food_composition_2025.js?v=20261102-1940"></script>
+  <script src="food_exchange_db.js?v=20261102-1940"></script>
+  <script src="app_data.js?v=20261102-1940"></script>
+  <script src="app.js?v=20261102-1940"></script>
 </body>
 </html>

@@ -62,6 +62,7 @@ namespace NutritionPlannerApp
             // 初始填入一次健康建議範例，讓介面一打開就生動豐富！
             ApplySampleDiet();
             ApplySampleMenuRecipes();
+            UpdateRecipeNutritionSummary();
             ApplyMenuRecipeFilter();
             UpdateCalculations();
             UpdateMealPlannedSummaries();
@@ -1523,6 +1524,7 @@ namespace NutritionPlannerApp
             ApplyMenuRecipeFilter();
             RefreshDishGrouping();
             UpdateColorStatistics();
+                UpdateRecipeNutritionSummary();
             TxtStatus.Text = "➕ 已新增一道菜餚食材！請輸入食材名稱，系統將自動 AI 辨識顏色。";
         }
 
@@ -1533,6 +1535,7 @@ namespace NutritionPlannerApp
                 _menuRecipes.Remove(item);
                 RefreshDishGrouping();
                 UpdateColorStatistics();
+                UpdateRecipeNutritionSummary();
                 TxtStatus.Text = $"🗑️ 已刪除菜色食材【{item.DishName} - {item.IngredientName}】";
             }
         }
@@ -1544,6 +1547,7 @@ namespace NutritionPlannerApp
                 _menuRecipes.Clear();
                 RefreshDishGrouping();
                 UpdateColorStatistics();
+                UpdateRecipeNutritionSummary();
                 TxtStatus.Text = "🗑️ 已清空菜單開立內容。";
             }
         }
@@ -1551,6 +1555,7 @@ namespace NutritionPlannerApp
         private void BtnLoadSampleMenuRecipe_Click(object sender, RoutedEventArgs e)
         {
             ApplySampleMenuRecipes();
+            UpdateRecipeNutritionSummary();
             ApplyMenuRecipeFilter();
             ApplyMenuRecipeFilter();
             UpdateColorStatistics();
@@ -1594,10 +1599,99 @@ namespace NutritionPlannerApp
                 }
                 RefreshDishGrouping();
                 UpdateColorStatistics();
+                UpdateRecipeNutritionSummary();
                 UpdateMealPlannedSummaries();
             }));
         }
 
+        private void RecalculateMenuItemNutrition(MenuItemDetail item)
+        {
+            if (item == null) return;
+            string name = (item.IngredientName ?? "").Trim();
+            double weight = item.RawWeightGrams > 0 ? item.RawWeightGrams : 100.0;
+            double portions = item.ExchangePortion > 0 ? item.ExchangePortion : 1.0;
+
+            if (_allFoodCompositions != null && _allFoodCompositions.Count > 0)
+            {
+                var matched = _allFoodCompositions.FirstOrDefault(f => f.Name == name);
+                if (matched == null && !string.IsNullOrEmpty(name))
+                {
+                    matched = _allFoodCompositions.FirstOrDefault(f => f.Name.Contains(name) || (!string.IsNullOrEmpty(f.CommonName) && f.CommonName.Contains(name)));
+                }
+                if (matched == null && !string.IsNullOrEmpty(name))
+                {
+                    matched = _allFoodCompositions.FirstOrDefault(f => name.Contains(f.Name));
+                }
+                if (matched != null)
+                {
+                    double factor = weight / 100.0;
+                    item.Calories = Math.Round(matched.Calories * factor, 1);
+                    item.Protein = Math.Round(matched.Protein * factor, 1);
+                    item.Fat = Math.Round(matched.Fat * factor, 1);
+                    item.Carbs = Math.Round(matched.Carbs * factor, 1);
+                    item.MatchedFoodName = matched.Name;
+                    return;
+                }
+            }
+
+            // 次要比對官方代換表
+            if (_allOfficialFoods != null && _allOfficialFoods.Count > 0)
+            {
+                var matchedEx = _allOfficialFoods.FirstOrDefault(f => f.FoodName == name || (!string.IsNullOrEmpty(name) && (f.FoodName.Contains(name) || name.Contains(f.FoodName))));
+                if (matchedEx != null)
+                {
+                    double factor = (matchedEx.RawWeightGrams > 0) ? (weight / matchedEx.RawWeightGrams) : portions;
+                    item.Calories = Math.Round(matchedEx.Calories * factor, 1);
+                    item.Protein = Math.Round(matchedEx.Protein * factor, 1);
+                    item.Fat = Math.Round(matchedEx.Fat * factor, 1);
+                    item.Carbs = Math.Round(matchedEx.Carbs * factor, 1);
+                    item.MatchedFoodName = matchedEx.FoodName;
+                    return;
+                }
+            }
+
+            // 保底估算
+            item.Calories = Math.Round(portions * 60.0, 1);
+            item.Protein = Math.Round(portions * 3.0, 1);
+            item.Fat = Math.Round(portions * 2.0, 1);
+            item.Carbs = Math.Round(portions * 8.0, 1);
+            item.MatchedFoodName = "";
+        }
+
+        public void UpdateRecipeNutritionSummary()
+        {
+            if (_menuRecipes == null) return;
+            double totalKcal = 0, totalP = 0, totalF = 0, totalC = 0;
+            foreach (var item in _menuRecipes)
+            {
+                RecalculateMenuItemNutrition(item);
+                totalKcal += item.Calories;
+                totalP += item.Protein;
+                totalF += item.Fat;
+                totalC += item.Carbs;
+            }
+
+            if (LblMenuNutrientSummary != null)
+            {
+                LblMenuNutrientSummary.Text = $"總熱量：{totalKcal:0.#} kcal ｜ 蛋白質：{totalP:0.#} g ｜ 脂肪：{totalF:0.#} g ｜ 醣類：{totalC:0.#} g";
+            }
+
+            if (LblMenuNutrientRatio != null)
+            {
+                double macroKcal = (totalC * 4) + (totalP * 4) + (totalF * 9);
+                if (macroKcal > 0)
+                {
+                    double pctC = (totalC * 4 / macroKcal) * 100.0;
+                    double pctP = (totalP * 4 / macroKcal) * 100.0;
+                    double pctF = (totalF * 9 / macroKcal) * 100.0;
+                    LblMenuNutrientRatio.Text = $"三大營養素佔比：碳水 {pctC:0.#}% ｜ 蛋白質 {pctP:0.#}% ｜ 脂肪 {pctF:0.#}%";
+                }
+                else
+                {
+                    LblMenuNutrientRatio.Text = "三大營養素佔比：碳水 0% ｜ 蛋白質 0% ｜ 脂肪 0%";
+                }
+            }
+        }
         private void UpdateColorStatistics()
         {
             if (LblColorCountStats == null) return;
@@ -1764,6 +1858,7 @@ namespace NutritionPlannerApp
             ApplyMenuRecipeFilter();
             RefreshDishGrouping();
             UpdateColorStatistics();
+                UpdateRecipeNutritionSummary();
             TxtStatus.Text = $"➕ 已從衛福部食物代換表帶入【{item.FoodName}】至 {defaultMeal}！";
         }
 
