@@ -1559,6 +1559,7 @@ body.mobile-mode .exchange-table {
   background: #f8fafc;
   color: #334155;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* 顏色標籤膠囊 */

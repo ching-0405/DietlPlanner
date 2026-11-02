@@ -892,7 +892,7 @@ function renderMenuRecipes() {
         <td>
           <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px; font-weight: 600;" value="${r.food || ""}" placeholder="輸入食材" 
             oninput="updateFoodName(${realIndex}, this.value)">
-          ${nutrient.matchedName ? `<div style="font-size: 10px; color: #0f766e; margin-top: 2px;">✔ 官方比對：${nutrient.matchedName}</div>` : ''}
+          
         </td>
         <td><span class="text-teal font-bold">${r.category || "自訂食材"}</span></td>
         <td class="val-red">
@@ -963,7 +963,7 @@ function renderMenuRecipes() {
 }
 
 /**
- * 依據菜單開立的食材(克數)進行加總，加總食品營養成分資料庫中所有的營養素
+ * 依據菜單開立的食材(克數)進行加總，並將菜單食材逐一詳細列於營養成分資料庫介面中
  */
 function updateAllCompositionNutrientSummary() {
   const sum = {
@@ -986,7 +986,7 @@ function updateAllCompositionNutrientSummary() {
     cholesterol: 0
   };
 
-  menuRecipes.forEach(r => {
+  const rowsHtml = menuRecipes.map((r, idx) => {
     const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex);
     sum.kcal += (nut.kcal || 0);
     sum.protein += (nut.protein || 0);
@@ -1004,7 +1004,37 @@ function updateAllCompositionNutrientSummary() {
     sum.zn += (nut.zn || 0);
     sum.p += (nut.p || 0);
     sum.cholesterol += (nut.cholesterol || 0);
-  });
+
+    return `
+      <tr>
+        <td><span class="badge" style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; font-size: 11px;">${r.meal}</span></td>
+        <td><strong>${r.dish || "—"}</strong></td>
+        <td><strong style="color: #0f766e;">${r.food}</strong></td>
+        <td style="text-align: right; font-weight: 600;">${r.rawWeight} g</td>
+        <td style="text-align: right;" class="val-red font-bold">${nut.kcal.toFixed(1)}</td>
+        <td style="text-align: right;" class="val-green font-bold">${nut.protein.toFixed(1)}</td>
+        <td style="text-align: right;" class="val-orange font-bold">${nut.fat.toFixed(1)}</td>
+        <td style="text-align: right;">${nut.saturatedFat ? nut.saturatedFat.toFixed(1) : 0}</td>
+        <td style="text-align: right;" class="val-blue font-bold">${nut.carbs.toFixed(1)}</td>
+        <td style="text-align: right;">${nut.fiber ? nut.fiber.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.sugars ? nut.sugars.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.water ? nut.water.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.na ? nut.na.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.k ? nut.k.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.ca ? nut.ca.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.mg ? nut.mg.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.fe ? nut.fe.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.zn ? nut.zn.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.p ? nut.p.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.cholesterol ? nut.cholesterol.toFixed(1) : 0}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const menuTableBody = document.getElementById("menuCompositionItemsBody");
+  if (menuTableBody) {
+    menuTableBody.innerHTML = rowsHtml || '<tr><td colspan="20" style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</td></tr>';
+  }
 
   const setVal = (id, val, unit = "") => {
     const el = document.getElementById(id);

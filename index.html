@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261102-1940">
+  <link rel="stylesheet" href="style.css?v=20261102-2025">
 </head>
 <body>
 
@@ -608,7 +608,7 @@
                 <th style="width: 95px;">生重克數 (g)</th>
                 <th style="width: 110px; text-align: center;">食材顏色</th>
                 <th style="width: 90px; text-align: right;">熱量 (kcal)</th>
-                <th style="width: 80px; text-align: right;">蛋白質 (g)</th>
+                <th style="width: 100px; text-align: right; white-space: nowrap;">蛋白質 (g)</th>
                 <th style="width: 80px; text-align: right;">脂肪 (g)</th>
                 <th style="width: 80px; text-align: right;">醣類 (g)</th>
                 <th style="width: 70px; text-align: center;">操作</th>
@@ -787,8 +787,50 @@
             </div>
           </div>
 
+          <!-- 菜單開立食材之完整營養成分資料明細表 -->
+          <div class="card mb-4" style="border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="background: #f1f5f9; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 18px;">📝</span>
+                <strong style="color: #0f766e; font-size: 14px;">菜單開立食材營養成分明細列表（依各食材開立克數換算各項營養素）</strong>
+              </div>
+              <span style="font-size: 12px; color: #64748b;">各欄位數值已按該食材之生重 (g) 換算</span>
+            </div>
+            <div class="table-scroll-container" style="max-height: 40vh;">
+              <table class="data-table" id="menuCompositionItemsTable">
+                <thead>
+                  <tr style="background: #f8fafc; font-size: 12px; white-space: nowrap;">
+                    <th>餐次</th>
+                    <th>菜名</th>
+                    <th>食材名稱</th>
+                    <th>生重 (g)</th>
+                    <th style="text-align: right;">熱量 (kcal)</th>
+                    <th style="text-align: right;">粗蛋白 (g)</th>
+                    <th style="text-align: right;">粗脂肪 (g)</th>
+                    <th style="text-align: right;">飽和脂肪 (g)</th>
+                    <th style="text-align: right;">總碳水 (g)</th>
+                    <th style="text-align: right;">膳食纖維 (g)</th>
+                    <th style="text-align: right;">糖質總量 (g)</th>
+                    <th style="text-align: right;">水分 (g)</th>
+                    <th style="text-align: right;">鈉 (mg)</th>
+                    <th style="text-align: right;">鉀 (mg)</th>
+                    <th style="text-align: right;">鈣 (mg)</th>
+                    <th style="text-align: right;">鎂 (mg)</th>
+                    <th style="text-align: right;">鐵 (mg)</th>
+                    <th style="text-align: right;">鋅 (mg)</th>
+                    <th style="text-align: right;">磷 (mg)</th>
+                    <th style="text-align: right;">膽固醇 (mg)</th>
+                  </tr>
+                </thead>
+                <tbody id="menuCompositionItemsBody">
+                  <!-- 動態注入菜單開立之食材 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <div class="query-info-banner">
-            <span>📋 檢索結果：共 <strong id="lblCompositionCount" class="text-teal">2,213</strong> 項食品（總收錄 2,213 項官方食品成分）</span>
+            <span>📋 官方資料庫檢索：共 <strong id="lblCompositionCount" class="text-teal">2,213</strong> 項食品（總收錄 2,213 項官方食品成分）</span>
             <span class="text-muted">💡 數值單位：每 100 g 可食部分之含量 ｜ 點擊食材亦可加入菜單</span>
           </div>
           <div class="table-scroll-container" style="max-height: 65vh;">
@@ -936,9 +978,9 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261102-1940"></script>
-  <script src="food_exchange_db.js?v=20261102-1940"></script>
-  <script src="app_data.js?v=20261102-1940"></script>
-  <script src="app.js?v=20261102-1940"></script>
+  <script src="food_composition_2025.js?v=20261102-2025"></script>
+  <script src="food_exchange_db.js?v=20261102-2025"></script>
+  <script src="app_data.js?v=20261102-2025"></script>
+  <script src="app.js?v=20261102-2025"></script>
 </body>
 </html>
