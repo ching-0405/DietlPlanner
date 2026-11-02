@@ -904,10 +904,6 @@ function renderMenuRecipes() {
             value="${r.rawWeight}" oninput="updateRecipeRawWeight(${realIndex}, this.value)">
         </td>
         <td style="text-align: center;">${colorTagHtml}</td>
-        <td style="text-align: right;" class="val-red font-bold">${nutrient.kcal.toFixed(1)}</td>
-        <td style="text-align: right;" class="val-green font-bold">${nutrient.protein.toFixed(1)}</td>
-        <td style="text-align: right;" class="val-orange font-bold">${nutrient.fat.toFixed(1)}</td>
-        <td style="text-align: right;" class="val-blue font-bold">${nutrient.carbs.toFixed(1)}</td>
         <td style="text-align: center;"><button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteRecipeItem(${realIndex})">✖ 刪除</button></td>
       </tr>
     `;
@@ -1010,8 +1006,9 @@ function updateAllCompositionNutrientSummary() {
         <td><span class="badge" style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; font-size: 11px;">${r.meal}</span></td>
         <td><strong>${r.dish || "—"}</strong></td>
         <td><strong style="color: #0f766e;">${r.food}</strong></td>
+        <td><span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 11px; padding: 2px 6px; white-space: nowrap;">📖 ${nut.matchedName || '食物代換估算'}</span></td>
         <td style="text-align: right; font-weight: 600;">${r.rawWeight} g</td>
-        <td style="text-align: right;" class="val-red font-bold">${nut.kcal.toFixed(1)}</td>
+        <td style="text-align: right;" class="val-red font-bold">${Math.round(nut.kcal)}</td>
         <td style="text-align: right;" class="val-green font-bold">${nut.protein.toFixed(1)}</td>
         <td style="text-align: right;" class="val-orange font-bold">${nut.fat.toFixed(1)}</td>
         <td style="text-align: right;">${nut.saturatedFat ? nut.saturatedFat.toFixed(1) : 0}</td>
@@ -1033,7 +1030,7 @@ function updateAllCompositionNutrientSummary() {
 
   const menuTableBody = document.getElementById("menuCompositionItemsBody");
   if (menuTableBody) {
-    menuTableBody.innerHTML = rowsHtml || '<tr><td colspan="20" style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</td></tr>';
+    menuTableBody.innerHTML = rowsHtml || '<tr><td colspan="21" style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</td></tr>';
   }
 
   const setVal = (id, val, unit = "") => {
@@ -1044,7 +1041,8 @@ function updateAllCompositionNutrientSummary() {
   const elStats = document.getElementById("lblCompMenuStats");
   if (elStats) elStats.innerText = `菜單目前開立共 ${sum.count} 項食材`;
 
-  setVal("sumCompKcal", sum.kcal, "kcal");
+  const elKcal = document.getElementById("sumCompKcal");
+  if (elKcal) elKcal.innerText = `${Math.round(sum.kcal)} kcal`;
   setVal("sumCompProtein", sum.protein, "g");
   setVal("sumCompFat", sum.fat, "g");
   setVal("sumCompSatFat", sum.saturatedFat, "g");

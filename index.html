@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261102-2025">
+  <link rel="stylesheet" href="style.css?v=20261102-2325">
 </head>
 <body>
 
@@ -572,20 +572,24 @@
           <strong>菜單開立 &amp; AI 食材顏色智慧辨識</strong>
           <small class="text-muted">（相同菜名自動合併顯示｜AI 自動辨識食材純色膠囊標籤）</small>
         </div>
-        <div class="toolbar-right">
-          <label>預設餐次：</label>
-          <select id="cboMealFilter" class="form-select">
-            <option value="全部">全部餐次 (顯示所有)</option>
-            <option value="早餐" selected>早餐</option>
-            <option value="早點">早點</option>
-            <option value="午餐">午餐</option>
-            <option value="午點">午點</option>
-            <option value="晚餐">晚餐</option>
-            <option value="晚點">晚點</option>
-          </select>
-          <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
-          <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
-          <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
+        <div class="toolbar-right" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <label style="font-weight: 600;">預設餐次：</label>
+            <select id="cboMealFilter" class="form-select">
+              <option value="全部">全部餐次 (顯示所有)</option>
+              <option value="早餐" selected>早餐</option>
+              <option value="早點">早點</option>
+              <option value="午餐">午餐</option>
+              <option value="午點">午點</option>
+              <option value="晚餐">晚餐</option>
+              <option value="晚點">晚點</option>
+            </select>
+            <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
+            <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
+          </div>
+          <div>
+            <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
+          </div>
         </div>
       </div>
 
@@ -607,10 +611,6 @@
                 <th style="width: 85px;">份數 (Ex)</th>
                 <th style="width: 95px;">生重克數 (g)</th>
                 <th style="width: 110px; text-align: center;">食材顏色</th>
-                <th style="width: 90px; text-align: right;">熱量 (kcal)</th>
-                <th style="width: 100px; text-align: right; white-space: nowrap;">蛋白質 (g)</th>
-                <th style="width: 80px; text-align: right;">脂肪 (g)</th>
-                <th style="width: 80px; text-align: right;">醣類 (g)</th>
                 <th style="width: 70px; text-align: center;">操作</th>
               </tr>
             </thead>
@@ -625,10 +625,6 @@
                 <td id="recipeSumEx" style="text-align: center; color: #0f766e; font-weight: 800;">0</td>
                 <td id="recipeSumWeight" style="text-align: center; color: #334155;">0 g</td>
                 <td style="text-align: center; color: #64748b; font-size: 12px;" id="recipeColorSummary">—</td>
-                <td id="recipeSumCalories" style="text-align: right; color: #dc2626; font-size: 14px; font-weight: 800;">0</td>
-                <td id="recipeSumProtein" style="text-align: right; color: #16a34a; font-weight: 800;">0</td>
-                <td id="recipeSumFat" style="text-align: right; color: #d97706; font-weight: 800;">0</td>
-                <td id="recipeSumCarbs" style="text-align: right; color: #2563eb; font-weight: 800;">0</td>
                 <td></td>
               </tr>
             </tfoot>
@@ -803,6 +799,7 @@
                     <th>餐次</th>
                     <th>菜名</th>
                     <th>食材名稱</th>
+                    <th>引用官方資料項目</th>
                     <th>生重 (g)</th>
                     <th style="text-align: right;">熱量 (kcal)</th>
                     <th style="text-align: right;">粗蛋白 (g)</th>
@@ -981,6 +978,6 @@
   <script src="food_composition_2025.js?v=20261102-2025"></script>
   <script src="food_exchange_db.js?v=20261102-2025"></script>
   <script src="app_data.js?v=20261102-2025"></script>
-  <script src="app.js?v=20261102-2025"></script>
+  <script src="app.js?v=20261102-2325"></script>
 </body>
 </html>
