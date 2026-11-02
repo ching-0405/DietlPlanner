@@ -891,8 +891,7 @@ function renderMenuRecipes() {
         </td>
         <td>
           <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px; font-weight: 600;" value="${r.food || ""}" placeholder="輸入食材" 
-            oninput="updateFoodName(${realIndex}, this.value)">
-          
+            oninput="updateFoodName(${realIndex}, this.value)" onchange="updateFoodNameAndRender(${realIndex}, this.value)">
         </td>
         <td><span class="text-teal font-bold">${r.category || "自訂食材"}</span></td>
         <td class="val-red">
@@ -937,7 +936,7 @@ function renderMenuRecipes() {
   const cardC = document.getElementById("cardRecipeTotalCarbs");
   const ratioDesc = document.getElementById("recipeNutrientRatioDesc");
 
-  if (cardKcal) cardKcal.innerText = `${totalKcal.toFixed(1)} kcal`;
+  if (cardKcal) cardKcal.innerText = `${Math.round(totalKcal)} kcal`;
   if (cardP) cardP.innerText = `${totalP.toFixed(1)} g`;
   if (cardF) cardF.innerText = `${totalF.toFixed(1)} g`;
   if (cardC) cardC.innerText = `${totalC.toFixed(1)} g`;
@@ -1058,6 +1057,9 @@ function updateAllCompositionNutrientSummary() {
   setVal("sumCompZn", sum.zn, "mg");
   setVal("sumCompP", sum.p, "mg");
   setVal("sumCompCholesterol", sum.cholesterol, "mg");
+
+  // 評估國人膳食營養素參考攝取量 (DRIs 第九版草案) 是否符合
+  renderDriCompliance(sum);
 }
 
 /**
@@ -1170,6 +1172,60 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex) {
   };
 }
 
+
+/**
+ * 局部更新菜單即時總結卡片與四大營養素佔比（不重繪整張輸入表，輸入極致流暢）
+ */
+function updateMenuSummaryCards() {
+  const filter = document.getElementById("cboMealFilter").value;
+  const filtered = filter === "全部" 
+    ? menuRecipes 
+    : menuRecipes.filter(r => r.meal === filter);
+
+  let totalEx = 0;
+  let totalWeight = 0;
+  let totalKcal = 0;
+  let totalP = 0;
+  let totalF = 0;
+  let totalC = 0;
+  const colorCountMap = {};
+
+  filtered.forEach(r => {
+    const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex);
+    r._calc = nut;
+    totalEx += Number(r.ex) || 0;
+    totalWeight += Number(r.rawWeight) || 0;
+    totalKcal += nut.kcal || 0;
+    totalP += nut.protein || 0;
+    totalF += nut.fat || 0;
+    totalC += nut.carbs || 0;
+    if (r.color) colorCountMap[r.color] = (colorCountMap[r.color] || 0) + 1;
+  });
+
+  const cardKcal = document.getElementById("cardRecipeTotalKcal");
+  const cardP = document.getElementById("cardRecipeTotalProtein");
+  const cardF = document.getElementById("cardRecipeTotalFat");
+  const cardC = document.getElementById("cardRecipeTotalCarbs");
+  const ratioDesc = document.getElementById("recipeNutrientRatioDesc");
+
+  if (cardKcal) cardKcal.innerText = `${Math.round(totalKcal)} kcal`;
+  if (cardP) cardP.innerText = `${totalP.toFixed(1)} g`;
+  if (cardF) cardF.innerText = `${totalF.toFixed(1)} g`;
+  if (cardC) cardC.innerText = `${totalC.toFixed(1)} g`;
+
+  if (ratioDesc) {
+    const macroKcal = (totalC * 4) + (totalP * 4) + (totalF * 9);
+    if (macroKcal > 0) {
+      const pctC = ((totalC * 4 / macroKcal) * 100).toFixed(1);
+      const pctP = ((totalP * 4 / macroKcal) * 100).toFixed(1);
+      const pctF = ((totalF * 9 / macroKcal) * 100).toFixed(1);
+      ratioDesc.innerText = `三大營養素佔比（${filter}）：碳水化合物 ${pctC}% ｜ 蛋白質 ${pctP}% ｜ 脂肪 ${pctF}% （熱量加總共 ${Math.round(totalKcal)} kcal）`;
+    } else {
+      ratioDesc.innerText = `三大營養素熱量佔比：碳水化合物 0% ｜ 蛋白質 0% ｜ 脂肪 0%`;
+    }
+  }
+}
+
 function updateRecipeMeal(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].meal = val;
@@ -1185,6 +1241,16 @@ function updateDishName(index, val) {
 }
 
 function updateFoodName(index, val) {
+  if (menuRecipes[index]) {
+    menuRecipes[index].food = val;
+    menuRecipes[index].color = detectFoodColor(val, menuRecipes[index].category);
+    // 更新即時加總與營養成分列表，但不觸發重新渲染整張表格以免輸入法中斷與失去游標焦點
+    updateMenuSummaryCards();
+    updateAllCompositionNutrientSummary();
+  }
+}
+
+function updateFoodNameAndRender(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].food = val;
     menuRecipes[index].color = detectFoodColor(val, menuRecipes[index].category);
@@ -1628,4 +1694,120 @@ function printPrescriptionReport() {
     </html>
   `);
   printWindow.document.close();
+}
+
+/**
+ * 國人膳食營養素參考攝取量 (DRIs) 第九版草案 比對與達成率分析
+ */
+let currentSelectedDriId = "19_30y_m";
+
+function onDriAgeGroupChange(newId) {
+  currentSelectedDriId = newId;
+  updateAllCompositionNutrientSummary();
+}
+
+function renderDriCompliance(sum) {
+  if (typeof DRIS_NINTH_EDITION === "undefined" || !Array.isArray(DRIS_NINTH_EDITION)) return;
+
+  const select = document.getElementById("cboDriAgeGroup");
+  if (select && select.children.length === 0) {
+    select.innerHTML = DRIS_NINTH_EDITION.map(d => `<option value="${d.id}" ${d.id === currentSelectedDriId ? "selected" : ""}>${d.label}</option>`).join("");
+  }
+  if (select) {
+    currentSelectedDriId = select.value || currentSelectedDriId;
+  }
+
+  const dri = DRIS_NINTH_EDITION.find(d => d.id === currentSelectedDriId) || DRIS_NINTH_EDITION[12]; // 預設 19-30 歲男
+  const container = document.getElementById("driComplianceContainer");
+  if (!container) return;
+
+  // 核心指標檢核清單
+  const items = [
+    { name: "總熱量", val: Math.round(sum.kcal), target: dri.kcal.min, targetMax: dri.kcal.max, unit: "kcal", note: dri.kcal.note },
+    { name: "蛋白質", val: sum.protein, target: dri.protein.val, unit: dri.protein.unit, type: dri.protein.type, max: dri.protein.max },
+    { name: "總碳水", val: sum.carbs, target: dri.carbs.val, unit: dri.carbs.unit, note: `${dri.carbs.minPct || 50}-${dri.carbs.maxPct || 65}%` },
+    { name: "膳食纖維", val: sum.fiber, target: dri.fiber.val, unit: dri.fiber.unit, type: dri.fiber.type },
+    { name: "鈉 (Sodium)", val: sum.na, max: dri.na.max || 2300, unit: "mg", isLimit: true, type: dri.na.type },
+    { name: "鉀 (Potassium)", val: sum.k, target: dri.k.val, unit: "mg", type: dri.k.type },
+    { name: "鈣 (Calcium)", val: sum.ca, target: dri.ca.val, unit: "mg", type: dri.ca.type, max: dri.ca.max },
+    { name: "鎂 (Magnesium)", val: sum.mg, target: dri.mg.val, unit: "mg", type: dri.mg.type, max: dri.mg.max },
+    { name: "鐵 (Iron)", val: sum.fe, target: dri.fe.val, unit: "mg", type: dri.fe.type, max: dri.fe.max },
+    { name: "鋅 (Zinc)", val: sum.zn, target: dri.zn.val, unit: "mg", type: dri.zn.type, max: dri.zn.max },
+    { name: "磷 (Phosphorus)", val: sum.p, target: dri.p.val, unit: "mg", type: dri.p.type, max: dri.p.max }
+  ];
+
+  const cardsHtml = items.map(it => {
+    const val = Number(it.val) || 0;
+    let statusBadge = "";
+    let rateText = "";
+    let barColor = "#0d9488";
+    let pct = 0;
+
+    if (it.isLimit) {
+      // 限制型營養素（如鈉）
+      pct = Math.round((val / it.max) * 100);
+      if (val === 0) {
+        statusBadge = '<span class="badge" style="background:#f1f5f9;color:#64748b;">未計算</span>';
+      } else if (val <= it.max) {
+        statusBadge = '<span class="badge" style="background:#dcfce7;color:#166534;">✔ 適量安全</span>';
+        barColor = "#16a34a";
+      } else {
+        statusBadge = '<span class="badge" style="background:#fee2e2;color:#991b1b;">⚠️ 超標注意</span>';
+        barColor = "#dc2626";
+      }
+      rateText = `上限 ${it.max} ${it.unit} (已達 ${pct}%)`;
+    } else if (it.targetMax && it.target) {
+      // 區間型（如熱量）
+      pct = Math.round((val / it.target) * 100);
+      if (val === 0) {
+        statusBadge = '<span class="badge" style="background:#f1f5f9;color:#64748b;">未計算</span>';
+      } else if (val >= it.target && val <= it.targetMax) {
+        statusBadge = '<span class="badge" style="background:#dcfce7;color:#166534;">✔ 符合建議</span>';
+        barColor = "#16a34a";
+      } else if (val < it.target) {
+        statusBadge = '<span class="badge" style="background:#fef3c7;color:#92400e;">⚡ 攝取不足</span>';
+        barColor = "#f59e0b";
+      } else {
+        statusBadge = '<span class="badge" style="background:#e0f2fe;color:#0369a1;">充足高於目標</span>';
+        barColor = "#0284c7";
+      }
+      rateText = `目標 ${it.target}-${it.targetMax} ${it.unit} (${pct}%)`;
+    } else if (it.target) {
+      // 一般建議量 (RDA/AI)
+      pct = Math.round((val / it.target) * 100);
+      if (val === 0) {
+        statusBadge = '<span class="badge" style="background:#f1f5f9;color:#64748b;">未開立</span>';
+      } else if (pct >= 100) {
+        statusBadge = '<span class="badge" style="background:#dcfce7;color:#166534;">✔ 達成標準</span>';
+        barColor = "#16a34a";
+      } else if (pct >= 70) {
+        statusBadge = '<span class="badge" style="background:#fef3c7;color:#92400e;">接近標準</span>';
+        barColor = "#f59e0b";
+      } else {
+        statusBadge = '<span class="badge" style="background:#fee2e2;color:#991b1b;">需補充</span>';
+        barColor = "#ef4444";
+      }
+      rateText = `建議 ${it.target} ${it.unit} (${pct}%)`;
+    }
+
+    const clampedPct = Math.min(Math.max(pct, 0), 100);
+
+    return `
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong style="color: #1e293b; font-size: 13px;">${it.name}</strong>
+          ${statusBadge}
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <span style="font-size: 16px; font-weight: 800; color: #0f172a;">${typeof val === 'number' && val % 1 !== 0 ? val.toFixed(1) : val} <small style="font-size: 11px; font-weight: 500; color: #64748b;">${it.unit}</small></span>
+          <span style="font-size: 11px; color: #64748b;">${rateText}</span>
+        </div>
+        <div style="width: 100%; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+          <div style="width: ${clampedPct}%; background: ${barColor}; height: 100%; border-radius: 3px; transition: width 0.3s ease;"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = cardsHtml;
 }

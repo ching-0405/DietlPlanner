@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261102-2325">
+  <link rel="stylesheet" href="style.css?v=20261102-2345">
 </head>
 <body>
 
@@ -617,7 +617,7 @@
             <tbody id="menuRecipeTableBody">
               <!-- 動態生成食材列 -->
             </tbody>
-            <tfoot id="menuRecipeTableFoot" style="background: #f8fafc; font-weight: 700; border-top: 2px solid #0d9488;">
+            <tfoot id="menuRecipeTableFoot" style="display: none;">
               <tr>
                 <td colspan="4" style="text-align: right; color: #0f766e; font-size: 13px;">
                   📋 <strong>菜單食材營養加總合計：</strong>
@@ -785,7 +785,30 @@
 
           <!-- 菜單開立食材之完整營養成分資料明細表 -->
           <div class="card mb-4" style="border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="background: #f1f5f9; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0;">
+                      <!-- 衛福部國人膳食營養素參考攝取量 (DRIs 第九版草案) 達成率比對評估 -->
+          <div class="card mb-3" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 22px;">🎯</span>
+                <div>
+                  <strong style="color: #0f766e; font-size: 15px;">國人膳食營養素參考攝取量 (DRIs 第九版草案) 比對分析</strong>
+                  <div style="font-size: 11px; color: #64748b;">依據菜單總和即時判定熱量與各項營養素是否符合建議攝取量 (RDA / AI / CDRR)</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="cboDriAgeGroup" style="font-size: 13px; font-weight: 600; color: #334155;">選擇年齡層 / 生命期：</label>
+                <select id="cboDriAgeGroup" class="form-select" style="min-width: 220px; font-weight: 600; color: #0f766e; border-color: #0d9488;" onchange="onDriAgeGroupChange(this.value)">
+                  <!-- 動態載入 DRIs 第九版年齡層選單 -->
+                </select>
+              </div>
+            </div>
+            <!-- 各項營養素指標符合度進度卡片 -->
+            <div id="driComplianceContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px;">
+              <!-- 動態生成指標卡片 -->
+            </div>
+          </div>
+
+          <div style="background: #f1f5f9; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 18px;">📝</span>
                 <strong style="color: #0f766e; font-size: 14px;">菜單開立食材營養成分明細列表（依各食材開立克數換算各項營養素）</strong>
@@ -978,6 +1001,7 @@
   <script src="food_composition_2025.js?v=20261102-2025"></script>
   <script src="food_exchange_db.js?v=20261102-2025"></script>
   <script src="app_data.js?v=20261102-2025"></script>
-  <script src="app.js?v=20261102-2325"></script>
+  <script src="dris_data.js?v=20261102-2345"></script>
+  <script src="app.js?v=20261102-2345"></script>
 </body>
 </html>
