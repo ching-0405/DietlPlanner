@@ -662,10 +662,10 @@ function renderMobileMacroSpecsCard() {
         <thead>
           <tr>
             <th class="spec-th-cat">食物大類</th>
-            <th class="spec-th-macro th-p">蛋白質 (P)</th>
-            <th class="spec-th-macro th-f">脂肪 (F)</th>
-            <th class="spec-th-macro th-c">醣類 (C)</th>
-            <th class="spec-th-kcal th-k">熱量</th>
+            <th class="spec-th-macro th-p">蛋白質 (P) (g)</th>
+            <th class="spec-th-macro th-f">脂肪 (F) (g)</th>
+            <th class="spec-th-macro th-c">醣類 (C) (g)</th>
+            <th class="spec-th-kcal th-k">熱量 (kcal)</th>
           </tr>
         </thead>
         <tbody>
@@ -675,10 +675,10 @@ function renderMobileMacroSpecsCard() {
                 <span class="cat-icon">${item.icon}</span>
                 <span class="cat-name">${item.category}</span>
               </td>
-              <td class="spec-td-val val-green">${item.p} <small>g</small></td>
-              <td class="spec-td-val val-orange">${item.f} <small>g</small></td>
-              <td class="spec-td-val val-red">${item.c} <small>g</small></td>
-              <td class="spec-td-val val-blue font-bold">${item.kcal} <small>kcal</small></td>
+              <td class="spec-td-val val-green font-bold">${item.p}</td>
+              <td class="spec-td-val val-orange font-bold">${item.f}</td>
+              <td class="spec-td-val val-red font-bold">${item.c}</td>
+              <td class="spec-td-val val-blue font-bold">${item.kcal}</td>
             </tr>
           `).join("")}
         </tbody>
@@ -809,10 +809,10 @@ function calcExchangeTotals() {
   document.getElementById("sumD").innerText = sumD.toFixed(1);
   document.getElementById("sumNs").innerText = sumNs.toFixed(1);
 
-  document.getElementById("sumProteinGrams").innerText = `${Math.round(totalP)} g`;
-  document.getElementById("sumFatGrams").innerText = `${Math.round(totalF)} g`;
-  document.getElementById("sumCarbGrams").innerText = `${Math.round(totalC)} g`;
-  document.getElementById("sumTotalCalories").innerText = `${Math.round(totalKcal)} kcal`;
+  document.getElementById("sumProteinGrams").innerText = `${Math.round(totalP)}`;
+  document.getElementById("sumFatGrams").innerText = `${Math.round(totalF)}`;
+  document.getElementById("sumCarbGrams").innerText = `${Math.round(totalC)}`;
+  document.getElementById("sumTotalCalories").innerText = `${Math.round(totalKcal)}`;
 
   // 4-9-4 修正熱量與百分比
   const macroKcal = (totalC * 4) + (totalP * 4) + (totalF * 9);
@@ -1067,7 +1067,7 @@ function updateAllCompositionNutrientSummary() {
             <button type="button" class="btn btn-outline" style="padding: 1px 7px; font-size: 11px; border-radius: 4px; white-space: nowrap;" onclick="openSampleSelectorModal(${idx})" title="搜尋並選取不同的樣品">🔍 選取</button>
           </div>
         </td>
-        <td style="text-align: right; font-weight: 600;">${r.rawWeight} g</td>
+        <td style="text-align: right; font-weight: 600;">${r.rawWeight}</td>
         <td style="text-align: right;" class="val-red font-bold">${Math.round(nut.kcal)}</td>
         <td style="text-align: right;" class="val-green font-bold">${nut.protein.toFixed(1)}</td>
         <td style="text-align: right;" class="val-orange font-bold">${nut.fat.toFixed(1)}</td>
@@ -1593,10 +1593,10 @@ function renderFormulasTable(list) {
     <tr>
       <td><strong style="color: #4338ca; font-size: 14px;">${f.name}</strong></td>
       <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:600;">${f.spec}</span></td>
-      <td class="val-green" style="font-weight:700;">${f.p} g</td>
-      <td class="val-orange" style="font-weight:700;">${f.f} g</td>
-      <td class="val-red" style="font-weight:700;">${f.c} g</td>
-      <td class="val-blue" style="font-weight:700; font-size: 13px;">${f.kcal} kcal</td>
+      <td class="val-green" style="font-weight:700;">${f.p}</td>
+      <td class="val-orange" style="font-weight:700;">${f.f}</td>
+      <td class="val-red" style="font-weight:700;">${f.c}</td>
+      <td class="val-blue" style="font-weight:700; font-size: 13px;">${f.kcal}</td>
       <td class="text-muted" style="font-size: 12px;">${f.note}</td>
     </tr>
   `).join("");
