@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261104-2325">
+  <link rel="stylesheet" href="style.css?v=20261104-2335">
 </head>
 <body>
 
@@ -699,7 +699,7 @@
               <small class="text-muted">衛生福利部最新食品成分檢索表 ｜ 每 100g 可食部分之完整營養成分規格</small>
             </div>
           </div>
-          <div class="header-actions-right">
+          <div class="header-actions-right" style="display: none;">
             <input type="text" id="inCompositionSearch" class="form-input" style="width: 220px;" placeholder="快速搜尋食品名稱、俗名、編號...">
             <select id="cboCompositionCategory" class="form-select" style="width: 170px;">
               <option value="全部">全部類別</option>
@@ -869,6 +869,8 @@
             </div>
           </div>
 
+          <!-- 依使用者需求：隱藏下方官方資料檢索 (如有需要亦可從彈窗樣品選擇器選取) -->
+          <div id="sectionOfficialCompQuery" style="display: none;">
           <div class="query-info-banner">
             <span>📋 官方資料庫檢索：共 <strong id="lblCompositionCount" class="text-teal">2,213</strong> 項食品（總收錄 2,213 項官方食品成分）</span>
             <span class="text-muted">💡 數值單位：每 100 g 可食部分之含量 ｜ 點擊食材亦可加入菜單</span>
@@ -897,6 +899,7 @@
               </tbody>
             </table>
           </div>
+          </div><!-- /#sectionOfficialCompQuery -->
         </div>
       </div>
     </section>
@@ -1135,10 +1138,10 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261104-2325"></script>
-  <script src="food_exchange_db.js?v=20261104-2325"></script>
-  <script src="app_data.js?v=20261104-2325"></script>
-  <script src="dris_data.js?v=20261104-2325"></script>
-  <script src="app.js?v=20261104-2325"></script>
+  <script src="food_composition_2025.js?v=20261104-2335"></script>
+  <script src="food_exchange_db.js?v=20261104-2335"></script>
+  <script src="app_data.js?v=20261104-2335"></script>
+  <script src="dris_data.js?v=20261104-2335"></script>
+  <script src="app.js?v=20261104-2335"></script>
 </body>
 </html>

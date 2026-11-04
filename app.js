@@ -23,7 +23,7 @@ let menuRecipes = [
   { meal: "午餐", dish: "", food: "雞胸肉", category: "豆魚蛋肉", ex: 2, rawWeight: 60, color: "白色" },
   { meal: "午餐", dish: "蒜炒菠菜", food: "菠菜", category: "蔬菜類", ex: 1, rawWeight: 100, color: "綠色" },
   { meal: "晚餐", dish: "番茄豆腐湯", food: "番茄", category: "蔬菜類", ex: 1, rawWeight: 100, color: "紅色" },
-  { meal: "晚餐", dish: "", food: "豆腐", category: "豆魚蛋肉", ex: 1, rawWeight: 110, color: "白色" },
+  { meal: "晚餐", dish: "", food: "豆腐", category: "豆魚蛋肉", ex: 1, rawWeight: 110, color: "白色", sampleName: "傳統豆腐" },
   { meal: "晚餐", dish: "清炒高麗菜", food: "高麗菜", category: "蔬菜類", ex: 1, rawWeight: 100, color: "粉綠/嫩綠" },
   { meal: "晚餐", dish: "紫米飯", food: "紫米", category: "全穀雜糧", ex: 3, rawWeight: 60, color: "紫色/黑色" }
 ];
@@ -1142,18 +1142,58 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampl
   // 1. 優先精準 / 模糊比對 2025版食品成分資料庫 (每 100g 含量)
   if (typeof FOOD_COMPOSITION_2025 !== "undefined" && Array.isArray(FOOD_COMPOSITION_2025) && FOOD_COMPOSITION_2025.length > 0) {
     let matched = null;
-    // 若使用者主動指定選取資料庫樣品名稱，優先使用指定樣品
+    // 1. 若使用者主動指定選取資料庫樣品名稱，最優先使用指定樣品
     if (customSampleName) {
       matched = FOOD_COMPOSITION_2025.find(it => it.Name === customSampleName);
     }
+
+    // 2. 常見日常食材精準官方樣品對應表 (避免如豆腐比對成俗名含芙蓉豆腐的蒸蛋)
+    const COMMON_FOOD_SAMPLE_DEFAULTS = {
+      "豆腐": "傳統豆腐",
+      "板豆腐": "傳統豆腐",
+      "嫩豆腐": "嫩豆腐",
+      "百頁豆腐": "百頁豆腐",
+      "油豆腐": "小三角油豆腐",
+      "豆皮": "豆腐皮",
+      "高麗菜": "甘藍平均值",
+      "香蕉": "北蕉平均值",
+      "牛奶": "高脂鮮乳",
+      "燕麥": "燕麥",
+      "胡蘿蔔": "胡蘿蔔平均值",
+      "雞胸肉": "去皮清肉(土雞)",
+      "菠菜": "菠菜",
+      "番茄": "牛番茄",
+      "紫米": "黑秈糯糙米",
+      "白飯": "白飯",
+      "雞蛋": "雞蛋平均值",
+      "蛋": "雞蛋平均值",
+      "豬肉": "豬肉火鍋片平均值",
+      "牛肉": "牛肉火鍋片平均值"
+    };
+
+    if (!matched && COMMON_FOOD_SAMPLE_DEFAULTS[name]) {
+      const defaultSample = COMMON_FOOD_SAMPLE_DEFAULTS[name];
+      matched = FOOD_COMPOSITION_2025.find(it => it.Name === defaultSample);
+    }
+
+    // 3. 樣品名稱完全吻合
     if (!matched) {
       matched = FOOD_COMPOSITION_2025.find(it => it.Name === name);
     }
+
+    // 4. 樣品名稱開頭吻合或包含 (優先找樣品名本身符合者)
+    if (!matched) {
+      matched = FOOD_COMPOSITION_2025.find(it => it.Name.startsWith(name) || it.Name.includes(name));
+    }
+
+    // 5. 俗名完全吻合單詞 (排除蛋類等非本質之俗名干擾)
     if (!matched) {
       matched = FOOD_COMPOSITION_2025.find(it => it.CommonName && it.CommonName.split(",").some(c => c.trim() === name));
     }
+
+    // 6. 俗名包含或反向包含
     if (!matched) {
-      matched = FOOD_COMPOSITION_2025.find(it => it.Name.includes(name) || (it.CommonName && it.CommonName.includes(name)));
+      matched = FOOD_COMPOSITION_2025.find(it => it.CommonName && it.CommonName.includes(name));
     }
     if (!matched) {
       matched = FOOD_COMPOSITION_2025.find(it => name.includes(it.Name));
