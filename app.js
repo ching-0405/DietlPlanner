@@ -74,6 +74,9 @@ function applyDeviceModeClass(isMobile) {
   } else {
     document.body.classList.remove("mobile-mode");
   }
+  if (typeof updateSubtotalColspans === "function") {
+    updateSubtotalColspans();
+  }
 }
 
 // ==========================================
@@ -609,10 +612,10 @@ function renderExchangeTable() {
     return `
       <tr>
         <td class="cat-cell">${item.icon} ${item.category}</td>
-        <td>${item.p}</td>
-        <td>${item.f}</td>
-        <td>${item.c}</td>
-        <td>${item.kcal}</td>
+        <td class="col-macro-cell">${item.p}</td>
+        <td class="col-macro-cell">${item.f}</td>
+        <td class="col-macro-cell">${item.c}</td>
+        <td class="col-macro-cell">${item.kcal}</td>
         <td class="design-ex-cell">
           <input type="number" class="cell-input design-ex-input" step="0.5" min="0"
             value="${item.ex}" aria-label="${item.category}設計份數"
@@ -635,7 +638,42 @@ function renderExchangeTable() {
 
   exchangesData.forEach((_, idx) => validateMealAllocation(idx));
   updateMealCountUI();
+  renderMobileMacroSpecsCard();
+  updateSubtotalColspans();
   calcExchangeTotals();
+}
+
+
+function updateSubtotalColspans() {
+  const isMobile = document.body.classList.contains("mobile-mode");
+  const titles = document.querySelectorAll(".subtotal-tbody .subtotal-title");
+  titles.forEach(td => {
+    td.colSpan = isMobile ? 1 : 5;
+  });
+}
+
+function renderMobileMacroSpecsCard() {
+  const container = document.getElementById("mobileMacroSpecsList");
+  if (!container || !Array.isArray(exchangesData)) return;
+
+  container.innerHTML = `
+    <div class="mobile-specs-grid">
+      ${exchangesData.map(item => `
+        <div class="mobile-spec-item">
+          <div class="spec-cat-head">
+            <span class="spec-icon">${item.icon}</span>
+            <span class="spec-cat-name">${item.category}</span>
+          </div>
+          <div class="spec-macros-chips">
+            <span class="spec-chip chip-p">蛋 ${item.p}g</span>
+            <span class="spec-chip chip-f">脂 ${item.f}g</span>
+            <span class="spec-chip chip-c">醣 ${item.c}g</span>
+            <span class="spec-chip chip-kcal">${item.kcal}kcal</span>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
 function renderMealInput(item, idx, mealKey) {

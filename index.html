@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261104-2055">
+  <link rel="stylesheet" href="style.css?v=20261104-2150">
 </head>
 <body>
 
@@ -470,6 +470,20 @@
         </div>
       </div>
 
+      <!-- 手機版專屬：每份三大營養素規格表 (依使用者需求放置於熱量計算下方) -->
+      <div class="card mb-3 mobile-macro-specs-card" id="mobileMacroSpecsCard">
+        <div class="card-header bg-teal">
+          <div class="card-header-left">
+            <span class="icon">📖</span>
+            <h2>每份食物三大營養素與熱量規格</h2>
+          </div>
+          <span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:11px; padding:3px 8px; border-radius:12px;">衛福部標準代換</span>
+        </div>
+        <div class="card-body p-2" id="mobileMacroSpecsList">
+          <!-- 由 JS 動態渲染各類食物每份規格 -->
+        </div>
+      </div>
+
       <!-- 六大類食物代換規劃表格 -->
       <div class="card mt-3">
         <div class="card-body p-0 overflow-x">
@@ -515,10 +529,10 @@
                 <th rowspan="2" class="col-total-kcal">總熱量 (kcal)</th>
               </tr>
               <tr class="header-sub">
-                <th>蛋白質 (P)</th>
-                <th>脂肪 (F)</th>
-                <th>醣類 (C)</th>
-                <th>熱量</th>
+                <th class="col-macro-cell">蛋白質 (P)</th>
+                <th class="col-macro-cell">脂肪 (F)</th>
+                <th class="col-macro-cell">醣類 (C)</th>
+                <th class="col-macro-cell">熱量</th>
                 <th class="meal-col meal-b">早</th>
                 <th class="meal-col meal-ms">早點</th>
                 <th class="meal-col meal-l">午</th>
@@ -1068,10 +1082,10 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261102-2025"></script>
-  <script src="food_exchange_db.js?v=20261102-2025"></script>
-  <script src="app_data.js?v=20261102-2025"></script>
-  <script src="dris_data.js?v=20261102-2345"></script>
-  <script src="app.js?v=20261104-2055"></script>
+  <script src="food_composition_2025.js?v=20261104-2150"></script>
+  <script src="food_exchange_db.js?v=20261104-2150"></script>
+  <script src="app_data.js?v=20261104-2150"></script>
+  <script src="dris_data.js?v=20261104-2150"></script>
+  <script src="app.js?v=20261104-2150"></script>
 </body>
 </html>
