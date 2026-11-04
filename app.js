@@ -657,21 +657,32 @@ function renderMobileMacroSpecsCard() {
   if (!container || !Array.isArray(exchangesData)) return;
 
   container.innerHTML = `
-    <div class="mobile-specs-grid">
-      ${exchangesData.map(item => `
-        <div class="mobile-spec-item">
-          <div class="spec-cat-head">
-            <span class="spec-icon">${item.icon}</span>
-            <span class="spec-cat-name">${item.category}</span>
-          </div>
-          <div class="spec-macros-chips">
-            <span class="spec-chip chip-p">蛋 ${item.p}g</span>
-            <span class="spec-chip chip-f">脂 ${item.f}g</span>
-            <span class="spec-chip chip-c">醣 ${item.c}g</span>
-            <span class="spec-chip chip-kcal">${item.kcal}kcal</span>
-          </div>
-        </div>
-      `).join("")}
+    <div class="mobile-specs-table-wrapper">
+      <table class="mobile-specs-table">
+        <thead>
+          <tr>
+            <th class="spec-th-cat">食物大類</th>
+            <th class="spec-th-macro th-p">蛋白質 (P)</th>
+            <th class="spec-th-macro th-f">脂肪 (F)</th>
+            <th class="spec-th-macro th-c">醣類 (C)</th>
+            <th class="spec-th-kcal th-k">熱量</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${exchangesData.map(item => `
+            <tr>
+              <td class="spec-td-cat">
+                <span class="cat-icon">${item.icon}</span>
+                <span class="cat-name">${item.category}</span>
+              </td>
+              <td class="spec-td-val val-green">${item.p} <small>g</small></td>
+              <td class="spec-td-val val-orange">${item.f} <small>g</small></td>
+              <td class="spec-td-val val-red">${item.c} <small>g</small></td>
+              <td class="spec-td-val val-blue font-bold">${item.kcal} <small>kcal</small></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
     </div>
   `;
 }

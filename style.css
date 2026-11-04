@@ -1775,80 +1775,71 @@ body.mobile-mode .mobile-macro-specs-card {
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 
-.mobile-specs-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-@media (max-width: 360px) {
-  .mobile-specs-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.mobile-spec-item {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+.mobile-specs-table-wrapper {
+  overflow-x: auto;
   border-radius: 8px;
-  padding: 6px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  border: 1px solid #e2e8f0;
 }
 
-.mobile-spec-item .spec-cat-head {
+.mobile-specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: #ffffff;
+}
+
+.mobile-specs-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  padding: 6px 4px;
+  border-bottom: 2px solid #cbd5e1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mobile-specs-table th.spec-th-cat {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.mobile-specs-table td {
+  padding: 6px 4px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mobile-specs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mobile-specs-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.mobile-specs-table td.spec-td-cat {
+  text-align: left;
+  padding-left: 10px;
+  font-weight: 600;
+  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 6px;
-  font-weight: 700;
-  font-size: 13px;
-  color: #0f172a;
 }
 
-.mobile-spec-item .spec-icon {
-  font-size: 15px;
+.mobile-specs-table td.spec-td-cat .cat-icon {
+  font-size: 14px;
 }
 
-.mobile-spec-item .spec-cat-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.mobile-specs-table td.spec-td-val {
+  font-size: 12px;
 }
 
-.mobile-spec-item .spec-macros-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.mobile-spec-item .spec-chip {
-  font-size: 11px;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.mobile-spec-item .chip-p {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.mobile-spec-item .chip-f {
-  background: #fef3c7;
-  color: #b45309;
-}
-
-.mobile-spec-item .chip-c {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-.mobile-spec-item .chip-kcal {
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-weight: 700;
+.mobile-specs-table td.spec-td-val small {
+  font-size: 10px;
+  color: #64748b;
+  margin-left: 1px;
 }
 
 /* 手機版模式下：隱藏代換大表格內部的 4 欄「每份三大營養素」，並修復下方加總列字體過大 */
