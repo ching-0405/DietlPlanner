@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261104-2315">
+  <link rel="stylesheet" href="style.css?v=20261104-2325">
 </head>
 <body>
 
@@ -27,6 +27,7 @@
         <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
         <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
         <button class="nav-tab" data-tab="tab-composition">📗 4. 食品營養成分資料庫</button>
+        <button class="nav-tab" data-tab="tab-formulas">🍼 5. 商業配方庫</button>
       </div>
     </div>
   </header>
@@ -63,6 +64,11 @@
             <span class="nav-text">營養成分資料庫</span>
             <span class="nav-arrow">›</span>
           </button>
+          <button class="sidebar-nav-item" data-tab="tab-formulas">
+            <span class="nav-icon">🍼</span>
+            <span class="nav-text">商業配方庫</span>
+            <span class="nav-arrow">›</span>
+          </button>
         </nav>
       </div>
 
@@ -71,7 +77,7 @@
         <div class="sidebar-nav-title">快捷操作</div>
         <button class="sidebar-action-btn btn-blue" onclick="resetNewClient()">➕ 新增個案</button>
         <button class="sidebar-action-btn btn-green" onclick="saveClientData()">💾 儲存存檔</button>
-        <button class="sidebar-action-btn btn-orange" onclick="openModal('modalFormulas')">🍼 商業配方庫</button>
+        
       </div>
     </aside>
 
@@ -385,7 +391,7 @@
           <div class="header-actions-right">
             <button type="button" class="btn btn-secondary" id="btnDiseaseMode" onclick="toggleDiseaseMode()">疾病飲食模式 (解除百分比限制)</button>
             <button class="btn btn-primary" id="btnDiabeticMode">糖尿病、低蛋白飲食</button>
-            <button class="btn btn-purple" id="btnOpenFormulaWindow">💊 商業配方庫</button>
+            
           </div>
         </div>
         <div class="card-body p-0 overflow-x">
@@ -894,6 +900,53 @@
         </div>
       </div>
     </section>
+
+    <!-- PAGE 5: 臨床商業營養配方庫 (Commercial Formulas DB) -->
+    <section id="tab-formulas" class="tab-content">
+      <div class="card">
+        <div class="card-header bg-purple">
+          <div class="composition-header-title">
+            <span class="icon">🍼</span>
+            <div>
+              <h2>臨床商業營養配方庫 (Commercial Formulas)</h2>
+              <small class="text-muted">臨床常用特殊營養品、管灌配方、透析/慢性腎臟病、糖尿病低GI與腫瘤濃縮高蛋白營養品規格清單</small>
+            </div>
+          </div>
+          <div class="header-actions-right">
+            <input type="text" id="inFormulaSearch" class="form-input" style="width: 240px;" placeholder="快速搜尋配方名稱、規格、備註..." oninput="filterFormulasPage()">
+            <select id="cboFormulaCategory" class="form-select" style="width: 170px;" onchange="filterFormulasPage()">
+              <option value="全部">全部配方分類</option>
+              <option value="均衡營養">均衡管灌/口飲</option>
+              <option value="糖尿病">糖尿病穩醣/低GI</option>
+              <option value="腎臟病">慢性腎病/洗腎透析</option>
+              <option value="腫瘤重症">腫瘤癌症/重症高蛋白</option>
+              <option value="其他特殊">低氮澱粉/特殊模組</option>
+            </select>
+            <button class="btn btn-warning" onclick="clearFormulaSearch()">❌ 清除</button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-scroll-container">
+            <table class="data-table" id="pageFormulaTable">
+              <thead>
+                <tr>
+                  <th style="min-width: 180px;">配方品名</th>
+                  <th style="min-width: 130px;">規格包裝</th>
+                  <th style="min-width: 110px;">蛋白質 (g)</th>
+                  <th style="min-width: 110px;">脂肪 (g)</th>
+                  <th style="min-width: 110px;">醣類 (g)</th>
+                  <th style="min-width: 130px;">總熱量 (kcal)</th>
+                  <th>適用對象與臨床備註</th>
+                </tr>
+              </thead>
+              <tbody id="pageFormulaTableBody">
+                <!-- 由 JS 動態注入配方資料 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
     </div><!-- /.main-workspace -->
   </div><!-- /.app-layout -->
@@ -1082,10 +1135,10 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261104-2315"></script>
-  <script src="food_exchange_db.js?v=20261104-2315"></script>
-  <script src="app_data.js?v=20261104-2315"></script>
-  <script src="dris_data.js?v=20261104-2315"></script>
-  <script src="app.js?v=20261104-2315"></script>
+  <script src="food_composition_2025.js?v=20261104-2325"></script>
+  <script src="food_exchange_db.js?v=20261104-2325"></script>
+  <script src="app_data.js?v=20261104-2325"></script>
+  <script src="dris_data.js?v=20261104-2325"></script>
+  <script src="app.js?v=20261104-2325"></script>
 </body>
 </html>

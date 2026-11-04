@@ -1375,10 +1375,10 @@ body.mobile-mode .nav-tabs {
   border-top: 1px solid #cbd5e1;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.12);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0;
   z-index: 999;
-  padding: 4px 6px;
+  padding: 4px 2px;
   border-radius: 12px 12px 0 0;
 }
 
@@ -1888,4 +1888,32 @@ body.mobile-mode .subtotal-title {
   font-size: 12px !important;
   padding-left: 6px !important;
   white-space: nowrap !important;
+}
+
+/* 第 5 頁：商業配方庫樣式 */
+#tab-formulas .card-header.bg-purple {
+  background: #faf5ff;
+  border-bottom: 2px solid #c084fc;
+}
+
+#tab-formulas .card-header.bg-purple h2 {
+  color: #581c87;
+}
+
+#pageFormulaTable th {
+  background: #f8fafc;
+  font-weight: 700;
+  font-size: 13px;
+  color: #334155;
+  padding: 10px 8px;
+}
+
+#pageFormulaTable td {
+  padding: 8px 8px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+#pageFormulaTable tbody tr:hover {
+  background: #f5f3ff;
 }

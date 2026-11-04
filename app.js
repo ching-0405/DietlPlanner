@@ -1535,24 +1535,82 @@ function addQueryItemToMenu(foodName, category, rawWeight) {
 // 6. 商業配方庫彈窗
 // ==========================================
 function initFormulas() {
-  document.getElementById("btnOpenFormulaWindow").addEventListener("click", () => {
-    openModal("modalFormulas");
-  });
+  const btn = document.getElementById("btnOpenFormulaWindow");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      openModal("modalFormulas");
+    });
+  }
 
-  const tbody = document.getElementById("formulaTableBody");
-  if (!tbody || typeof COMMERCIAL_FORMULAS_DB === "undefined") return;
+  // 渲染獨立頁面配方庫與彈窗
+  renderFormulasTable(COMMERCIAL_FORMULAS_DB);
+}
 
-  tbody.innerHTML = COMMERCIAL_FORMULAS_DB.map(f => `
+function renderFormulasTable(list) {
+  if (!Array.isArray(list)) return;
+
+  const rowHtml = list.map(f => `
     <tr>
-      <td><strong>${f.name}</strong></td>
-      <td>${f.spec}</td>
-      <td class="val-green">${f.p} g</td>
-      <td class="val-orange">${f.f} g</td>
-      <td class="val-red">${f.c} g</td>
-      <td class="val-blue"><strong>${f.kcal} kcal</strong></td>
-      <td class="text-muted">${f.note}</td>
+      <td><strong style="color: #4338ca; font-size: 14px;">${f.name}</strong></td>
+      <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:600;">${f.spec}</span></td>
+      <td class="val-green" style="font-weight:700;">${f.p} g</td>
+      <td class="val-orange" style="font-weight:700;">${f.f} g</td>
+      <td class="val-red" style="font-weight:700;">${f.c} g</td>
+      <td class="val-blue" style="font-weight:700; font-size: 13px;">${f.kcal} kcal</td>
+      <td class="text-muted" style="font-size: 12px;">${f.note}</td>
     </tr>
   `).join("");
+
+  // 渲染第 5 頁主畫面表格
+  const pageTbody = document.getElementById("pageFormulaTableBody");
+  if (pageTbody) {
+    pageTbody.innerHTML = rowHtml || `<tr><td colspan="7" class="text-center text-muted" style="padding: 24px;">查無符合的商業配方</td></tr>`;
+  }
+
+  // 同步彈窗表格 (若彈窗仍被調用)
+  const modalTbody = document.getElementById("formulaTableBody");
+  if (modalTbody) {
+    modalTbody.innerHTML = rowHtml;
+  }
+}
+
+function filterFormulasPage() {
+  if (typeof COMMERCIAL_FORMULAS_DB === "undefined") return;
+
+  const keyword = (document.getElementById("inFormulaSearch")?.value || "").trim().toLowerCase();
+  const cat = document.getElementById("cboFormulaCategory")?.value || "全部";
+
+  const filtered = COMMERCIAL_FORMULAS_DB.filter(item => {
+    let matchCat = true;
+    if (cat === "均衡營養") {
+      matchCat = item.note.includes("均衡") || item.note.includes("等滲透") || item.note.includes("纖維") || item.name.includes("安素") || item.name.includes("愛速康") || item.name.includes("健力體") || item.name.includes("愛美力") || item.name.includes("完膳");
+    } else if (cat === "糖尿病") {
+      matchCat = item.note.includes("糖尿病") || item.note.includes("穩醣") || item.note.includes("低GI") || item.name.includes("糖尿") || item.name.includes("葡勝納");
+    } else if (cat === "腎臟病") {
+      matchCat = item.note.includes("腎") || item.name.includes("腎") || item.name.includes("LPF");
+    } else if (cat === "腫瘤重症") {
+      matchCat = item.note.includes("腫瘤") || item.note.includes("癌症") || item.note.includes("重症") || item.note.includes("高蛋白") || item.name.includes("倍力素") || item.name.includes("諾沛") || item.name.includes("雙卡") || item.name.includes("創快復");
+    } else if (cat === "其他特殊") {
+      matchCat = item.note.includes("低氮") || item.name.includes("低氮") || item.note.includes("分離乳清") || item.note.includes("胜肽");
+    }
+
+    const matchText = !keyword ||
+      item.name.toLowerCase().includes(keyword) ||
+      item.spec.toLowerCase().includes(keyword) ||
+      item.note.toLowerCase().includes(keyword);
+
+    return matchCat && matchText;
+  });
+
+  renderFormulasTable(filtered);
+}
+
+function clearFormulaSearch() {
+  const inSearch = document.getElementById("inFormulaSearch");
+  const cboCat = document.getElementById("cboFormulaCategory");
+  if (inSearch) inSearch.value = "";
+  if (cboCat) cboCat.value = "全部";
+  filterFormulasPage();
 }
 
 // 通用 Modal
