@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261102-2345">
+  <link rel="stylesheet" href="style.css?v=20261104-2055">
 </head>
 <body>
 
@@ -822,7 +822,7 @@
                     <th>餐次</th>
                     <th>菜名</th>
                     <th>食材名稱</th>
-                    <th>引用官方資料項目</th>
+                    <th style="min-width: 160px;">資料庫樣品名稱</th>
                     <th>生重 (g)</th>
                     <th style="text-align: right;">熱量 (kcal)</th>
                     <th style="text-align: right;">粗蛋白 (g)</th>
@@ -885,6 +885,76 @@
   </div><!-- /.app-layout -->
 
   <!-- 彈出視窗 1：衛福部食物代換表查詢 (261項) -->
+    <!-- 彈出視窗：選取資料庫樣品名稱 (2025版 2,213項) -->
+  <div class="modal-overlay" id="modalSampleSelector">
+    <div class="modal-box modal-lg" style="max-width: 860px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header bg-blue">
+        <div class="modal-title">
+          <span>📗 選取食品成分資料庫樣品名稱</span>
+          <small>衛生福利部食品成分資料庫 (2025 UPDATE1) ｜ 快速搜尋並指定精確樣品比對計算</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalSampleSelector')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; overflow: hidden;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            當前菜單項目：<span id="lblTargetMealBadge" class="badge" style="background:#e0f2fe; color:#0369a1; padding:2px 6px;">早餐</span>
+            <strong id="lblTargetFoodTitle" style="color: #0f766e; margin-left: 6px; font-size: 14px;">食材名稱</strong>
+          </div>
+          <button class="btn btn-outline" style="padding: 3px 10px; font-size: 12px;" onclick="resetTargetSampleToAuto()">🔄 恢復 AI 自動比對</button>
+        </div>
+        <div class="query-search-bar" style="display: flex; gap: 10px; margin-bottom: 0;">
+          <input type="text" id="inSampleSearch" class="form-input flex-1" placeholder="輸入樣品名稱、俗名搜尋 (例：高麗菜、甘藍、雞胸肉、豆腐...)" oninput="filterSampleSelectorList()">
+          <select id="cboSampleCategory" class="form-select" style="width: 170px;" onchange="filterSampleSelectorList()">
+            <option value="全部">全部類別</option>
+            <option value="穀物類">穀物類</option>
+            <option value="澱粉類">澱粉類</option>
+            <option value="堅果及種子類">堅果及種子類</option>
+            <option value="豆類">豆類</option>
+            <option value="蔬菜類">蔬菜類</option>
+            <option value="菇類">菇類</option>
+            <option value="藻類">藻類</option>
+            <option value="水果類">水果類</option>
+            <option value="肉類">肉類</option>
+            <option value="魚貝類">魚貝類</option>
+            <option value="蛋類">蛋類</option>
+            <option value="乳品類">乳品類</option>
+            <option value="油脂類">油脂類</option>
+            <option value="糖類">糖類</option>
+            <option value="飲料類">飲料類</option>
+            <option value="糕餅點心類">糕餅點心類</option>
+            <option value="加工調理食品及其他類">加工調理食品及其他類</option>
+            <option value="調味料及香辛料類">調味料及香辛料類</option>
+          </select>
+          <button class="btn btn-warning" onclick="clearSampleSearch()">❌ 清除</button>
+        </div>
+        <div style="font-size: 12px; color: #64748b;">
+          符合條件樣品：<strong id="lblSampleCount" style="color: #0f766e;">0</strong> 筆（點選「選用此樣品」立即套用換算）
+        </div>
+        <div class="table-scroll-container" style="flex: 1; max-height: 52vh; overflow-y: auto;">
+          <table class="data-table" id="sampleSelectorTable">
+            <thead>
+              <tr style="background: #f1f5f9; position: sticky; top: 0; z-index: 2; font-size: 12px;">
+                <th style="width: 90px;">整合代碼</th>
+                <th style="width: 110px;">食物分類</th>
+                <th>樣品名稱</th>
+                <th>俗名 / 別名</th>
+                <th style="text-align: right; width: 85px;">熱量 (kcal)</th>
+                <th style="text-align: right; width: 75px;">粗蛋白</th>
+                <th style="text-align: right; width: 75px;">粗脂肪</th>
+                <th style="text-align: right; width: 75px;">總碳水</th>
+                <th style="width: 95px; text-align: center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="sampleSelectorTableBody">
+              <!-- 動態生成樣品清單 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="modalExchangeQuery">
     <div class="modal-box modal-lg">
       <div class="modal-header bg-blue">
@@ -1002,6 +1072,6 @@
   <script src="food_exchange_db.js?v=20261102-2025"></script>
   <script src="app_data.js?v=20261102-2025"></script>
   <script src="dris_data.js?v=20261102-2345"></script>
-  <script src="app.js?v=20261102-2345"></script>
+  <script src="app.js?v=20261104-2055"></script>
 </body>
 </html>

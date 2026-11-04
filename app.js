@@ -855,7 +855,7 @@ function renderMenuRecipes() {
     const colorClass = r.color ? r.color.replace("/", "\/") : "白色";
 
     // 依據生重克數比對食品成分資料庫 (每 100g 含量精確換算)
-    const nutrient = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex);
+    const nutrient = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
     r._calc = nutrient;
 
     const rowEx = Number(r.ex) || 0;
@@ -884,7 +884,12 @@ function renderMenuRecipes() {
 
     return `
       <tr>
-        <td style="width: 100px;">${mealSelectHtml}</td>
+        <td style="width: 125px;">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <button type="button" class="btn btn-teal" style="padding: 2px 7px; font-size: 13px; line-height: 1.2; border-radius: 4px; flex-shrink: 0;" title="在下方新增一列餐次/菜名/食材" onclick="insertRecipeItemAfter(${realIndex})">➕</button>
+            <div style="flex: 1;">${mealSelectHtml}</div>
+          </div>
+        </td>
         <td>
           <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px;" value="${r.dish || ""}" placeholder="輸入菜名" 
             oninput="updateDishName(${realIndex}, this.value)">
@@ -982,7 +987,7 @@ function updateAllCompositionNutrientSummary() {
   };
 
   const rowsHtml = menuRecipes.map((r, idx) => {
-    const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex);
+    const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
     sum.kcal += (nut.kcal || 0);
     sum.protein += (nut.protein || 0);
     sum.fat += (nut.fat || 0);
@@ -1005,7 +1010,14 @@ function updateAllCompositionNutrientSummary() {
         <td><span class="badge" style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; font-size: 11px;">${r.meal}</span></td>
         <td><strong>${r.dish || "—"}</strong></td>
         <td><strong style="color: #0f766e;">${r.food}</strong></td>
-        <td><span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 11px; padding: 2px 6px; white-space: nowrap;">📖 ${nut.matchedName || '食物代換估算'}</span></td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="badge" style="background: ${r.sampleName ? '#ecfdf5' : '#f1f5f9'}; color: ${r.sampleName ? '#047857' : '#334155'}; border: 1px solid ${r.sampleName ? '#6ee7b7' : '#cbd5e1'}; font-size: 11px; padding: 2px 6px; white-space: nowrap;" title="${r.sampleName ? '使用者指定選用樣品' : '系統自動智慧比對'}">
+              ${r.sampleName ? '🎯 ' : '📖 '}${nut.matchedName || '食物代換估算'}
+            </span>
+            <button type="button" class="btn btn-outline" style="padding: 1px 7px; font-size: 11px; border-radius: 4px; white-space: nowrap;" onclick="openSampleSelectorModal(${idx})" title="搜尋並選取不同的樣品">🔍 選取</button>
+          </div>
+        </td>
         <td style="text-align: right; font-weight: 600;">${r.rawWeight} g</td>
         <td style="text-align: right;" class="val-red font-bold">${Math.round(nut.kcal)}</td>
         <td style="text-align: right;" class="val-green font-bold">${nut.protein.toFixed(1)}</td>
@@ -1065,7 +1077,7 @@ function updateAllCompositionNutrientSummary() {
 /**
  * 智慧比對衛福部食品成分資料庫 (2025版，共2,213項)，依據生重克數精確換算完整營養素
  */
-function calculateRecipeNutrients(foodName, category, rawWeight, ex) {
+function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampleName = null) {
   const weight = Number(rawWeight) || 0;
   const portions = Number(ex) || 1;
   const name = (foodName || "").trim();
@@ -1080,7 +1092,14 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex) {
 
   // 1. 優先精準 / 模糊比對 2025版食品成分資料庫 (每 100g 含量)
   if (typeof FOOD_COMPOSITION_2025 !== "undefined" && Array.isArray(FOOD_COMPOSITION_2025) && FOOD_COMPOSITION_2025.length > 0) {
-    let matched = FOOD_COMPOSITION_2025.find(it => it.Name === name);
+    let matched = null;
+    // 若使用者主動指定選取資料庫樣品名稱，優先使用指定樣品
+    if (customSampleName) {
+      matched = FOOD_COMPOSITION_2025.find(it => it.Name === customSampleName);
+    }
+    if (!matched) {
+      matched = FOOD_COMPOSITION_2025.find(it => it.Name === name);
+    }
     if (!matched) {
       matched = FOOD_COMPOSITION_2025.find(it => it.CommonName && it.CommonName.split(",").some(c => c.trim() === name));
     }
@@ -1191,7 +1210,7 @@ function updateMenuSummaryCards() {
   const colorCountMap = {};
 
   filtered.forEach(r => {
-    const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex);
+    const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
     r._calc = nut;
     totalEx += Number(r.ex) || 0;
     totalWeight += Number(r.rawWeight) || 0;
@@ -1810,4 +1829,140 @@ function renderDriCompliance(sum) {
   }).join("");
 
   container.innerHTML = cardsHtml;
+}
+
+/**
+ * 在指定行下方快速插入新的一列（繼承當前餐次與菜名，方便連續新增食材或菜式）
+ */
+function insertRecipeItemAfter(index) {
+  const current = menuRecipes[index];
+  const meal = current ? current.meal : (document.getElementById("cboMealFilter").value === "全部" ? "早餐" : document.getElementById("cboMealFilter").value);
+  const dish = current ? current.dish : "";
+
+  const newItem = {
+    meal: meal,
+    dish: dish,
+    food: "新食材",
+    category: "自訂食材",
+    ex: 1,
+    rawWeight: 100,
+    color: "白色",
+    sampleName: null
+  };
+
+  menuRecipes.splice(index + 1, 0, newItem);
+  renderMenuRecipes();
+}
+
+/**
+ * ==========================================
+ * 食品成分資料庫樣品選取彈窗 (Sample Selector)
+ * ==========================================
+ */
+let targetRecipeItemIndex = null;
+
+function openSampleSelectorModal(recipeIndex) {
+  targetRecipeItemIndex = recipeIndex;
+  const item = menuRecipes[recipeIndex];
+  if (!item) return;
+
+  const badgeEl = document.getElementById("lblTargetMealBadge");
+  const titleEl = document.getElementById("lblTargetFoodTitle");
+  if (badgeEl) badgeEl.innerText = item.meal || "餐次";
+  if (titleEl) titleEl.innerText = `${item.dish ? item.dish + ' — ' : ''}${item.food || '未命名食材'}`;
+
+  const searchInput = document.getElementById("inSampleSearch");
+  const catSelect = document.getElementById("cboSampleCategory");
+
+  // 預設搜尋關鍵字為食材名稱（若包含多餘烹調字詞則精簡）
+  if (searchInput) {
+    searchInput.value = item.food ? item.food.replace(/炒|湯|飯|麵|清蒸|紅燒|烤|煎/g, "").trim() : "";
+  }
+  if (catSelect) {
+    catSelect.value = "全部";
+  }
+
+  openModal("modalSampleSelector");
+  filterSampleSelectorList();
+}
+
+function filterSampleSelectorList() {
+  if (typeof FOOD_COMPOSITION_2025 === "undefined" || !Array.isArray(FOOD_COMPOSITION_2025)) return;
+
+  const keyword = (document.getElementById("inSampleSearch").value || "").trim().toLowerCase();
+  const cat = document.getElementById("cboSampleCategory").value;
+
+  const filtered = FOOD_COMPOSITION_2025.filter(item => {
+    const matchCat = cat === "全部" || item.Category === cat;
+    const matchText = !keyword || 
+      (item.Name && item.Name.toLowerCase().includes(keyword)) ||
+      (item.CommonName && item.CommonName.toLowerCase().includes(keyword)) ||
+      (item.Code && item.Code.toLowerCase().includes(keyword));
+    return matchCat && matchText;
+  });
+
+  const countEl = document.getElementById("lblSampleCount");
+  if (countEl) countEl.innerText = filtered.length.toLocaleString();
+
+  const tbody = document.getElementById("sampleSelectorTableBody");
+  if (!tbody) return;
+
+  const currentItem = targetRecipeItemIndex !== null ? menuRecipes[targetRecipeItemIndex] : null;
+  const currentSelectedSample = currentItem ? currentItem.sampleName : null;
+
+  // 呈現前 150 筆以保證極致流暢度
+  const displayItems = filtered.slice(0, 150);
+
+  if (displayItems.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #94a3b8; padding: 24px;">查無符合的樣品，請更換關鍵字或類別</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = displayItems.map(item => {
+    const isSelected = currentSelectedSample === item.Name;
+    return `
+      <tr style="${isSelected ? 'background: #f0fdf4;' : ''}">
+        <td><code style="font-size: 11px;">${item.Code}</code></td>
+        <td><span class="text-teal font-bold">${item.Category}</span></td>
+        <td>
+          <strong style="color: #0f172a;">${item.Name}</strong>
+          ${isSelected ? ' <span class="badge" style="background:#10b981; color:#fff; font-size:10px; padding:1px 4px;">當前選定</span>' : ''}
+        </td>
+        <td class="text-muted" style="font-size: 12px;">${item.CommonName || "—"}</td>
+        <td style="text-align: right;" class="val-red font-bold">${Math.round(item.Calories || 0)}</td>
+        <td style="text-align: right;" class="val-green font-bold">${item.Protein ? item.Protein.toFixed(1) : 0}</td>
+        <td style="text-align: right;" class="val-orange font-bold">${item.Fat ? item.Fat.toFixed(1) : 0}</td>
+        <td style="text-align: right;" class="val-blue font-bold">${item.Carbs ? item.Carbs.toFixed(1) : 0}</td>
+        <td style="text-align: center;">
+          <button type="button" class="btn ${isSelected ? 'btn-teal' : 'btn-outline'}" style="padding: 3px 8px; font-size: 11px;" onclick="applySampleToTargetRecipe('${item.Name.replace(/'/g, "\\'")}')">
+            ${isSelected ? '✔ 已選用' : '選用此樣品'}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function clearSampleSearch() {
+  const inSearch = document.getElementById("inSampleSearch");
+  const cboCat = document.getElementById("cboSampleCategory");
+  if (inSearch) inSearch.value = "";
+  if (cboCat) cboCat.value = "全部";
+  filterSampleSelectorList();
+}
+
+function applySampleToTargetRecipe(sampleName) {
+  if (targetRecipeItemIndex !== null && menuRecipes[targetRecipeItemIndex]) {
+    menuRecipes[targetRecipeItemIndex].sampleName = sampleName;
+    updateAllCompositionNutrientSummary();
+    closeModal("modalSampleSelector");
+  }
+}
+
+function resetTargetSampleToAuto() {
+  if (targetRecipeItemIndex !== null && menuRecipes[targetRecipeItemIndex]) {
+    menuRecipes[targetRecipeItemIndex].sampleName = null;
+    updateAllCompositionNutrientSummary();
+    closeModal("modalSampleSelector");
+  }
 }
