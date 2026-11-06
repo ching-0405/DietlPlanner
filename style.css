@@ -1385,19 +1385,59 @@ body.mobile-mode #modalExchangeQuery #inFoodSearch {
   grid-column: 1 / -1;
   width: 100%;
   min-width: 0;
-  height: 40px;
+  height: 42px;
+  font-size: 15px;
 }
 
 body.mobile-mode #modalExchangeQuery #cboCategoryFilter {
   width: 100% !important;
   min-width: 0;
-  height: 40px;
+  height: 42px;
+  font-size: 14px;
 }
 
 body.mobile-mode #modalExchangeQuery .query-search-bar .btn {
   min-width: 82px;
-  height: 40px;
+  height: 42px;
   white-space: nowrap;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 10px !important;
+  }
+  .modal-box.modal-lg {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  #modalExchangeQuery .modal-body {
+    padding: 10px !important;
+  }
+  #modalExchangeQuery .query-search-bar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 8px !important;
+  }
+  #modalExchangeQuery #inFoodSearch {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 42px !important;
+    font-size: 15px !important;
+  }
+  #modalExchangeQuery #cboCategoryFilter {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 42px !important;
+    font-size: 14px !important;
+  }
+  #modalExchangeQuery .query-search-bar .btn {
+    min-width: 82px !important;
+    height: 42px !important;
+    white-space: nowrap !important;
+    font-size: 14px !important;
+  }
 }
 
 /* 試算表底部分頁切換欄 (Bottom Sheet Tabs：在手機外框底部居中) */
@@ -1736,6 +1776,10 @@ body.mobile-mode .exchange-table {
   display: flex;
   gap: 10px;
   margin-bottom: 12px;
+}
+
+#modalExchangeQuery #cboCategoryFilter {
+  width: 180px;
 }
 
 .flex-1 { flex: 1; }
