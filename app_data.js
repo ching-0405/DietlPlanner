@@ -47,9 +47,9 @@ function getDefaultExchanges(isDiabeticLowProtein = false) {
     { category: "豆魚蛋肉類(中脂)", icon: "🍗", unit: "份 (1兩肉/中脂豆腐)", p: 7, f: 5, c: 0, kcal: 75, ex: 3, b: 0, ms: 0, l: 1.5, as: 0, d: 1.5, ns: 0 },
     { category: "豆魚蛋肉類(高脂)", icon: "🥩", unit: "份 (五花/香腸/肉鬆)", p: 7, f: 9, c: 0, kcal: 120, ex: 0, b: 0, ms: 0, l: 0, as: 0, d: 0, ns: 0 },
     { category: "蔬菜類", icon: "🥦", unit: "份 (100g/半碗煮熟)", p: 1, f: 0, c: 5, kcal: 25, ex: 3, b: 0, ms: 0, l: 1.5, as: 0, d: 1.5, ns: 0 },
-    { category: "水果類", icon: "🍎", unit: "份 (拳頭大/1碗切塊)", p: 0, f: 0, c: 15, kcal: 60, ex: 2, b: 0, ms: 1, l: 0, as: 1, d: 0, ns: 0 },
+    { category: "水果類", icon: "🍎", unit: "份 (拳頭大/1碗切塊)", p: 0, f: 0, c: 15, kcal: 60, ex: 2, b: 0, ms: 0, l: 1, as: 0, d: 1, ns: 0 },
     { category: "油脂類", icon: "🫒", unit: "份 (1茶匙 5g)", p: 0, f: 5, c: 0, kcal: 45, ex: 5, b: 1, ms: 0, l: 2, as: 0, d: 2, ns: 0 },
-    { category: "堅果種子類", icon: "🥜", unit: "份 (1湯匙約10g)", p: 0, f: 5, c: 0, kcal: 45, ex: 1, b: 0, ms: 0, l: 0, as: 1, d: 0, ns: 0 }
+    { category: "堅果種子類", icon: "🥜", unit: "份 (1湯匙約10g)", p: 0, f: 5, c: 0, kcal: 45, ex: 1, b: 1, ms: 0, l: 0, as: 0, d: 0, ns: 0 }
   );
 
   return list;

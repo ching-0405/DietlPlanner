@@ -7,7 +7,7 @@ let lastRatioLimitSignature = "";
 let ratioLimitDialogReturnFocus = null;
 let currentDeviceMode = "auto";
 let exchangesData = [];
-let activeMealKeys = ["b", "ms", "l", "as", "d", "ns"];
+let activeMealKeys = ["b", "l", "d"];
 const mealKeyOrder = ["b", "ms", "l", "as", "d", "ns"];
 const mealCountMap = {
   3: ["b", "l", "d"],
@@ -617,7 +617,7 @@ function renderExchangeTable() {
         <td class="col-macro-cell">${item.c}</td>
         <td class="col-macro-cell">${item.kcal}</td>
         <td class="design-ex-cell">
-          <input type="number" class="cell-input design-ex-input" step="0.5" min="0"
+          <input type="number" class="cell-input design-ex-input" step="any" min="0"
             value="${item.ex}" aria-label="${item.category}設計份數"
             oninput="onDesignExChanged(${idx}, this.value)">
           <span class="allocation-status" id="row_allocation_status_${idx}" hidden></span>
@@ -688,7 +688,7 @@ function renderMobileMacroSpecsCard() {
 }
 
 function renderMealInput(item, idx, mealKey) {
-  return `<td class="meal-col meal-${mealKey}"><input type="number" class="cell-input meal-ex-input" step="0.5" min="0" value="${item[mealKey]}" ${item.ex > 0 && activeMealKeys.includes(mealKey) ? "" : "disabled"} oninput="onMealExChanged(${idx}, '${mealKey}', this.value)"></td>`;
+  return `<td class="meal-col meal-${mealKey}"><input type="number" class="cell-input meal-ex-input" step="any" min="0" value="${item[mealKey]}" ${item.ex > 0 && activeMealKeys.includes(mealKey) ? "" : "disabled"} oninput="onMealExChanged(${idx}, '${mealKey}', this.value)"></td>`;
 }
 
 function initMealCountSelector() {
@@ -949,7 +949,7 @@ function renderMenuRecipes() {
         </td>
         <td><span class="text-teal font-bold">${r.category || "自訂食材"}</span></td>
         <td class="val-red">
-          <input type="number" class="form-input" style="width: 70px; text-align: center; padding: 4px;" step="0.5" min="0.1" 
+          <input type="number" class="form-input" style="width: 70px; text-align: center; padding: 4px;" step="any" min="0.1" 
             value="${r.ex}" oninput="updateRecipeEx(${realIndex}, this.value)">
         </td>
         <td>
@@ -1370,7 +1370,13 @@ function updateRecipeEx(index, val) {
   const num = parseFloat(val);
   if (menuRecipes[index] && Number.isFinite(num) && num > 0) {
     menuRecipes[index].ex = num;
-    renderMenuRecipes();
+    updateMenuSummaryCards();
+    updateAllCompositionNutrientSummary();
+    const row = document.querySelectorAll("#recipeTableBody tr")[index];
+    if (row && menuRecipes[index]._calc) {
+      const kcalCell = row.querySelector(".rec-kcal");
+      if (kcalCell) kcalCell.innerText = Math.round(menuRecipes[index]._calc.kcal);
+    }
   }
 }
 
@@ -2111,5 +2117,292 @@ function resetTargetSampleToAuto() {
     menuRecipes[targetRecipeItemIndex].sampleName = null;
     updateAllCompositionNutrientSummary();
     closeModal("modalSampleSelector");
+  }
+}
+
+
+// ==========================================
+// 6. 「請引導我」智慧菜單設計嚮導 (Guided Menu Wizard)
+// 順序：乳製品 ➔ 蔬菜 ➔ 水果 ➔ 豆魚蛋肉類、油脂類及堅果種子
+// ==========================================
+
+const GUIDED_STEPS = [
+  {
+    stepIndex: 0,
+    title: "開立乳製品",
+    badge: "第 1 步：乳製品",
+    subtitle: "步驟引導 1/4：開立乳製品（每天建議 1~2 杯優質乳品，補充蛋白質與鈣質）",
+    desc: "請選擇適合的乳製品（全脂奶、低脂奶、脫脂奶、起司、乳酪等），為早餐或點心注入鈣質與優質蛋白質。",
+    defaultMeal: "早餐",
+    categoryFilter: (item) => {
+      return item.category === "乳品類" || (item.category && item.category.includes("奶"));
+    }
+  },
+  {
+    stepIndex: 1,
+    title: "開立蔬菜類",
+    badge: "第 2 步：蔬菜類",
+    subtitle: "步驟引導 2/4：開立蔬菜類（每餐至少 1~2 份各色蔬菜，補充膳食纖維與植化素）",
+    desc: "開立深綠色與各色彩色蔬菜（如菠菜、甘藍/高麗菜、胡蘿蔔、花椰菜、菇類等），促進腸道健康並穩定血糖。",
+    defaultMeal: "午餐",
+    categoryFilter: (item) => {
+      return item.category === "蔬菜類" || (item.category && item.category.includes("菜"));
+    }
+  },
+  {
+    stepIndex: 2,
+    title: "開立水果類",
+    badge: "第 3 步：水果類",
+    subtitle: "步驟引導 3/4：開立水果類（每天建議 2 份新鮮水果，補充維生素 C 與多酚）",
+    desc: "選擇新鮮季節水果（如蘋果、奇異果、香蕉、芭樂、柑橘等），可規劃於早點、午點或隨餐食用。",
+    defaultMeal: "早點",
+    categoryFilter: (item) => {
+      return item.category === "水果類" || (item.category && item.category.includes("果"));
+    }
+  },
+  {
+    stepIndex: 3,
+    title: "豆魚蛋肉類、油脂類及堅果種子",
+    badge: "第 4 步：蛋白質與好油堅果",
+    subtitle: "步驟引導 4/4：開立豆魚蛋肉類、油脂類及堅果種子（建構肌肉組織與優質脂肪酸）",
+    desc: "先豆、次魚、後蛋、再肉，搭配健康植物油脂（橄欖油、芥花油）與堅果種子（核桃、杏仁等），完成全日健康營養平衡！",
+    defaultMeal: "午餐",
+    categoryFilter: (item) => {
+      return item.category === "豆魚蛋肉" || 
+             item.category === "油脂與堅果種子" || 
+             (item.category && (item.category.includes("肉") || item.category.includes("豆") || item.category.includes("魚") || item.category.includes("蛋") || item.category.includes("油") || item.category.includes("堅果")));
+    }
+  }
+];
+
+let currentGuidedStepIndex = 0;
+let wizardAddedItems = [];
+
+function startGuidedMenuWizard() {
+  currentGuidedStepIndex = 0;
+  wizardAddedItems = [];
+  openModal("modalGuidedMenuWizard");
+  renderGuidedStep();
+}
+
+function renderGuidedStep() {
+  const step = GUIDED_STEPS[currentGuidedStepIndex];
+  if (!step) return;
+
+  // 更新頂部步驟資訊
+  const titleEl = document.getElementById("wizardStepTitleText");
+  const descEl = document.getElementById("wizardStepDescText");
+  const subEl = document.getElementById("wizardStepSubtitle");
+  const mealSelect = document.getElementById("wizardTargetMeal");
+
+  if (titleEl) titleEl.innerText = step.badge;
+  if (descEl) descEl.innerText = step.desc;
+  if (subEl) subEl.innerText = step.subtitle;
+  if (mealSelect) {
+    // 預設切換為該步驟推薦餐次
+    mealSelect.value = step.defaultMeal;
+  }
+
+  // 渲染步驟導航進度標籤
+  const navContainer = document.getElementById("wizardStepperNav");
+  if (navContainer) {
+    navContainer.innerHTML = GUIDED_STEPS.map((s, idx) => {
+      let stateCls = "";
+      if (idx === currentGuidedStepIndex) stateCls = "active";
+      else if (idx < currentGuidedStepIndex) stateCls = "completed";
+
+      return `
+        <div class="wizard-step-item ${stateCls}" onclick="jumpToGuidedStep(${idx})">
+          <div class="wizard-step-number">${idx < currentGuidedStepIndex ? "✓" : (idx + 1)}</div>
+          <div class="wizard-step-label">${s.title}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // 底部按鈕狀態
+  const btnPrev = document.getElementById("btnWizardPrev");
+  const btnNext = document.getElementById("btnWizardNext");
+
+  if (btnPrev) {
+    btnPrev.style.display = currentGuidedStepIndex > 0 ? "inline-block" : "none";
+  }
+
+  if (btnNext) {
+    if (currentGuidedStepIndex === GUIDED_STEPS.length - 1) {
+      btnNext.innerText = "🎉 完成並前往菜單開立";
+      btnNext.className = "btn btn-teal";
+    } else {
+      btnNext.innerText = "下一步 ➔";
+      btnNext.className = "btn btn-teal";
+    }
+  }
+
+  // 清空搜尋框並渲染食材列表
+  const searchIn = document.getElementById("wizardSearchInput");
+  if (searchIn) searchIn.value = "";
+  filterWizardFoodList();
+  renderWizardAddedItems();
+}
+
+function filterWizardFoodList() {
+  const step = GUIDED_STEPS[currentGuidedStepIndex];
+  if (!step) return;
+
+  const container = document.getElementById("wizardFoodListContainer");
+  if (!container) return;
+
+  if (typeof FOOD_EXCHANGE_DB === "undefined" || !Array.isArray(FOOD_EXCHANGE_DB)) {
+    container.innerHTML = '<div style="color: #ef4444; padding: 20px;">食物代換資料庫載入中，請稍候...</div>';
+    return;
+  }
+
+  const keyword = (document.getElementById("wizardSearchInput")?.value || "").trim().toLowerCase();
+
+  const filtered = FOOD_EXCHANGE_DB.filter(item => {
+    const matchCat = step.categoryFilter(item);
+    if (!matchCat) return false;
+    if (!keyword) return true;
+    return (item.foodName && item.foodName.toLowerCase().includes(keyword)) ||
+           (item.subCategory && item.subCategory.toLowerCase().includes(keyword)) ||
+           (item.notes && item.notes.toLowerCase().includes(keyword));
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div style="color: #94a3b8; grid-column: 1/-1; text-align: center; padding: 30px;">查無符合的食物，請嘗試其他關鍵字</div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => {
+    const p = item.protein || 0;
+    const f = item.fat || 0;
+    const c = item.carbs || 0;
+    const kcal = item.calories || (p * 4 + f * 9 + c * 4);
+
+    return `
+      <div class="wizard-food-card" onclick="addFoodFromWizard('${item.foodName.replace(/'/g, "\\'")}', '${(item.category || "自訂").replace(/'/g, "\\'")}', ${item.rawWeight || 100})">
+        <div class="wizard-food-header">
+          <div class="wizard-food-name">${item.foodName}</div>
+          <span class="wizard-food-badge">${item.subCategory || item.category}</span>
+        </div>
+        <div class="wizard-food-portion">每份份量：${item.portionDesc || (item.rawWeight + 'g')}</div>
+        <div class="wizard-food-macros">
+          <span>🔥 <strong>${kcal}</strong> kcal</span>
+          <span>蛋 ${p}g</span>
+          <span>脂 ${f}g</span>
+          <span>醣 ${c}g</span>
+          <span style="margin-left: auto; color: #0d9488; font-weight: 700;">➕ 加入</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function addFoodFromWizard(foodName, category, rawWeight) {
+  const mealSelect = document.getElementById("wizardTargetMeal");
+  const meal = mealSelect ? mealSelect.value : "午餐";
+
+  // 計算顏色
+  let color = detectFoodColor(foodName, category);
+
+  const newRecipe = {
+    meal: meal,
+    dish: "",
+    food: foodName,
+    category: category,
+    ex: 1,
+    rawWeight: rawWeight || 100,
+    color: color
+  };
+
+  // 加入全域菜單
+  menuRecipes.push(newRecipe);
+
+  // 記錄於嚮導本輪加入紀錄
+  wizardAddedItems.push(newRecipe);
+
+  // 即時更新介面
+  renderWizardAddedItems();
+  renderMenuRecipes();
+}
+
+function renderWizardAddedItems() {
+  const container = document.getElementById("wizardAddedItemsList");
+  const countBadge = document.getElementById("wizardAddedCount");
+  if (countBadge) countBadge.innerText = wizardAddedItems.length;
+
+  if (!container) return;
+
+  if (wizardAddedItems.length === 0) {
+    container.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 10px;">尚未加入任何食材，請從上方點選食物加入。</div>';
+    return;
+  }
+
+  container.innerHTML = wizardAddedItems.map((r, idx) => {
+    return `
+      <span style="display: inline-flex; align-items: center; gap: 4px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 14px; padding: 3px 10px; margin: 3px; font-size: 12px;">
+        <span style="color: #0369a1; font-weight: 600;">[${r.meal}]</span>
+        <strong>${r.food}</strong> (${r.rawWeight}g)
+        <button type="button" onclick="removeWizardAddedItem(${idx})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: bold; margin-left: 2px;">×</button>
+      </span>
+    `;
+  }).join("");
+}
+
+function removeWizardAddedItem(idx) {
+  const target = wizardAddedItems[idx];
+  if (!target) return;
+
+  // 從 menuRecipes 中移除
+  const recIndex = menuRecipes.lastIndexOf(target);
+  if (recIndex !== -1) {
+    menuRecipes.splice(recIndex, 1);
+  }
+
+  wizardAddedItems.splice(idx, 1);
+  renderWizardAddedItems();
+  renderMenuRecipes();
+}
+
+function clearWizardAddedItems() {
+  if (wizardAddedItems.length === 0) return;
+  if (!confirm("確定要清空本次引導所加入的所有食材嗎？")) return;
+
+  wizardAddedItems.forEach(target => {
+    const recIndex = menuRecipes.lastIndexOf(target);
+    if (recIndex !== -1) {
+      menuRecipes.splice(recIndex, 1);
+    }
+  });
+
+  wizardAddedItems = [];
+  renderWizardAddedItems();
+  renderMenuRecipes();
+}
+
+function jumpToGuidedStep(idx) {
+  if (idx >= 0 && idx < GUIDED_STEPS.length) {
+    currentGuidedStepIndex = idx;
+    renderGuidedStep();
+  }
+}
+
+function prevGuidedStep() {
+  if (currentGuidedStepIndex > 0) {
+    currentGuidedStepIndex--;
+    renderGuidedStep();
+  }
+}
+
+function nextGuidedStep() {
+  if (currentGuidedStepIndex < GUIDED_STEPS.length - 1) {
+    currentGuidedStepIndex++;
+    renderGuidedStep();
+  } else {
+    // 完成所有引導步驟
+    closeModal("modalGuidedMenuWizard");
+    // 平滑切換至「菜單開立」分頁
+    switchTab("tab-menu");
+    alert("🎉 恭喜！引導式菜單設計已順序完成！\n\n已為您切換至「菜單開立」分頁，您可檢視完整菜單、調整克數與菜名，或查看營養素比對。");
   }
 }
