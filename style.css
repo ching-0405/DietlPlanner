@@ -1,4 +1,4 @@
-:root {
+ï»¿:root {
   --primary: #10b981;
   --primary-hover: #059669;
   --teal-header: #e6f6f3;
@@ -1698,9 +1698,52 @@ body.mobile-mode .exchange-table {
   display: flex;
   gap: 10px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.flex-1 { flex: 1; }
+.query-search-bar .form-input,
+.query-search-bar #inFoodSearch,
+.query-search-bar #inSampleSearch {
+  flex: 1 1 200px;
+  min-width: 160px;
+  width: auto;
+}
+
+.query-search-bar .form-select {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.query-search-bar .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .query-search-bar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .query-search-bar .form-input,
+  .query-search-bar #inFoodSearch,
+  .query-search-bar #inSampleSearch {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+  .query-search-bar .form-select {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+  .query-search-bar .btn {
+    width: 100% !important;
+  }
+}
+
+.flex-1 { flex: 1; min-width: 0; }
 
 .query-info-banner {
   background: #eff6ff;
@@ -1917,7 +1960,7 @@ body.mobile-mode .subtotal-title {
 #pageFormulaTable tbody tr:hover {
   background: #f5f3ff;
 }
-/* å¼•å?è¨­è?ç²¾é? (Guided Menu Wizard) æ¨?? */
+/* å¼•ï¿½?è¨­ï¿½?ç²¾ï¿½? (Guided Menu Wizard) ï¿½?? */
 .guided-btn-toolbar {
   transition: background-color 0.2s ease;
 }
