@@ -1353,6 +1353,11 @@
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
+                                                <!-- 營養成分資料庫自動帶入 -->
+                                                <DataGridTextColumn Header="熱量 (kcal)" Binding="{Binding Calories, StringFormat='{}{0:0.#}'}" FontWeight="Bold" Foreground="#DC2626" Width="95"/>
+                                                <DataGridTextColumn Header="蛋白質 (g)" Binding="{Binding Protein, StringFormat='{}{0:0.#}'}" FontWeight="Bold" Foreground="#16A34A" Width="85"/>
+                                                <DataGridTextColumn Header="脂肪 (g)" Binding="{Binding Fat, StringFormat='{}{0:0.#}'}" FontWeight="Bold" Foreground="#D97706" Width="85"/>
+                                                <DataGridTextColumn Header="醣類 (g)" Binding="{Binding Carbs, StringFormat='{}{0:0.#}'}" FontWeight="Bold" Foreground="#2563EB" Width="85"/>
                                                 <DataGridTextColumn Header="烹調與備註" Binding="{Binding Notes, UpdateSourceTrigger=LostFocus}" Width="*"/>
                                                 <DataGridTemplateColumn Header="操作" Width="80">
                                                     <DataGridTemplateColumn.CellTemplate>
@@ -1366,6 +1371,21 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- 2.5 菜單食材營養成分資料庫加總合計卡片 -->
+                                <Border Background="#F0FDF4" BorderBrush="#99DCD0" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="🥗 菜單食材營養成分加總：" FontWeight="Bold" Foreground="#0F766E" FontSize="13" Margin="0,0,8,0"/>
+                                            <TextBlock x:Name="LblMenuNutrientSummary" Text="總熱量：0 kcal ｜ 蛋白質：0 g ｜ 脂肪：0 g ｜ 醣類：0 g" FontSize="12" FontWeight="SemiBold" Foreground="#1E293B"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" x:Name="LblMenuNutrientRatio" Text="三大營養素佔比：碳水 0% ｜ 蛋白質 0% ｜ 脂肪 0%" FontSize="12" Foreground="#0D9488" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
                                 <!-- 3. Bottom AI Color Statistics Card (色彩豐富度與植化素指引) -->
                                 <Border Background="{StaticResource HeaderYellowBrush}" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,4">
                                     <Grid>

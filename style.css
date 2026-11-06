@@ -395,9 +395,30 @@ body {
   padding: 10px 16px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 10px;
   border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.card-header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.card-header-left .icon {
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.card-header-left h2 {
+  display: inline-block;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .header-actions-right {
@@ -614,24 +635,40 @@ body {
 
 .val-highlight {
   font-size: 17px;
+  white-space: nowrap;
 }
 
 .val-highlight.red strong { color: #dc2626; }
 .val-highlight.green strong { color: #16a34a; }
-.val-bold { font-weight: 700; color: #1f2937; }
+.val-bold {
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+}
 
 /* 徽章 Badge */
 .badge {
-  display: inline-block;
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
   border-radius: 9999px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .badge-normal {
   background: #dcfce7;
   color: #15803d;
+}
+
+.cell-bmi-badge {
+  width: 140px;
+  white-space: nowrap;
+  text-align: center;
 }
 
 /* BMI 彩色相連尺標 */
@@ -1143,8 +1180,8 @@ body {
   height: 188px;
   padding: 0;
   background-image: url("Assets/dietlplanner-banner.jpg");
-  background-size: contain;
-  background-position: center;
+  background-size: cover;
+  background-position: center top;
   background-repeat: no-repeat;
   background-color: #fff4dc;
   border: 0;
@@ -1188,22 +1225,62 @@ body {
   margin-left: 10px;
 }
 
-/* 手機版模式 (隱藏左側選單，分頁像 Excel / Google 試算表般固定在螢幕最底端) */
+/* 手機版模式 (在電腦寬螢幕切換手機版時，呈現 9:16 直立手機畫面外框) */
+body.mobile-mode {
+  background-color: #0f172a;
+}
+
 body.mobile-mode .sidebar-desktop {
   display: none !important;
 }
 
 body.mobile-mode .hero-banner {
   display: block;
-  padding: 12px 10px 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: #fff4dc;
+  line-height: 0;
+  overflow: hidden;
 }
 
 body.mobile-mode .hero-banner img {
-  border-radius: 12px;
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  border-radius: 0;
+  object-fit: cover !important;
+  object-position: center top;
 }
 
 body.mobile-mode .app-layout {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 16px 0 80px;
+}
+
+/* 9:16 直立手機螢幕容器限制 (寬 420px，外框仿 iPhone 直立視覺) */
+body.mobile-mode .main-workspace {
+  width: 100%;
+  max-width: 420px;
+  min-height: calc(100vh - 120px);
+  background-color: var(--bg-main);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #334155;
+}
+
+/* 手機版頂部標頭不遮擋，與橫幅維持流暢間距 */
+body.mobile-mode .navbar {
+  position: relative;
+  top: auto;
+  z-index: 50;
 }
 
 body.mobile-mode .container {
@@ -1213,6 +1290,30 @@ body.mobile-mode .container {
 
 body.mobile-mode .grid-2col {
   grid-template-columns: 1fr;
+}
+
+body.mobile-mode .form-table td.lbl {
+  width: auto;
+  min-width: 130px;
+  padding: 6px 4px;
+  font-size: 13px;
+}
+
+body.mobile-mode .form-table td.unit {
+  width: auto;
+  min-width: 60px;
+  padding: 6px 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+body.mobile-mode .val-bold,
+body.mobile-mode .val-highlight {
+  white-space: nowrap;
+}
+
+body.mobile-mode .form-table td {
+  padding: 6px 4px;
 }
 
 body.mobile-mode .navbar {
@@ -1261,59 +1362,24 @@ body.mobile-mode .btn-device-toggle {
   font-size: 11px;
 }
 
-body.mobile-mode .modal-overlay {
-  padding: 12px;
-}
-
-body.mobile-mode .modal-box.modal-lg {
-  width: 100%;
-  max-width: none;
-}
-
-body.mobile-mode #modalExchangeQuery .modal-body {
-  padding: 12px;
-}
-
-body.mobile-mode #modalExchangeQuery .query-search-bar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-}
-
-body.mobile-mode #modalExchangeQuery #inFoodSearch {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
-  height: 40px;
-}
-
-body.mobile-mode #modalExchangeQuery #cboCategoryFilter {
-  width: 100% !important;
-  min-width: 0;
-  height: 40px;
-}
-
-body.mobile-mode #modalExchangeQuery .query-search-bar .btn {
-  min-width: 82px;
-  height: 40px;
-  white-space: nowrap;
-}
-
-/* 試算表底部分頁切換欄 (Bottom Sheet Tabs) */
+/* 試算表底部分頁切換欄 (Bottom Sheet Tabs：在手機外框底部居中) */
 body.mobile-mode .nav-tabs {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 420px;
   height: 56px;
   background: #ffffff;
   border-top: 1px solid #cbd5e1;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.12);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0;
   z-index: 999;
-  padding: 4px 6px;
+  padding: 4px 2px;
+  border-radius: 12px 12px 0 0;
 }
 
 body.mobile-mode .nav-tab {
@@ -1342,8 +1408,11 @@ body.mobile-mode .nav-tab.active {
 
 body.mobile-mode .alert-banner {
   bottom: 66px; /* 移到試算表底部分頁之上，不被遮擋 */
-  right: 12px;
-  left: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 396px;
+  right: auto;
   padding: 10px 14px;
   font-size: 13px;
 }
@@ -1490,27 +1559,32 @@ body.mobile-mode .exchange-table {
   background: #f8fafc;
   color: #334155;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* 顏色標籤膠囊 */
 .color-tag {
   display: inline-block;
-  padding: 2px 12px;
+  padding: 3px 12px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 700;
   color: #ffffff;
   text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  white-space: nowrap;
 }
 
-.color-tag.黃色 { background: #eab308; }
-.color-tag.白色 { background: #94a3b8; }
-.color-tag.橙色 { background: #f97316; }
-.color-tag.綠色 { background: #22c55e; }
-.color-tag.紅色 { background: #ef4444; }
-.color-tag.紫色\/黑色 { background: #8b5cf6; }
-.color-tag.粉綠\/嫩綠 { background: #84cc16; }
-.color-tag.其他 { background: #64748b; }
+.color-tag.黃色 { background: #eab308; color: #1f2937; }
+.color-tag.白色 { background: #94a3b8; color: #ffffff; }
+.color-tag.橙色 { background: #f97316; color: #ffffff; }
+.color-tag.綠色 { background: #22c55e; color: #ffffff; }
+.color-tag.紅色 { background: #ef4444; color: #ffffff; }
+.color-tag.紫色\/黑色 { background: #8b5cf6; color: #ffffff; }
+.color-tag.粉綠\/嫩綠 { background: #84cc16; color: #1f2937; }
+.color-tag.嫩綠色 { background: #a8d878; color: #1f2937; }
+.color-tag.棕褐色 { background: #a16207; color: #ffffff; }
+.color-tag.其他 { background: #64748b; color: #ffffff; }
 
 /* 彈窗 Modal */
 .modal-overlay {
@@ -1684,4 +1758,293 @@ body.mobile-mode .exchange-table {
   font-size: 13px;
   color: #64748b;
   font-weight: 600;
+}
+
+/* ========================================================
+   手機版專屬：每份三大營養素規格表 & 代換表格微調
+   ======================================================== */
+.mobile-macro-specs-card {
+  display: none; /* 電腦版維持隱藏，由大表格完整顯示 */
+}
+
+body.mobile-mode .mobile-macro-specs-card {
+  display: block;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.mobile-specs-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.mobile-specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: #ffffff;
+}
+
+.mobile-specs-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  padding: 6px 4px;
+  border-bottom: 2px solid #cbd5e1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mobile-specs-table th.spec-th-cat {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.mobile-specs-table td {
+  padding: 6px 4px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mobile-specs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mobile-specs-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.mobile-specs-table td.spec-td-cat {
+  text-align: left;
+  padding-left: 10px;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobile-specs-table td.spec-td-cat .cat-icon {
+  font-size: 14px;
+}
+
+.mobile-specs-table td.spec-td-val {
+  font-size: 12px;
+}
+
+.mobile-specs-table td.spec-td-val small {
+  font-size: 10px;
+  color: #64748b;
+  margin-left: 1px;
+}
+
+/* 手機版模式下：隱藏代換大表格內部的 4 欄「每份三大營養素」，並修復下方加總列字體過大 */
+body.mobile-mode .col-macros-spec,
+body.mobile-mode .col-macro-cell,
+body.mobile-mode .exchange-table col.col-macro {
+  display: none !important;
+}
+
+body.mobile-mode .exchange-table {
+  font-size: 12px;
+  table-layout: auto; /* 手機版自適應欄寬，不被固定 16 欄擠壓 */
+}
+
+body.mobile-mode .exchange-table th,
+body.mobile-mode .exchange-table td {
+  padding: 4px 2px !important;
+}
+
+body.mobile-mode .exchange-table input.cell-input {
+  font-size: 12px;
+  padding: 3px 1px;
+  max-width: 42px;
+  min-width: 32px;
+}
+
+body.mobile-mode .exchange-table .col-cat {
+  width: auto;
+  min-width: 80px;
+}
+
+body.mobile-mode .subtotal-row {
+  font-size: 12px !important;
+}
+
+body.mobile-mode .subtotal-row.grams-row td,
+body.mobile-mode .subtotal-row.percent-row td {
+  font-size: 12px !important;
+  padding: 4px 1px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  letter-spacing: -0.3px;
+}
+
+body.mobile-mode .subtotal-title {
+  font-size: 12px !important;
+  padding-left: 6px !important;
+  white-space: nowrap !important;
+}
+
+/* 第 5 頁：商業配方庫樣式 */
+#tab-formulas .card-header.bg-purple {
+  background: #faf5ff;
+  border-bottom: 2px solid #c084fc;
+}
+
+#tab-formulas .card-header.bg-purple h2 {
+  color: #581c87;
+}
+
+#pageFormulaTable th {
+  background: #f8fafc;
+  font-weight: 700;
+  font-size: 13px;
+  color: #334155;
+  padding: 10px 8px;
+}
+
+#pageFormulaTable td {
+  padding: 8px 8px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+#pageFormulaTable tbody tr:hover {
+  background: #f5f3ff;
+}
+/* 引�?設�?精�? (Guided Menu Wizard) �?? */
+.guided-btn-toolbar {
+  transition: background-color 0.2s ease;
+}
+
+.wizard-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  position: relative;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.wizard-step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 140px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.wizard-step-item.active {
+  background: #f0fdfa;
+  border-color: #0d9488;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.15);
+}
+
+.wizard-step-item.completed {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.wizard-step-number {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.wizard-step-item.active .wizard-step-number {
+  background: #0d9488;
+  color: #ffffff;
+}
+
+.wizard-step-item.completed .wizard-step-number {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.wizard-step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.wizard-step-item.active .wizard-step-label {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.wizard-food-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.wizard-food-card:hover {
+  border-color: #0d9488;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.wizard-food-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.wizard-food-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.wizard-food-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e0f2fe;
+  color: #0369a1;
+  white-space: nowrap;
+}
+
+.wizard-food-portion {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.wizard-food-macros {
+  font-size: 11px;
+  display: flex;
+  gap: 8px;
+  color: #475569;
+  background: #f8fafc;
+  padding: 4px 6px;
+  border-radius: 4px;
 }

@@ -4,16 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261106-2210">
+  <link rel="stylesheet" href="style.css?v=20261104-2345">
 </head>
 <body>
 
-  <!-- 手機版專屬頂部橫幅 -->
-  <div class="hero-banner">
-    <img src="Assets/dietlplanner-banner.jpg" alt="營養菜單設計系統">
-  </div>
-
-  <!-- 頂部標頭與導航列 (手機版或簡約頂欄) -->
+  <!-- 頂部標頭與導航列 (電腦版/手機版頂欄) -->
   <header class="navbar">
     <div class="brand">
       <span class="brand-icon">🥗</span>
@@ -32,6 +27,7 @@
         <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
         <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
         <button class="nav-tab" data-tab="tab-composition">📗 4. 食品營養成分資料庫</button>
+        <button class="nav-tab" data-tab="tab-formulas">🍼 5. 商業配方庫</button>
       </div>
     </div>
   </header>
@@ -68,6 +64,11 @@
             <span class="nav-text">營養成分資料庫</span>
             <span class="nav-arrow">›</span>
           </button>
+          <button class="sidebar-nav-item" data-tab="tab-formulas">
+            <span class="nav-icon">🍼</span>
+            <span class="nav-text">商業配方庫</span>
+            <span class="nav-arrow">›</span>
+          </button>
         </nav>
       </div>
 
@@ -76,12 +77,16 @@
         <div class="sidebar-nav-title">快捷操作</div>
         <button class="sidebar-action-btn btn-blue" onclick="resetNewClient()">➕ 新增個案</button>
         <button class="sidebar-action-btn btn-green" onclick="saveClientData()">💾 儲存存檔</button>
-        <button class="sidebar-action-btn btn-orange" onclick="openModal('modalFormulas')">🍼 商業配方庫</button>
+        
       </div>
     </aside>
 
     <!-- 右側主要工作區域 -->
     <div class="main-workspace">
+      <!-- 手機版專屬頂部橫幅 (置於手機畫面容器內部最頂端，不擋內容、比例精準) -->
+      <div class="hero-banner">
+        <img src="Assets/dietlplanner-banner.jpg" alt="飲食營養菜單設計系統 - 營養均衡 健康每一天">
+      </div>
   <main class="container">
 
     <!-- PAGE 1: 個案評估與熱量設定 -->
@@ -90,8 +95,10 @@
       <!-- 個案資料與體位測量 -->
       <div class="card">
         <div class="card-header bg-teal">
-          <span class="icon">📋</span>
-          <h2>個案基本資料與體位測量表（身高、體重、BMI、IBW）</h2>
+          <div class="card-header-left">
+            <span class="icon">📋</span>
+            <h2>個案體位測量</h2>
+          </div>
         </div>
         <div class="card-body grid-2col">
           <!-- 基本輸入 -->
@@ -146,11 +153,11 @@
               <tr>
                 <td class="lbl">BMI = BW / BH²</td>
                 <td class="val-highlight" id="cellBmiVal"><strong id="valBmi">23.53</strong></td>
-                <td><span class="badge badge-normal" id="badgeBmiStatus">體重正常 (理想)</span></td>
+                <td class="cell-bmi-badge"><span class="badge badge-normal" id="badgeBmiStatus">體重正常 (理想)</span></td>
               </tr>
               <tr>
                 <td class="lbl">體重佔理想體重比 (IBW%)</td>
-                <td class="val-bold" id="valIbwPercent">107.0 %</td>
+                <td class="val-bold" id="valIbwPercent">107 %</td>
                 <td class="unit">正常 90~110%</td>
               </tr>
               <tr>
@@ -201,8 +208,10 @@
         <!-- 臨床速算熱量對照表 -->
         <div class="card">
           <div class="card-header bg-orange">
-            <span class="icon">⚡</span>
-            <h2>臨床速算熱量對照表（點擊直接套用為目標熱量）</h2>
+            <div class="card-header-left">
+              <span class="icon">⚡</span>
+              <h2>臨床速算熱量對照表（點擊直接套用為目標熱量）</h2>
+            </div>
           </div>
           <div class="card-body">
             <p class="section-desc">點選下方數值按鈕，可直接快速帶入上方目標熱量</p>
@@ -224,8 +233,10 @@
         <!-- BEE 與 TDEE -->
         <div class="card">
           <div class="card-header bg-blue">
-            <span class="icon">💧</span>
-            <h2>BEE 基礎代謝率 與 TDEE 每日熱量需求表</h2>
+            <div class="card-header-left">
+              <span class="icon">💧</span>
+              <h2>BEE 基礎代謝率 與 TDEE 每日熱量需求表</h2>
+            </div>
           </div>
           <div class="card-body">
             <table class="form-table full-width">
@@ -276,8 +287,10 @@
       <!-- 臨床腎功能推估與行動不便推估 -->
       <div class="card mt-4">
         <div class="card-header bg-slate">
-          <span class="icon">📐</span>
-          <h2>臨床腎功能推估與行動不便推估公式（肌酸酐、eGFR、膝長、尺骨長、圈度推算）</h2>
+          <div class="card-header-left">
+            <span class="icon">📐</span>
+            <h2>臨床腎功能推估與行動不便推估公式（肌酸酐、eGFR、膝長、尺骨長、圈度推算）</h2>
+          </div>
         </div>
         <div class="card-body overflow-x">
           <table class="data-table">
@@ -361,6 +374,19 @@
             </tbody>
           </table>
         </div>
+        <!-- 食物代換表下方：引導設計菜單按鈕 -->
+        <div class="guided-btn-toolbar" style="padding: 14px 20px; background: #f0fdfa; border-top: 2px solid #ccfbf1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">💡</span>
+            <div>
+              <strong style="color: #0f766e; font-size: 14px;">智慧配餐引導助理</strong>
+              <div style="font-size: 12px; color: #64748b;">依序引導開立【乳製品 ➔ 蔬菜 ➔ 水果 ➔ 豆魚蛋肉類、油脂類及堅果種子】，快速完成全日營養菜單！</div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-teal btn-guided-start" id="btnStartGuidedWizard" onclick="startGuidedMenuWizard()" style="font-size: 15px; font-weight: 700; padding: 10px 22px; border-radius: 8px; box-shadow: 0 3px 8px rgba(13,148,136,0.3); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            ✨ 請引導我設計菜單
+          </button>
+        </div>
       </div>
 
     </section>
@@ -371,12 +397,14 @@
       <!-- 三大營養素熱量百分比與克數計算表 (原系統介面) -->
       <div class="card mb-3">
         <div class="card-header bg-teal">
-          <span class="icon">⚖️</span>
-          <h2>三大營養素比例設定與目標克數計算過程</h2>
+          <div class="card-header-left">
+            <span class="icon">⚖️</span>
+            <h2>三大營養素比例設定與目標克數計算過程</h2>
+          </div>
           <div class="header-actions-right">
             <button type="button" class="btn btn-secondary" id="btnDiseaseMode" onclick="toggleDiseaseMode()">疾病飲食模式 (解除百分比限制)</button>
             <button class="btn btn-primary" id="btnDiabeticMode">糖尿病、低蛋白飲食</button>
-            <button class="btn btn-purple" id="btnOpenFormulaWindow">💊 商業配方庫</button>
+            
           </div>
         </div>
         <div class="card-body p-0 overflow-x">
@@ -461,6 +489,20 @@
         </div>
       </div>
 
+      <!-- 手機版專屬：每份三大營養素規格表 (依使用者需求放置於熱量計算下方) -->
+      <div class="card mb-3 mobile-macro-specs-card" id="mobileMacroSpecsCard">
+        <div class="card-header bg-teal">
+          <div class="card-header-left">
+            <span class="icon">📖</span>
+            <h2>每份食物三大營養素與熱量規格</h2>
+          </div>
+          <span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:11px; padding:3px 8px; border-radius:12px;">衛福部標準代換</span>
+        </div>
+        <div class="card-body p-2" id="mobileMacroSpecsList">
+          <!-- 由 JS 動態渲染各類食物每份規格 -->
+        </div>
+      </div>
+
       <!-- 六大類食物代換規劃表格 -->
       <div class="card mt-3">
         <div class="card-body p-0 overflow-x">
@@ -492,10 +534,10 @@
                   各餐次分配份數
                   <label class="meal-count-selector">餐次：
                     <select id="mealCountSelect" class="meal-count-select" aria-label="選擇餐次數量">
-                      <option value="3">3 餐</option>
+                      <option value="3" selected>3 餐</option>
                       <option value="4">4 餐</option>
                       <option value="5">5 餐</option>
-                      <option value="6" selected>6 餐</option>
+                      <option value="6">6 餐</option>
                     </select>
                   </label>
                   <small>(可輸入小數點如 1.5、2.5)</small>
@@ -506,10 +548,10 @@
                 <th rowspan="2" class="col-total-kcal">總熱量 (kcal)</th>
               </tr>
               <tr class="header-sub">
-                <th>蛋白質 (P)</th>
-                <th>脂肪 (F)</th>
-                <th>醣類 (C)</th>
-                <th>熱量</th>
+                <th class="col-macro-cell">蛋白質 (P)</th>
+                <th class="col-macro-cell">脂肪 (F)</th>
+                <th class="col-macro-cell">醣類 (C)</th>
+                <th class="col-macro-cell">熱量 (kcal)</th>
                 <th class="meal-col meal-b">早</th>
                 <th class="meal-col meal-ms">早點</th>
                 <th class="meal-col meal-l">午</th>
@@ -532,10 +574,10 @@
                 <td class="meal-summary-cell meal-summary-as" id="sumAs">2</td>
                 <td class="meal-summary-cell meal-summary-d" id="sumD">11</td>
                 <td class="meal-summary-cell meal-summary-ns" id="sumNs">1</td>
-                <td class="val-green" id="sumProteinGrams">65.0 g</td>
-                <td class="val-orange" id="sumFatGrams">43.0 g</td>
-                <td class="val-red" id="sumCarbGrams">187.0 g</td>
-                <td class="val-blue" id="sumTotalCalories">1425 kcal</td>
+                <td class="val-green" id="sumProteinGrams">65</td>
+                <td class="val-orange" id="sumFatGrams">43</td>
+                <td class="val-red" id="sumCarbGrams">187</td>
+                <td class="val-blue" id="sumTotalCalories">1425</td>
               </tr>
               <tr class="subtotal-row percent-row">
                 <td colspan="5" class="subtotal-title"><strong>三大營養素百分比</strong></td>
@@ -563,20 +605,24 @@
           <strong>菜單開立 &amp; AI 食材顏色智慧辨識</strong>
           <small class="text-muted">（相同菜名自動合併顯示｜AI 自動辨識食材純色膠囊標籤）</small>
         </div>
-        <div class="toolbar-right">
-          <label>預設餐次：</label>
-          <select id="cboMealFilter" class="form-select">
-            <option value="全部">全部餐次 (顯示所有)</option>
-            <option value="早餐" selected>早餐</option>
-            <option value="早點">早點</option>
-            <option value="午餐">午餐</option>
-            <option value="午點">午點</option>
-            <option value="晚餐">晚餐</option>
-            <option value="晚點">晚點</option>
-          </select>
-          <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
-          <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
-          <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
+        <div class="toolbar-right" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <label style="font-weight: 600;">預設餐次：</label>
+            <select id="cboMealFilter" class="form-select">
+              <option value="全部">全部餐次 (顯示所有)</option>
+              <option value="早餐" selected>早餐</option>
+              <option value="早點">早點</option>
+              <option value="午餐">午餐</option>
+              <option value="午點">午點</option>
+              <option value="晚餐">晚餐</option>
+              <option value="晚點">晚點</option>
+            </select>
+            <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
+            <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
+          </div>
+          <div>
+            <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
+          </div>
         </div>
       </div>
 
@@ -591,20 +637,64 @@
           <table class="data-table menu-grid" id="menuRecipeTable">
             <thead>
               <tr>
-                <th style="width: 120px;">餐次</th>
-                <th style="width: 200px;">菜名</th>
-                <th style="width: 180px;">食材名稱</th>
-                <th style="width: 140px;">食物類別</th>
-                <th style="width: 100px;">份數 (Ex)</th>
-                <th style="width: 110px;">生重克數 (g)</th>
-                <th style="width: 120px;">食材顏色</th>
-                <th style="width: 80px;">操作</th>
+                <th style="width: 100px;">餐次</th>
+                <th style="width: 170px;">菜名</th>
+                <th style="width: 160px;">食材名稱</th>
+                <th style="width: 110px;">食物類別</th>
+                <th style="width: 85px;">份數 (Ex)</th>
+                <th style="width: 95px;">生重克數 (g)</th>
+                <th style="width: 110px; text-align: center;">食材顏色</th>
+                <th style="width: 70px; text-align: center;">操作</th>
               </tr>
             </thead>
             <tbody id="menuRecipeTableBody">
               <!-- 動態生成食材列 -->
             </tbody>
+            <tfoot id="menuRecipeTableFoot" style="display: none;">
+              <tr>
+                <td colspan="4" style="text-align: right; color: #0f766e; font-size: 13px;">
+                  📋 <strong>菜單食材營養加總合計：</strong>
+                </td>
+                <td id="recipeSumEx" style="text-align: center; color: #0f766e; font-weight: 800;">0</td>
+                <td id="recipeSumWeight" style="text-align: center; color: #334155;">0 g</td>
+                <td style="text-align: center; color: #64748b; font-size: 12px;" id="recipeColorSummary">—</td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
+        </div>
+      </div>
+
+      <!-- 菜單食材營養素即時總結卡片 -->
+      <div class="card mt-2" style="background: linear-gradient(135deg, #f0fdf4 0%, #e6f6f3 100%); border: 1px solid #99dcd0;">
+        <div class="card-body" style="padding: 12px 18px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 22px;">🥗</span>
+              <div>
+                <strong style="color: #0f766e; font-size: 14px;">已由衛福部食品營養成分資料庫 (2025版) 自動比對計算</strong>
+                <div style="font-size: 12px; color: #475569;" id="recipeNutrientRatioDesc">三大營養素熱量佔比：碳水化合物 0% ｜ 蛋白質 0% ｜ 脂肪 0%</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">總熱量</div>
+                <strong id="cardRecipeTotalKcal" style="color: #dc2626; font-size: 16px;">0 kcal</strong>
+              </div>
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">蛋白質</div>
+                <strong id="cardRecipeTotalProtein" style="color: #16a34a; font-size: 16px;">0 g</strong>
+              </div>
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">脂肪</div>
+                <strong id="cardRecipeTotalFat" style="color: #d97706; font-size: 16px;">0 g</strong>
+              </div>
+              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">醣類 (碳水)</div>
+                <strong id="cardRecipeTotalCarbs" style="color: #2563eb; font-size: 16px;">0 g</strong>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -622,7 +712,7 @@
               <small class="text-muted">衛生福利部最新食品成分檢索表 ｜ 每 100g 可食部分之完整營養成分規格</small>
             </div>
           </div>
-          <div class="header-actions-right">
+          <div class="header-actions-right" style="display: none;">
             <input type="text" id="inCompositionSearch" class="form-input" style="width: 220px;" placeholder="快速搜尋食品名稱、俗名、編號...">
             <select id="cboCompositionCategory" class="form-select" style="width: 170px;">
               <option value="全部">全部類別</option>
@@ -649,8 +739,153 @@
           </div>
         </div>
         <div class="card-body">
+          <!-- 菜單食材所有營養素自動加總合計面板 -->
+          <div class="card mb-3" style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px;">📊</span>
+                <strong style="color: #166534; font-size: 15px;">菜單開立食材營養素加總分析（依據食材生重克數精確換算）：</strong>
+              </div>
+              <span id="lblCompMenuStats" style="font-size: 12px; color: #15803d; font-weight: 600;">菜單共 10 項食材</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; font-size: 13px;">
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">總熱量 (Calories)</div>
+                <strong id="sumCompKcal" style="color: #dc2626; font-size: 15px;">0 kcal</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">粗蛋白 (Protein)</div>
+                <strong id="sumCompProtein" style="color: #16a34a; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">粗脂肪 (Fat)</div>
+                <strong id="sumCompFat" style="color: #d97706; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">飽和脂肪 (Sat. Fat)</div>
+                <strong id="sumCompSatFat" style="color: #b45309; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">總碳水 (Carbs)</div>
+                <strong id="sumCompCarbs" style="color: #2563eb; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">膳食纖維 (Fiber)</div>
+                <strong id="sumCompFiber" style="color: #059669; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">糖質總量 (Sugars)</div>
+                <strong id="sumCompSugars" style="color: #7c3aed; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">水分 (Water)</div>
+                <strong id="sumCompWater" style="color: #0284c7; font-size: 15px;">0 g</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鈉 (Sodium, Na)</div>
+                <strong id="sumCompNa" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鉀 (Potassium, K)</div>
+                <strong id="sumCompK" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鈣 (Calcium, Ca)</div>
+                <strong id="sumCompCa" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鎂 (Magnesium, Mg)</div>
+                <strong id="sumCompMg" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鐵 (Iron, Fe)</div>
+                <strong id="sumCompFe" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">鋅 (Zinc, Zn)</div>
+                <strong id="sumCompZn" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">磷 (Phosphorus, P)</div>
+                <strong id="sumCompP" style="color: #475569; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">膽固醇 (Cholesterol)</div>
+                <strong id="sumCompCholesterol" style="color: #e11d48; font-size: 15px;">0 mg</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- 菜單開立食材之完整營養成分資料明細表 -->
+          <div class="card mb-4" style="border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                      <!-- 衛福部國人膳食營養素參考攝取量 (DRIs 第九版草案) 達成率比對評估 -->
+          <div class="card mb-3" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 22px;">🎯</span>
+                <div>
+                  <strong style="color: #0f766e; font-size: 15px;">國人膳食營養素參考攝取量 (DRIs 第九版草案) 比對分析</strong>
+                  <div style="font-size: 11px; color: #64748b;">依據菜單總和即時判定熱量與各項營養素是否符合建議攝取量 (RDA / AI / CDRR)</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="cboDriAgeGroup" style="font-size: 13px; font-weight: 600; color: #334155;">選擇年齡層 / 生命期：</label>
+                <select id="cboDriAgeGroup" class="form-select" style="min-width: 220px; font-weight: 600; color: #0f766e; border-color: #0d9488;" onchange="onDriAgeGroupChange(this.value)">
+                  <!-- 動態載入 DRIs 第九版年齡層選單 -->
+                </select>
+              </div>
+            </div>
+            <!-- 各項營養素指標符合度進度卡片 -->
+            <div id="driComplianceContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px;">
+              <!-- 動態生成指標卡片 -->
+            </div>
+          </div>
+
+          <div style="background: #f1f5f9; padding: 10px 16px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 18px;">📝</span>
+                <strong style="color: #0f766e; font-size: 14px;">菜單開立食材營養成分明細列表（依各食材開立克數換算各項營養素）</strong>
+              </div>
+              <span style="font-size: 12px; color: #64748b;">各欄位數值已按該食材之生重 (g) 換算</span>
+            </div>
+            <div class="table-scroll-container" style="max-height: 40vh;">
+              <table class="data-table" id="menuCompositionItemsTable">
+                <thead>
+                  <tr style="background: #f8fafc; font-size: 12px; white-space: nowrap;">
+                    <th>餐次</th>
+                    <th>菜名</th>
+                    <th>食材名稱</th>
+                    <th style="min-width: 160px;">資料庫樣品名稱</th>
+                    <th>生重 (g)</th>
+                    <th style="text-align: right;">熱量 (kcal)</th>
+                    <th style="text-align: right;">粗蛋白 (g)</th>
+                    <th style="text-align: right;">粗脂肪 (g)</th>
+                    <th style="text-align: right;">飽和脂肪 (g)</th>
+                    <th style="text-align: right;">總碳水 (g)</th>
+                    <th style="text-align: right;">膳食纖維 (g)</th>
+                    <th style="text-align: right;">糖質總量 (g)</th>
+                    <th style="text-align: right;">水分 (g)</th>
+                    <th style="text-align: right;">鈉 (mg)</th>
+                    <th style="text-align: right;">鉀 (mg)</th>
+                    <th style="text-align: right;">鈣 (mg)</th>
+                    <th style="text-align: right;">鎂 (mg)</th>
+                    <th style="text-align: right;">鐵 (mg)</th>
+                    <th style="text-align: right;">鋅 (mg)</th>
+                    <th style="text-align: right;">磷 (mg)</th>
+                    <th style="text-align: right;">膽固醇 (mg)</th>
+                  </tr>
+                </thead>
+                <tbody id="menuCompositionItemsBody">
+                  <!-- 動態注入菜單開立之食材 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 依使用者需求：隱藏下方官方資料檢索 (如有需要亦可從彈窗樣品選擇器選取) -->
+          <div id="sectionOfficialCompQuery" style="display: none;">
           <div class="query-info-banner">
-            <span>📋 檢索結果：共 <strong id="lblCompositionCount" class="text-teal">2,213</strong> 項食品（總收錄 2,213 項官方食品成分）</span>
+            <span>📋 官方資料庫檢索：共 <strong id="lblCompositionCount" class="text-teal">2,213</strong> 項食品（總收錄 2,213 項官方食品成分）</span>
             <span class="text-muted">💡 數值單位：每 100 g 可食部分之含量 ｜ 點擊食材亦可加入菜單</span>
           </div>
           <div class="table-scroll-container" style="max-height: 65vh;">
@@ -677,6 +912,54 @@
               </tbody>
             </table>
           </div>
+          </div><!-- /#sectionOfficialCompQuery -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 5: 臨床商業營養配方庫 (Commercial Formulas DB) -->
+    <section id="tab-formulas" class="tab-content">
+      <div class="card">
+        <div class="card-header bg-purple">
+          <div class="composition-header-title">
+            <span class="icon">🍼</span>
+            <div>
+              <h2>臨床商業營養配方庫 (Commercial Formulas)</h2>
+              <small class="text-muted">臨床常用特殊營養品、管灌配方、透析/慢性腎臟病、糖尿病低GI與腫瘤濃縮高蛋白營養品規格清單</small>
+            </div>
+          </div>
+          <div class="header-actions-right">
+            <input type="text" id="inFormulaSearch" class="form-input" style="width: 240px;" placeholder="快速搜尋配方名稱、規格、備註..." oninput="filterFormulasPage()">
+            <select id="cboFormulaCategory" class="form-select" style="width: 170px;" onchange="filterFormulasPage()">
+              <option value="全部">全部配方分類</option>
+              <option value="均衡營養">均衡管灌/口飲</option>
+              <option value="糖尿病">糖尿病穩醣/低GI</option>
+              <option value="腎臟病">慢性腎病/洗腎透析</option>
+              <option value="腫瘤重症">腫瘤癌症/重症高蛋白</option>
+              <option value="其他特殊">低氮澱粉/特殊模組</option>
+            </select>
+            <button class="btn btn-warning" onclick="clearFormulaSearch()">❌ 清除</button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-scroll-container">
+            <table class="data-table" id="pageFormulaTable">
+              <thead>
+                <tr>
+                  <th style="min-width: 180px;">配方品名</th>
+                  <th style="min-width: 130px;">規格包裝</th>
+                  <th style="min-width: 110px;">蛋白質 (g)</th>
+                  <th style="min-width: 110px;">脂肪 (g)</th>
+                  <th style="min-width: 110px;">醣類 (g)</th>
+                  <th style="min-width: 130px;">總熱量 (kcal)</th>
+                  <th>適用對象與臨床備註</th>
+                </tr>
+              </thead>
+              <tbody id="pageFormulaTableBody">
+                <!-- 由 JS 動態注入配方資料 -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -685,6 +968,76 @@
   </div><!-- /.app-layout -->
 
   <!-- 彈出視窗 1：衛福部食物代換表查詢 (261項) -->
+    <!-- 彈出視窗：選取資料庫樣品名稱 (2025版 2,213項) -->
+  <div class="modal-overlay" id="modalSampleSelector">
+    <div class="modal-box modal-lg" style="max-width: 860px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header bg-blue">
+        <div class="modal-title">
+          <span>📗 選取食品成分資料庫樣品名稱</span>
+          <small>衛生福利部食品成分資料庫 (2025 UPDATE1) ｜ 快速搜尋並指定精確樣品比對計算</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalSampleSelector')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; overflow: hidden;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            當前菜單項目：<span id="lblTargetMealBadge" class="badge" style="background:#e0f2fe; color:#0369a1; padding:2px 6px;">早餐</span>
+            <strong id="lblTargetFoodTitle" style="color: #0f766e; margin-left: 6px; font-size: 14px;">食材名稱</strong>
+          </div>
+          <button class="btn btn-outline" style="padding: 3px 10px; font-size: 12px;" onclick="resetTargetSampleToAuto()">🔄 恢復 AI 自動比對</button>
+        </div>
+        <div class="query-search-bar" style="display: flex; gap: 10px; margin-bottom: 0;">
+          <input type="text" id="inSampleSearch" class="form-input flex-1" placeholder="輸入樣品名稱、俗名搜尋 (例：高麗菜、甘藍、雞胸肉、豆腐...)" oninput="filterSampleSelectorList()">
+          <select id="cboSampleCategory" class="form-select" style="width: 170px;" onchange="filterSampleSelectorList()">
+            <option value="全部">全部類別</option>
+            <option value="穀物類">穀物類</option>
+            <option value="澱粉類">澱粉類</option>
+            <option value="堅果及種子類">堅果及種子類</option>
+            <option value="豆類">豆類</option>
+            <option value="蔬菜類">蔬菜類</option>
+            <option value="菇類">菇類</option>
+            <option value="藻類">藻類</option>
+            <option value="水果類">水果類</option>
+            <option value="肉類">肉類</option>
+            <option value="魚貝類">魚貝類</option>
+            <option value="蛋類">蛋類</option>
+            <option value="乳品類">乳品類</option>
+            <option value="油脂類">油脂類</option>
+            <option value="糖類">糖類</option>
+            <option value="飲料類">飲料類</option>
+            <option value="糕餅點心類">糕餅點心類</option>
+            <option value="加工調理食品及其他類">加工調理食品及其他類</option>
+            <option value="調味料及香辛料類">調味料及香辛料類</option>
+          </select>
+          <button class="btn btn-warning" onclick="clearSampleSearch()">❌ 清除</button>
+        </div>
+        <div style="font-size: 12px; color: #64748b;">
+          符合條件樣品：<strong id="lblSampleCount" style="color: #0f766e;">0</strong> 筆（點選「選用此樣品」立即套用換算）
+        </div>
+        <div class="table-scroll-container" style="flex: 1; max-height: 52vh; overflow-y: auto;">
+          <table class="data-table" id="sampleSelectorTable">
+            <thead>
+              <tr style="background: #f1f5f9; position: sticky; top: 0; z-index: 2; font-size: 12px;">
+                <th style="width: 90px;">整合代碼</th>
+                <th style="width: 110px;">食物分類</th>
+                <th>樣品名稱</th>
+                <th>俗名 / 別名</th>
+                <th style="text-align: right; width: 85px;">熱量 (kcal)</th>
+                <th style="text-align: right; width: 75px;">粗蛋白</th>
+                <th style="text-align: right; width: 75px;">粗脂肪</th>
+                <th style="text-align: right; width: 75px;">總碳水</th>
+                <th style="width: 95px; text-align: center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="sampleSelectorTableBody">
+              <!-- 動態生成樣品清單 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="modalExchangeQuery">
     <div class="modal-box modal-lg">
       <div class="modal-header bg-blue">
@@ -771,6 +1124,80 @@
     </div>
   </div>
 
+  <!-- 菜單設計引導精靈 Modal (Guided Menu Wizard) -->
+  <div class="modal-overlay" id="modalGuidedMenuWizard">
+    <div class="modal-box modal-lg" style="max-width: 920px; max-height: 92vh; display: flex; flex-direction: column;">
+      <div class="modal-header bg-teal">
+        <div class="modal-title">
+          <span>✨ 智慧引導菜單設計嚮導</span>
+          <small id="wizardStepSubtitle">步驟引導：依序開立乳製品、蔬菜、水果、豆魚蛋肉、油脂及堅果種子</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalGuidedMenuWizard')">&times;</button>
+      </div>
+      
+      <!-- 步驟進度條 -->
+      <div class="wizard-stepper-container" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 14px 20px;">
+        <div class="wizard-stepper" id="wizardStepperNav">
+          <!-- JS 動態生成步驟標籤 -->
+        </div>
+      </div>
+
+      <div class="modal-body" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto;">
+        
+        <!-- 當前步驟提示說明卡片 -->
+        <div id="wizardStepNotice" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-weight: 700; color: #166534; font-size: 15px;" id="wizardStepTitleText">第 1 步：開立乳製品</div>
+            <div style="font-size: 13px; color: #15803d; margin-top: 2px;" id="wizardStepDescText">建議每天攝取 1~2 杯奶類，提供優質蛋白質與豐富的鈣質。</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 13px; font-weight: 600; color: #334155;">分配至餐次：</label>
+            <select id="wizardTargetMeal" class="form-select" style="width: 100px; padding: 4px 8px; font-weight: 600;">
+              <option value="早餐">早餐</option>
+              <option value="午餐">午餐</option>
+              <option value="晚餐">晚餐</option>
+              <option value="早點">早點</option>
+              <option value="午點">午點</option>
+              <option value="晚點">晚點</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 搜尋與快速加入列 -->
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="wizardSearchInput" class="form-input flex-1" placeholder="🔍 搜尋本步驟食材（例如：低脂鮮乳、高麗菜、奇異果...）" oninput="filterWizardFoodList()">
+          <span style="font-size: 12px; color: #64748b;">點擊下方食物卡片即可快速加入該餐次</span>
+        </div>
+
+        <!-- 食物清單卡片展示區 -->
+        <div id="wizardFoodListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; max-height: 260px; overflow-y: auto; padding: 4px 2px;">
+          <!-- JS 動態生成食物卡片 -->
+        </div>
+
+        <!-- 本次引導已加入食材摘要清單 -->
+        <div style="border-top: 1px dashed #cbd5e1; padding-top: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 14px; color: #0f766e;">📋 本引導已加入之食材菜單清單 (<span id="wizardAddedCount">0</span> 項)</strong>
+            <button type="button" class="btn btn-outline" style="padding: 2px 8px; font-size: 12px;" onclick="clearWizardAddedItems()">清空本次引導項目</button>
+          </div>
+          <div id="wizardAddedItemsList" style="min-height: 50px; max-height: 120px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 13px;">
+            <div style="color: #94a3b8; text-align: center; padding: 10px;">尚未加入任何食材，請從上方點選食物加入。</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 底部操作按鈕 -->
+      <div class="modal-footer" style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn btn-outline" id="btnWizardPrev" onclick="prevGuidedStep()" style="display: none;">⬅ 上一步</button>
+        <div style="display: flex; gap: 10px; margin-left: auto;">
+          <button type="button" class="btn btn-warning" onclick="closeModal('modalGuidedMenuWizard')">關閉</button>
+          <button type="button" class="btn btn-teal" id="btnWizardNext" onclick="nextGuidedStep()" style="font-weight: 700; padding: 8px 20px;">下一步 ➔</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 警告提示橫幅 Modal/Toast -->
   <div id="ratioAlertBanner" class="alert-banner" style="display: none;">
     <span class="alert-icon">⚠️</span>
@@ -798,9 +1225,10 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261106-2210"></script>
-  <script src="food_exchange_db.js?v=20261106-2210"></script>
-  <script src="app_data.js?v=20261106-2210"></script>
-  <script src="app.js?v=20261106-2210"></script>
+  <script src="food_composition_2025.js?v=20261104-2345"></script>
+  <script src="food_exchange_db.js?v=20261104-2345"></script>
+  <script src="app_data.js?v=20261104-2345"></script>
+  <script src="dris_data.js?v=20261104-2345"></script>
+  <script src="app.js?v=20261104-2345"></script>
 </body>
 </html>
