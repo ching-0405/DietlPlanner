@@ -464,8 +464,8 @@ function calcMacroTargets() {
   // 同步顯示脂質與蛋白質的目標熱量文字
   const lblSyncF = document.getElementById("lblSyncKcalFat");
   const lblSyncP = document.getElementById("lblSyncKcalProt");
-  if (lblSyncF) lblSyncF.innerText = `${Math.round(targetKcal * (ratioF / 100.0))} kcal`;
-  if (lblSyncP) lblSyncP.innerText = `${Math.round(targetKcal * (ratioP / 100.0))} kcal`;
+  if (lblSyncF) lblSyncF.innerText = `${Math.round(targetKcal)} kcal`;
+  if (lblSyncP) lblSyncP.innerText = `${Math.round(targetKcal)} kcal`;
 
   // 1. 醣類: kcal * (C%) / 4
   const carbKcal = targetKcal * (ratioC / 100.0);
