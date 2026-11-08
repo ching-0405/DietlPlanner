@@ -141,6 +141,7 @@ function initAssessment() {
     const tdeeText = document.getElementById("valTdee").innerText;
     const tdee = parseFloat(tdeeText) || 2000;
     document.getElementById("inTargetKcal").value = Math.round(tdee);
+    calcMacroTargets();
     calcExchangeTotals();
     syncSidebarClientCard();
     alert(`已將 TDEE (${Math.round(tdee)} kcal) 套用至第 2 頁目標熱量！`);
@@ -172,6 +173,7 @@ function resetNewClient() {
     document.getElementById("inWeight").value = "65";
     document.getElementById("inTargetKcal").value = "1800";
     calcAssessment();
+    calcMacroTargets();
     calcExchangeTotals();
     syncSidebarClientCard();
     switchTab("tab-assessment");
@@ -363,6 +365,7 @@ function renderQuickCalcButtons(ibw, cbw) {
 
 function applyQuickKcal(kcal) {
   document.getElementById("inTargetKcal").value = kcal;
+  calcMacroTargets();
   calcExchangeTotals();
   alert(`已將速算熱量 ${kcal} kcal 套用至目標熱量！`);
 }
@@ -461,8 +464,8 @@ function calcMacroTargets() {
   // 同步顯示脂質與蛋白質的目標熱量文字
   const lblSyncF = document.getElementById("lblSyncKcalFat");
   const lblSyncP = document.getElementById("lblSyncKcalProt");
-  if (lblSyncF) lblSyncF.innerText = `${Math.round(targetKcal)} kcal`;
-  if (lblSyncP) lblSyncP.innerText = `${Math.round(targetKcal)} kcal`;
+  if (lblSyncF) lblSyncF.innerText = `${Math.round(targetKcal * (ratioF / 100.0))} kcal`;
+  if (lblSyncP) lblSyncP.innerText = `${Math.round(targetKcal * (ratioP / 100.0))} kcal`;
 
   // 1. 醣類: kcal * (C%) / 4
   const carbKcal = targetKcal * (ratioC / 100.0);
