@@ -2799,11 +2799,11 @@ function insertRecipeItemAfter(index) {
   const newItem = {
     meal: meal,
     dish: dish,
-    food: "新食材",
+    food: "",
     category: "自訂食材",
     ex: 1,
     rawWeight: 100,
-    color: "白色",
+    color: "",
     sampleName: null
   };
 
