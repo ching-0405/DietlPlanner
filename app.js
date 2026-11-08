@@ -610,7 +610,7 @@ function renderExchangeTable() {
   const tbody = document.getElementById("exchangeTableBody");
   tbody.innerHTML = exchangesData.map((item, idx) => {
     return `
-      <tr data-recipe-index="${realIndex}">
+      <tr>
         <td class="cat-cell">${item.icon} ${item.category}</td>
         <td class="col-macro-cell">${item.p}</td>
         <td class="col-macro-cell">${item.f}</td>
@@ -932,7 +932,7 @@ function renderMenuRecipes() {
     `;
 
     return `
-      <tr>
+      <tr data-recipe-index="${realIndex}">
         <td style="width: 125px;">
           <div style="display: flex; align-items: center; gap: 4px;">
             <button type="button" class="btn btn-teal" style="padding: 2px 7px; font-size: 13px; line-height: 1.2; border-radius: 4px; flex-shrink: 0;" title="在下方新增一列餐次/菜名/食材" onclick="insertRecipeItemAfter(${realIndex})">➕</button>
