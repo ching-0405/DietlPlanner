@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=1794142414">
+  <link rel="stylesheet" href="style.css?v=1794144133">
 </head>
 <body>
 
@@ -125,9 +125,9 @@
                 <td class="unit">必填</td>
               </tr>
               <tr class="row-chart-no">
-                <td class="lbl">編號</td>
+                <td class="lbl">病歷號 / 編號</td>
                 <td><input type="text" id="inChartNo" class="form-input" value="P001"></td>
-                <td class="unit"></td>
+                <td class="unit">編號</td>
               </tr>
               <tr>
                 <td class="lbl">生理性別</td>
@@ -555,11 +555,11 @@
                       <option value="6">6 餐</option>
                     </select>
                   </label>
-                  <small>(可輸入小數點如 1.5、2.5)</small>
+                  
                 </th>
-                <th rowspan="2" class="col-total-p">蛋白質 (g)</th>
-                <th rowspan="2" class="col-total-f">脂肪 (g)</th>
-                <th rowspan="2" class="col-total-c">醣類 (g)</th>
+                <th rowspan="2" class="col-total-p">總蛋白質 (g)</th>
+                <th rowspan="2" class="col-total-f">總脂肪 (g)</th>
+                <th rowspan="2" class="col-total-c">總醣類 (g)</th>
                 <th rowspan="2" class="col-total-kcal">總熱量 (kcal)</th>
               </tr>
               <tr class="header-sub">
@@ -582,13 +582,13 @@
             <tbody class="subtotal-tbody">
               <tr class="subtotal-row grams-row">
                 <td colspan="5" class="subtotal-title"><strong>三大營養素加總克數</strong></td>
-                <td class="val-blue count-summary-value" id="sumTotalEx" aria-hidden="true"></td>
-                <td class="meal-summary-cell meal-summary-b count-summary-value" id="sumB" aria-hidden="true"></td>
-                <td class="meal-summary-cell meal-summary-ms count-summary-value" id="sumMs" aria-hidden="true"></td>
-                <td class="meal-summary-cell meal-summary-l count-summary-value" id="sumL" aria-hidden="true"></td>
-                <td class="meal-summary-cell meal-summary-as count-summary-value" id="sumAs" aria-hidden="true"></td>
-                <td class="meal-summary-cell meal-summary-d count-summary-value" id="sumD" aria-hidden="true"></td>
-                <td class="meal-summary-cell meal-summary-ns count-summary-value" id="sumNs" aria-hidden="true"></td>
+                <td class="val-blue" id="sumTotalEx">23</td>
+                <td class="meal-summary-cell meal-summary-b" id="sumB">5</td>
+                <td class="meal-summary-cell meal-summary-ms" id="sumMs">1</td>
+                <td class="meal-summary-cell meal-summary-l" id="sumL">11</td>
+                <td class="meal-summary-cell meal-summary-as" id="sumAs">2</td>
+                <td class="meal-summary-cell meal-summary-d" id="sumD">11</td>
+                <td class="meal-summary-cell meal-summary-ns" id="sumNs">1</td>
                 <td class="val-green" id="sumProteinGrams">65</td>
                 <td class="val-orange" id="sumFatGrams">43</td>
                 <td class="val-red" id="sumCarbGrams">187</td>
@@ -596,7 +596,7 @@
               </tr>
               <tr class="subtotal-row percent-row">
                 <td colspan="5" class="subtotal-title"><strong>三大營養素百分比</strong></td>
-                <td class="text-muted"></td>
+                <td class="text-muted">—</td>
                 <td id="mealSummaryPlaceholder" colspan="6" class="text-center font-sm text-muted"></td>
                 <td class="val-green" id="pctProtein">18.6 %</td>
                 <td class="val-orange" id="pctFat">27.7 %</td>
@@ -1345,6 +1345,6 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
-<script src="app.js?v=20261108-2131"></script>
+<script src="app.js?v=1794144133"></script>
 </body>
 </html>

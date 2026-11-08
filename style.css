@@ -1118,11 +1118,6 @@ body:not(.mobile-mode) .exchange-table {
   background: #f0fdf4;
 }
 
-/* 保留欄位寬度，但不在表格下方顯示設計份數與餐次份數加總。 */
-.exchange-table .count-summary-value {
-  visibility: hidden;
-}
-
 .subtotal-row.grams-row td {
   font-size: 15px !important;
   padding: 8px 6px;
@@ -1305,20 +1300,6 @@ body.mobile-mode .val-highlight {
 
 body.mobile-mode .form-table td {
   padding: 6px 4px;
-}
-
-body.mobile-mode .form-table {
-  table-layout: fixed;
-}
-
-body.mobile-mode .form-table .cell-bmi-badge {
-  width: 105px;
-  white-space: nowrap;
-}
-
-body.mobile-mode .form-table .cell-bmi-badge .badge {
-  padding: 3px 5px;
-  font-size: 11px;
 }
 
 body.mobile-mode .navbar {
@@ -2509,6 +2490,15 @@ body.mobile-mode .subtotal-title {
   padding-left: 6px !important;
 }
 
+/* 手機版隱藏病歷號及後方編號欄位 */
+body.mobile-mode .row-chart-no,
+@media (max-width: 768px) {
+  .row-chart-no {
+    display: none !important;
+  }
+}
+
+
 /* 菜單開立：手機版餐次與菜名輸入框自適應寬度，徹底解決方框過小問題 */
 #menuRecipeTable {
   min-width: 780px !important; /* 確保在任何裝置下有足夠寬度進行水平滾動，避免 8 欄相互擠壓 */
@@ -2555,4 +2545,50 @@ body.mobile-mode .subtotal-title {
   box-sizing: border-box !important;
   width: 100% !important;
   min-width: 0 !important;
+}
+
+/* 手機版個案評估：病歷號 / 編號完全隱藏 (包含 mobile-mode 與 max-width 768px/900px) */
+body.mobile-mode .row-chart-no,
+@media (max-width: 900px) {
+  .row-chart-no,
+  tr.row-chart-no,
+  #inChartNoRow {
+    display: none !important;
+  }
+}
+
+
+/* 餐次選擇器樣式放大優化 (電腦版與手機版) */
+.meal-count-selector {
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-left: 6px !important;
+}
+
+.meal-count-select {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  border: 1.5px solid #0d9488 !important;
+  background-color: #ffffff !important;
+  color: #0f766e !important;
+  cursor: pointer !important;
+  outline: none !important;
+  min-height: 32px !important;
+}
+
+body.mobile-mode .meal-count-selector,
+@media (max-width: 768px) {
+  .meal-count-selector {
+    font-size: 13.5px !important;
+  }
+  .meal-count-select {
+    font-size: 13.5px !important;
+    padding: 3px 8px !important;
+    min-height: 30px !important;
+  }
 }
