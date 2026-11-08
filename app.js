@@ -914,10 +914,15 @@ function updateMealChipsBar() {
 
   const activeMeals = getActiveMealDefinitions();
 
+  const proteinGroups = getDesignedProteinCategories().map(category => ({
+    key: category,
+    label: getFoodCategoryLabel(category),
+    matches: itemCategory => itemCategory === category
+  }));
   const categoryGroups = [
     { key: "乳品類", label: getDesignedDairyLabel(), matches: category => category.includes("奶") || category.includes("乳") },
     { key: "全穀雜糧", label: "全穀雜糧", matches: category => category.includes("穀") || category.includes("米食") || category.includes("麵食") },
-    { key: "豆魚蛋肉", label: getDesignedProteinLabel(), matches: category => category.includes("豆魚蛋肉") },
+    ...proteinGroups,
     { key: "蔬菜類", label: "蔬菜類", matches: category => category === "蔬菜類" },
     { key: "水果類", label: "水果類", matches: category => category === "水果類" },
     { key: "油脂與堅果種子", label: "油脂與堅果種子", matches: category => category.includes("油脂") || category.includes("堅果") }
@@ -1025,10 +1030,11 @@ function updateMealChipsBar() {
 }
 
 function getMenuFoodCategoryKey(category) {
+  if (PROTEIN_EXCHANGE_CATEGORIES.includes(category)) return category;
   const normalized = normalizeFoodCategory(category);
   if (normalized === "乳品類") return "乳品類";
   if (normalized === "全穀雜糧") return "全穀雜糧";
-  if (normalized === "豆魚蛋肉") return "豆魚蛋肉";
+  if (normalized === "豆魚蛋肉") return getDesignedProteinCategories()[0] || "豆魚蛋肉";
   if (normalized === "蔬菜類") return "蔬菜類";
   if (normalized === "水果類") return "水果類";
   if (normalized === "油脂與堅果種子") return "油脂與堅果種子";
@@ -1883,10 +1889,16 @@ const PROTEIN_EXCHANGE_CATEGORIES = [
   "豆魚蛋肉類(高脂)"
 ];
 
-function getDesignedProteinTypes() {
-  return exchangesData
+function getDesignedProteinCategories() {
+  const designed = exchangesData
     .filter(item => PROTEIN_EXCHANGE_CATEGORIES.includes(item.category) && Number(item.ex) > 0)
-    .map(item => item.category.match(/\((低脂|中脂|高脂)\)/)?.[1])
+    .map(item => item.category);
+  return designed.length > 0 ? designed : PROTEIN_EXCHANGE_CATEGORIES;
+}
+
+function getDesignedProteinTypes() {
+  return getDesignedProteinCategories()
+    .map(category => category.match(/\((低脂|中脂|高脂)\)/)?.[1])
     .filter(Boolean);
 }
 
@@ -1905,6 +1917,12 @@ function getFoodCategoryOptions() {
         label: getFoodCategoryLabel(dairyCategory)
       }));
     }
+    if (category === "豆魚蛋肉") {
+      return getDesignedProteinCategories().map(proteinCategory => ({
+        value: proteinCategory,
+        label: getFoodCategoryLabel(proteinCategory)
+      }));
+    }
     return [{ value: category, label: getFoodCategoryLabel(category) }];
   });
 }
@@ -1913,6 +1931,9 @@ function getRecipeCategoryOptionValue(category, options) {
   if (options.some(option => option.value === category)) return category;
   if (normalizeFoodCategory(category) === "乳品類") {
     return getDesignedDairyCategories()[0];
+  }
+  if (normalizeFoodCategory(category) === "豆魚蛋肉") {
+    return getDesignedProteinCategories()[0];
   }
   return category || "自訂食材";
 }
