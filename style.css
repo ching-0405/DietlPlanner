@@ -1118,6 +1118,10 @@ body:not(.mobile-mode) .exchange-table {
   background: #f0fdf4;
 }
 
+.exchange-table .count-summary-value {
+  visibility: hidden;
+}
+
 .subtotal-row.grams-row td {
   font-size: 15px !important;
   padding: 8px 6px;
