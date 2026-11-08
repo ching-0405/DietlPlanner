@@ -1844,15 +1844,64 @@ function printPrescriptionReport() {
       </tr>`;
   });
 
-  const menuRowsHtml = menuRecipes.map(recipe => `
-    <tr>
-      <td>${escapeHtml(recipe.meal)}</td>
-      <td>${escapeHtml(recipe.dish || "—")}</td>
-      <td>${escapeHtml(recipe.food)}</td>
-      <td style="text-align:right;">${formatNumber(recipe.ex, 1)} 份</td>
-      <td style="text-align:right;">${recipe.rawWeight === "" || recipe.rawWeight == null ? "—" : `${formatNumber(recipe.rawWeight, 1)} g`}</td>
-    </tr>
-  `).join("");
+  const exchangeMealLabels = { b: "早", ms: "早點", l: "午", as: "午點", d: "晚", ns: "晚點" };
+  const exchangeMealHeaders = activeMealKeys
+    .map(key => `<th class="numeric">${exchangeMealLabels[key]}</th>`)
+    .join("");
+  const exchangeRowsHtml = exchangesData.map(item => {
+    const mealCells = activeMealKeys
+      .map(key => `<td class="numeric">${formatNumber(item[key], 1)}</td>`)
+      .join("");
+    return `
+      <tr>
+        <td>${escapeHtml(item.icon)} ${escapeHtml(item.category)}</td>
+        <td class="numeric">${formatNumber(item.p, 1)}</td>
+        <td class="numeric">${formatNumber(item.f, 1)}</td>
+        <td class="numeric">${formatNumber(item.c, 1)}</td>
+        <td class="numeric">${formatNumber(item.kcal, 0)}</td>
+        <td class="numeric" style="font-weight:bold;">${formatNumber(item.ex, 1)}</td>
+        ${mealCells}
+        <td class="numeric">${formatNumber(item.p * item.ex, 1)}</td>
+        <td class="numeric">${formatNumber(item.f * item.ex, 1)}</td>
+        <td class="numeric">${formatNumber(item.c * item.ex, 1)}</td>
+        <td class="numeric">${formatNumber(item.kcal * item.ex, 0)}</td>
+      </tr>`;
+  }).join("");
+  const exchangeTotals = exchangesData.reduce((totals, item) => {
+    totals.ex += Number(item.ex) || 0;
+    totals.p += (Number(item.p) || 0) * (Number(item.ex) || 0);
+    totals.f += (Number(item.f) || 0) * (Number(item.ex) || 0);
+    totals.c += (Number(item.c) || 0) * (Number(item.ex) || 0);
+    totals.kcal += (Number(item.kcal) || 0) * (Number(item.ex) || 0);
+    return totals;
+  }, { ex: 0, p: 0, f: 0, c: 0, kcal: 0 });
+  const exchangeMealTotals = activeMealKeys.map(key => exchangesData.reduce(
+    (total, item) => total + (Number(item[key]) || 0), 0
+  ));
+  const exchangeTotalMealCells = exchangeMealTotals
+    .map(total => `<td class="numeric">${formatNumber(total, 1)}</td>`)
+    .join("");
+
+  const menuRowsHtml = [];
+  for (let index = 0; index < menuRecipes.length;) {
+    const meal = menuRecipes[index].meal;
+    let end = index;
+    while (end < menuRecipes.length && menuRecipes[end].meal === meal) end += 1;
+    for (let rowIndex = index; rowIndex < end; rowIndex += 1) {
+      const recipe = menuRecipes[rowIndex];
+      menuRowsHtml.push(`
+        <tr>
+          ${rowIndex === index ? `<td rowspan="${end - index}" class="meal-group-cell">${escapeHtml(meal)}</td>` : ""}
+          <td>${escapeHtml(recipe.dish || "—")}</td>
+          <td>${escapeHtml(recipe.food)}</td>
+          <td class="numeric">${formatNumber(recipe.ex, 1)} 份</td>
+          <td class="numeric">${recipe.rawWeight === "" || recipe.rawWeight == null ? "—" : `${formatNumber(recipe.rawWeight, 1)} g`}</td>
+        </tr>
+      `);
+    }
+    index = end;
+  }
+  const menuRows = menuRowsHtml.join("");
 
   const compositionSum = {
     kcal: 0, protein: 0, fat: 0, saturatedFat: 0, carbs: 0, fiber: 0,
@@ -1925,7 +1974,12 @@ function printPrescriptionReport() {
         .highlight { font-weight: bold; color: #0f766e; }
         .footer { margin-top: 30px; text-align: right; font-size: 13px; color: #64748b; }
         .numeric { text-align: right; white-space: nowrap; }
+        .macro-table { width: 72%; margin-left: 0; }
+        .macro-table th, .macro-table td { width: 20%; }
+        .macro-table th:first-child, .macro-table td:first-child { width: 40%; }
+        .meal-group-cell { vertical-align: middle; font-weight: bold; background: #f8fafc; }
         @media print { body { padding: 10mm; } .section-title { break-after: avoid; } table { break-inside: avoid; } }
+        @media screen and (max-width: 700px) { .macro-table { width: 100%; } }
       </style>
     </head>
     <body>
@@ -1954,25 +2008,57 @@ function printPrescriptionReport() {
       </table>
 
       <div class="section-title">二、三大營養素目標熱量與克數分配</div>
-      <table>
+      <table class="macro-table">
         <tr><th>三大營養素</th><th class="numeric">目標熱量</th><th class="numeric">百分比</th><th class="numeric">目標克數</th></tr>
         ${macroRowsHtml}
         <tr><th>合計</th><th class="numeric">${formatNumber(totalKcal, 0)} kcal</th><th class="numeric">${formatNumber(macroDefinitions.reduce((sum, macro) => sum + macro.ratio, 0), 1)}%</th><th></th></tr>
       </table>
 
-      <div class="section-title">三、客製化飲食菜單規劃</div>
+      <div class="section-title">三、食物代換表設計份數</div>
       <table>
-        <tr><th>餐次</th><th>菜名</th><th>食材名稱</th><th class="numeric">份數</th><th class="numeric">克數</th></tr>
-        ${menuRowsHtml || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">尚未開立菜單食材</td></tr>'}
+        <tr>
+          <th rowspan="2">食物大類</th>
+          <th colspan="4">每份三大營養素</th>
+          <th rowspan="2" class="numeric">設計份數</th>
+          ${activeMealKeys.length ? `<th colspan="${activeMealKeys.length}">設計餐次</th>` : ""}
+          <th colspan="4">設計份數加總</th>
+        </tr>
+        <tr>
+          <th class="numeric">蛋白質 (g)</th>
+          <th class="numeric">脂肪 (g)</th>
+          <th class="numeric">醣類 (g)</th>
+          <th class="numeric">熱量 (kcal)</th>
+          ${exchangeMealHeaders}
+          <th class="numeric">總蛋白質 (g)</th>
+          <th class="numeric">總脂肪 (g)</th>
+          <th class="numeric">總醣類 (g)</th>
+          <th class="numeric">總熱量 (kcal)</th>
+        </tr>
+        ${exchangeRowsHtml}
+        <tr>
+          <th colspan="5">三大營養素加總克數</th>
+          <th class="numeric">${formatNumber(exchangeTotals.ex, 1)}</th>
+          ${exchangeTotalMealCells}
+          <th class="numeric">${formatNumber(exchangeTotals.p, 1)}</th>
+          <th class="numeric">${formatNumber(exchangeTotals.f, 1)}</th>
+          <th class="numeric">${formatNumber(exchangeTotals.c, 1)}</th>
+          <th class="numeric">${formatNumber(exchangeTotals.kcal, 0)}</th>
+        </tr>
       </table>
 
-      <div class="section-title">四、食品營養成分資料庫：食材加總營養素</div>
+      <div class="section-title">四、客製化飲食菜單規劃</div>
+      <table>
+        <tr><th>餐次</th><th>菜名</th><th>食材名稱</th><th class="numeric">份數</th><th class="numeric">克數</th></tr>
+        ${menuRows || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">尚未開立菜單食材</td></tr>'}
+      </table>
+
+      <div class="section-title">五、食品營養成分資料庫：食材加總營養素</div>
       <p style="font-size:12px;color:#64748b;margin:0 0 8px;">依菜單各食材開立克數，套用衛生福利部食品營養成分資料庫 (2025版) 換算加總。</p>
       <table>
         ${compositionRowsHtml.join("")}
       </table>
 
-      <div class="section-title">五、營養師專業指導與衛教叮嚀</div>
+      <div class="section-title">六、營養師專業指導與衛教叮嚀</div>
       <div style="border:1px solid #cbd5e1;padding:12px;border-radius:6px;background:#f8fafc;font-size:14px;">
         1. 每日維持規律三餐與點心，補充足量水分（建議每日至少 2000 ml）。<br>
         2. 烹調宜清淡，以蒸、煮、滷、涼拌為原則，避免油炸及高鈉加工食品。<br>
