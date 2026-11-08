@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261108-2244">
+  <link rel="stylesheet" href="style.css?v=20261108-2250">
 </head>
 <body>
 
@@ -656,6 +656,7 @@
         </div>
         <div class="toolbar-right" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span id="mealPendingSummary" class="meal-pending-toolbar-note" hidden></span>
             <label style="font-weight: 600;">預設餐次：</label>
             <select id="cboMealFilter" class="form-select">
               <option value="全部">全部餐次 (顯示所有)</option>
@@ -1312,6 +1313,6 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
-<script src="app.js?v=20261108-2244"></script>
+<script src="app.js?v=20261108-2250"></script>
 </body>
 </html>
