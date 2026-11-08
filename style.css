@@ -2691,6 +2691,10 @@ body.mobile-mode .row-chart-no,
   width: 90px !important;
 }
 
+#menuRecipeTable tr.meal-group-start td {
+  border-top: 3px solid #94a3b8 !important;
+}
+
 /* 餐次分配不符合設計份數時，整列明確提示 */
 #exchangeTableBody tr.allocation-invalid {
   background-color: #fff1f2 !important;

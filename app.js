@@ -1062,6 +1062,7 @@ function renderMenuRecipes() {
 
   tbody.innerHTML = filtered.map((r, i) => {
     const realIndex = menuRecipes.indexOf(r);
+    const startsNewMealGroup = i > 0 && filtered[i - 1].meal !== r.meal;
     const normalizedRecipeCategory = normalizeFoodCategory(r.category, r.food);
     const isNonPortionSeasoning = normalizedRecipeCategory === "調味" || normalizedRecipeCategory === "調味蔬菜";
     if (isNonPortionSeasoning) {
@@ -1102,7 +1103,7 @@ function renderMenuRecipes() {
     ` : `<span style="color: #94a3b8; font-size: 12px;">—</span>`;
 
     return `
-      <tr id="recipeRow_${realIndex}" data-index="${realIndex}">
+      <tr id="recipeRow_${realIndex}" data-index="${realIndex}" class="${startsNewMealGroup ? "meal-group-start" : ""}">
         <td class="col-meal-cell" style="min-width: 120px; width: 125px;">
           <div style="display: flex; align-items: center; gap: 4px;">
             <button type="button" class="btn btn-teal" style="padding: 2px 7px; font-size: 13px; line-height: 1.2; border-radius: 4px; flex-shrink: 0;" title="在下方新增一列餐次/菜名/食材" onclick="insertRecipeItemAfter(${realIndex})">➕</button>
@@ -1117,12 +1118,6 @@ function renderMenuRecipes() {
           <input type="text" class="form-input" style="width: 100%; min-width: 110px; padding: 5px 8px; font-size: 13px; font-weight: 600;" value="${r.food || ""}" placeholder="輸入食材" 
             oninput="updateFoodName(${realIndex}, this.value)" onchange="updateFoodNameAndRender(${realIndex}, this.value)">
         </td>
-        <td class="col-cat-cell" style="min-width: 110px; width: 115px;">
-          <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
-            onchange="updateRecipeCategory(${realIndex}, this.value)" title="可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）">
-            ${categoryOptions.map(option => `<option value="${option.value}" ${getRecipeCategoryOptionValue(r.category, categoryOptions) === option.value ? "selected" : ""}>${option.label}</option>`).join("")}
-          </select>
-        </td>
         <td class="col-ex-cell val-red" style="min-width: 75px; width: 80px;">
           ${isNonPortionSeasoning
             ? `<span class="text-muted" title="調味料與調味蔬菜不計入食物代換份數">不計份數</span>`
@@ -1133,8 +1128,14 @@ function renderMenuRecipes() {
           <input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="1" min="1" 
             value="${r.rawWeight}" oninput="updateRecipeRawWeight(${realIndex}, this.value)">
         </td>
-        <td style="text-align: center;">${colorTagHtml}</td>
-        <td style="text-align: center;"><button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteRecipeItem(${realIndex})">✖ 刪除</button></td>
+        <td class="col-color-cell" style="text-align: center;">${colorTagHtml}</td>
+        <td class="col-cat-cell" style="min-width: 110px; width: 115px;">
+          <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
+            onchange="updateRecipeCategory(${realIndex}, this.value)" title="可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）">
+            ${categoryOptions.map(option => `<option value="${option.value}" ${getRecipeCategoryOptionValue(r.category, categoryOptions) === option.value ? "selected" : ""}>${option.label}</option>`).join("")}
+          </select>
+        </td>
+        <td class="col-operation-cell" style="text-align: center;"><button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteRecipeItem(${realIndex})">✖ 刪除</button></td>
       </tr>
     `;
   }).join("");
@@ -1707,16 +1708,16 @@ function updateFoodName(index, val) {
     // 即時精準同步該列 DOM (使用 id="recipeRow_${index}")
     const row = document.getElementById(`recipeRow_${index}`) || document.querySelectorAll("#menuRecipeTableBody tr")[index];
     if (row) {
-      const weightInput = row.children[5] ? row.children[5].querySelector("input") : null;
+      const weightInput = row.querySelector(".col-weight-cell input");
       if (weightInput && menuRecipes[index].rawWeight !== undefined) {
         weightInput.value = menuRecipes[index].rawWeight;
       }
-      const catSelect = row.children[3] ? row.children[3].querySelector("select") : null;
+      const catSelect = row.querySelector(".col-cat-cell select");
       if (catSelect) {
         const categoryOptions = getFoodCategoryOptions();
         catSelect.value = getRecipeCategoryOptionValue(menuRecipes[index].category, categoryOptions);
       }
-      const colorCell = row.children[6];
+      const colorCell = row.querySelector(".col-color-cell");
       if (colorCell) {
         colorCell.innerHTML = menuRecipes[index].color 
           ? `<span class="color-tag ${menuRecipes[index].color.replace("/", "\/")}" title="AI 自動辨識：${menuRecipes[index].color}">${menuRecipes[index].color}</span>`
@@ -1773,7 +1774,7 @@ function updateRecipeEx(index, val) {
       
       const row = document.getElementById(`recipeRow_${index}`) || document.querySelectorAll("#menuRecipeTableBody tr")[index];
       if (row) {
-        const weightInput = row.children[5] ? row.children[5].querySelector("input") : null;
+        const weightInput = row.querySelector(".col-weight-cell input");
         if (weightInput) weightInput.value = calcWeight;
       }
     }
