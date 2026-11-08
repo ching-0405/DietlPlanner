@@ -284,12 +284,12 @@
         </div>
       </div>
 
-      <!-- 臨床腎功能推估與行動不便推估 -->
+      <!-- 身高與腎功能推估 -->
       <div class="card mt-4">
         <div class="card-header bg-slate">
           <div class="card-header-left">
             <span class="icon">📐</span>
-            <h2>臨床腎功能推估與行動不便推估公式（肌酸酐、eGFR、膝長、尺骨長、圈度推算）</h2>
+            <h2>身高與腎功能推估</h2>
           </div>
         </div>
         <div class="card-body overflow-x">
@@ -298,9 +298,9 @@
               <tr>
                 <th style="width: 200px;">推估項目</th>
                 <th style="width: 240px;">測量輸入數值</th>
-                <th>推估公式說明</th>
                 <th style="width: 140px;">推估結果</th>
                 <th style="width: 120px;">操作狀態</th>
+                <th>推估公式說明</th>
               </tr>
             </thead>
             <tbody>
@@ -315,9 +315,9 @@
                     </div>
                   </div>
                 </td>
-                <td class="text-muted">2021 CKD-EPI 公式：依性別、年齡及肌酸酐精準估算腎絲球過濾率</td>
                 <td><strong class="text-teal" id="valEgfr">98.5</strong> ml/min</td>
                 <td><span class="badge badge-normal" id="badgeEgfr">正常</span></td>
+                <td class="text-muted">2021 CKD-EPI 公式：依性別、年齡及肌酸酐精準估算腎絲球過濾率</td>
               </tr>
               <tr>
                 <td><strong>膝長推估身高 (Chumlea)</strong><br><small class="text-muted">臥床/駝背者身高估算</small></td>
@@ -330,9 +330,9 @@
                     </div>
                   </div>
                 </td>
-                <td class="text-muted">Chumlea 公式：男 64.19 - (0.04×年齡) + (2.02×膝長) / 女 84.88 - (0.24×年齡) + (1.83×膝長)</td>
                 <td><strong class="text-teal" id="valEstKneeHeight">164.0</strong> cm</td>
                 <td><button class="btn btn-outline" onclick="applyEstHeight('knee')">套用為身高</button></td>
+                <td class="text-muted">Chumlea 公式：男 64.19 - (0.04×年齡) + (2.02×膝長) / 女 84.88 - (0.24×年齡) + (1.83×膝長)</td>
               </tr>
               <tr>
                 <td><strong>尺骨長推估身高 (Ulna)</strong><br><small class="text-muted">手肘彎曲量測至手腕骨</small></td>
@@ -345,9 +345,9 @@
                     </div>
                   </div>
                 </td>
-                <td class="text-muted">依 MUST 臨床營養篩檢指引尺骨長與身高對照換算標準</td>
                 <td><strong class="text-teal" id="valEstUlnaHeight">168.0</strong> cm</td>
                 <td><button class="btn btn-outline" onclick="applyEstHeight('ulna')">套用為身高</button></td>
+                <td class="text-muted">依 MUST 臨床營養篩檢指引尺骨長與身高對照換算標準</td>
               </tr>
               <tr>
                 <td><strong>圈度推估體重 (Chumlea)</strong><br><small class="text-muted">無法站立量秤體重之推估</small></td>
@@ -367,9 +367,9 @@
                     </div>
                   </div>
                 </td>
-                <td class="text-muted">Chumlea 圈度估算法：結合膝長、小腿圍、臂圍及肩胛下皮褶綜合估算</td>
                 <td><strong class="text-teal" id="valEstCircWeight">65.2</strong> kg</td>
                 <td><button class="btn btn-outline" onclick="applyEstWeight()">套用為體重</button></td>
+                <td class="text-muted">Chumlea 圈度估算法：結合膝長、小腿圍、臂圍及肩胛下皮褶綜合估算</td>
               </tr>
             </tbody>
           </table>
