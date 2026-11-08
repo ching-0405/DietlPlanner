@@ -1557,6 +1557,11 @@ body.mobile-mode .exchange-table {
   font-weight: 700;
 }
 
+body.mobile-mode .meal-guidance-table th:nth-child(2),
+body.mobile-mode .meal-guidance-table td:nth-child(2) {
+  display: none !important;
+}
+
 .meal-guidance-table tbody th {
   background: #f8fafc;
   color: #0f172a;
