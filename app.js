@@ -10,6 +10,8 @@ let exchangesData = [];
 let activeMealKeys = ["b", "l", "d"];
 const mealKeyOrder = ["b", "ms", "l", "as", "d", "ns"];
 const mealCountMap = {
+  1: ["b"],
+  2: ["b", "d"],
   3: ["b", "l", "d"],
   4: ["b", "ms", "l", "d"],
   5: ["b", "ms", "l", "as", "d"],
