@@ -996,30 +996,61 @@ body {
 .exchange-table .col-total-macro { width: 5.5%; }
 .exchange-table .col-total-kcal { width: 6%; }
 
-.exchange-table th, .exchange-table td {
-  padding: 5px 3px;
-  border: 1px solid #cbd5e1;
-  text-align: center;
-  white-space: normal;
-  overflow-wrap: anywhere;
+/* ==========================================
+   食物代換表 (Exchange Table) - 放大字體與不折行樣式
+   ========================================== */
+.exchange-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
+.exchange-table th,
+.exchange-table td {
+  padding: 7px 5px;
+  border: 1px solid #cbd5e1;
+  text-align: center;
+}
+
+/* 表頭文字放大且絕不分行 */
 .exchange-table thead th {
   background: #f1f5f9;
   color: #1e293b;
   font-weight: 700;
-  font-size: 11px;
+  font-size: 13px;
+  white-space: nowrap !important;
+  vertical-align: middle;
 }
 
 .exchange-table thead .header-main th {
-  font-size: 12px;
+  font-size: 14px;
+  padding: 8px 6px;
 }
 
+/* 確保「總蛋白質 (g)」等總量表頭與子表頭不折行 */
+.col-total-p,
+.col-total-f,
+.col-total-c,
+.col-total-kcal {
+  white-space: nowrap !important;
+  min-width: 82px;
+  padding: 6px 8px !important;
+}
+
+.exchange-table .col-macro-cell {
+  white-space: nowrap !important;
+  min-width: 48px;
+  font-size: 14px;
+}
+
+/* 食物大類字體放大 */
 .exchange-table td.cat-cell {
   text-align: left;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 15px;
   color: #0f172a;
+  white-space: nowrap;
+  padding-left: 10px;
 }
 
 .exchange-table td.unit-cell {
@@ -1028,114 +1059,44 @@ body {
   color: #475569;
 }
 
+/* 輸入框字體放大與高度調適 */
 .exchange-table input.cell-input {
   width: 100%;
-  max-width: 54px;
   max-width: 100%;
   text-align: center;
-  padding: 5px 2px;
+  padding: 4px 2px;
   border: 1px solid #94a3b8;
   border-radius: 4px;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 15px;
+  height: 32px;
+  color: #0f172a;
 }
 
 @media (min-width: 768px) {
   .exchange-table .meal-ex-input {
     width: 54px;
+    height: 32px;
+    font-size: 15px;
   }
 
   .exchange-table .design-ex-input {
-    width: 58px;
+    width: 60px;
+    height: 32px;
+    font-size: 15px;
   }
 }
 
-.exchange-table th:nth-child(1),
-.exchange-table td:nth-child(1) {
-  width: 14%;
-}
-
-.exchange-table th:nth-child(2),
-.exchange-table td:nth-child(2),
-.exchange-table th:nth-child(3),
-.exchange-table td:nth-child(3),
-.exchange-table th:nth-child(4),
-.exchange-table td:nth-child(4),
-.exchange-table th:nth-child(5),
-.exchange-table td:nth-child(5) {
-  width: 5%;
-}
-
-.exchange-table th:nth-child(6),
-.exchange-table td:nth-child(6) {
-  width: 7%;
-}
-
-.exchange-table th:nth-child(n+7):nth-child(-n+12),
-.exchange-table td:nth-child(n+7):nth-child(-n+12) {
-  width: 6%;
-}
-
-.exchange-table th:nth-child(n+13),
-.exchange-table td:nth-child(n+13) {
-  width: 5.75%;
-}
-
-.exchange-table .design-ex-cell {
-  min-width: 0;
-}
-
-.exchange-table .meal-ex-input:disabled {
-  background: #e2e8f0;
-  color: #64748b;
-  cursor: not-allowed;
-  opacity: 0.75;
-}
-
-.exchange-table .allocation-status {
-  display: block;
-  max-width: 130px;
-  margin-top: 3px;
-  color: #b91c1c;
-  font-size: 11px;
-  line-height: 1.2;
-  white-space: normal;
-}
-
-.exchange-table .allocation-status[hidden] {
-  display: none !important;
-}
-
-.meal-count-selector {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: 8px;
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.meal-count-select {
-  min-width: 62px;
-  padding: 3px 4px;
-  border: 1px solid #94a3b8;
-  border-radius: 4px;
-  background: #ffffff;
-  color: #1e293b;
+/* 各食物大類每列計算出的三大營養素數值 */
+.exchange-table tbody td.val-green,
+.exchange-table tbody td.val-orange,
+.exchange-table tbody td.val-red,
+.exchange-table tbody td.val-blue {
+  font-size: 15px;
   font-weight: 700;
 }
 
-.exchange-table tr.allocation-invalid {
-  background: #fef2f2;
-}
-
-.exchange-table input.cell-input:focus {
-  border-color: #0d9488;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
-}
-
-/* 緊鄰堅果種子下方的加總列 (適度緊湊舒適字體) */
+/* 底部加總列 (三大營養素加總克數 / 百分比) 字體放大清晰 */
 .subtotal-tbody {
   border-top: 2px solid #0d9488;
 }
@@ -1143,7 +1104,7 @@ body {
 .subtotal-row {
   background: #f8fafc;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .subtotal-row.grams-row {
@@ -1151,8 +1112,9 @@ body {
 }
 
 .subtotal-row.grams-row td {
-  font-size: 13px;
-  padding: 6px 4px;
+  font-size: 15px;
+  padding: 8px 6px;
+  white-space: nowrap;
 }
 
 .subtotal-row.percent-row {
@@ -1160,15 +1122,18 @@ body {
 }
 
 .subtotal-row.percent-row td {
-  font-size: 13px;
-  padding: 6px 4px;
+  font-size: 15px;
+  padding: 8px 6px;
+  white-space: nowrap;
 }
 
 .subtotal-title {
   text-align: left !important;
-  padding-left: 12px !important;
+  padding-left: 14px !important;
   color: #0f172a;
-  font-size: 13px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
 }
 
 /* 警示橫幅 Alert Banner */
@@ -1456,7 +1421,7 @@ body.mobile-mode .exchange-table {
   outline: none;
 }
 
-/* 緊鄰堅果種子下方的加總列 */
+/* 緊鄰堅果種子下方的加總列 (清晰舒適大字體) */
 .subtotal-tbody {
   border-top: 2px solid #0d9488;
 }
@@ -1464,7 +1429,7 @@ body.mobile-mode .exchange-table {
 .subtotal-row {
   background: #f8fafc;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 15px !important;
 }
 
 .subtotal-row.grams-row {
@@ -1472,8 +1437,9 @@ body.mobile-mode .exchange-table {
 }
 
 .subtotal-row.grams-row td {
-  font-size: 13px;
-  padding: 6px 4px;
+  font-size: 15px !important;
+  padding: 8px 6px;
+  white-space: nowrap;
 }
 
 .subtotal-row.percent-row {
@@ -1481,15 +1447,18 @@ body.mobile-mode .exchange-table {
 }
 
 .subtotal-row.percent-row td {
-  font-size: 13px;
-  padding: 6px 4px;
+  font-size: 15px !important;
+  padding: 8px 6px;
+  white-space: nowrap;
 }
 
 .subtotal-title {
   text-align: left !important;
-  padding-left: 12px !important;
-  color: #1f2937;
-  font-size: 13px !important;
+  padding-left: 14px !important;
+  color: #0f172a;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
 }
 
 .val-blue { color: #2563eb; font-weight: 700; }
