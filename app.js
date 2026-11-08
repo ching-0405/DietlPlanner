@@ -927,7 +927,9 @@ function updateMealChipsBar() {
       : number.toFixed(1).replace(/\.0$/, "");
   };
 
-  const pendingByCategory = new Map();
+  const pendingByMeal = new Map(
+    activeMeals.map(meal => [meal.key, []])
+  );
   const rows = categoryGroups.map(group => {
     const exchangeItems = exchangesData.filter(item => group.matches(item.category));
     const designPortion = exchangeItems.reduce((sum, item) => sum + (Number(item.ex) || 0), 0);
@@ -942,10 +944,7 @@ function updateMealChipsBar() {
       const cellClass = isComplete ? "meal-portion-complete" : "meal-portion-pending";
       if (!isComplete) {
         const pending = Math.max(required - opened, 0);
-        pendingByCategory.set(
-          group.label,
-          (pendingByCategory.get(group.label) || 0) + pending
-        );
+        pendingByMeal.get(meal.key).push({ label: group.label, portion: pending });
       }
 
       return `
@@ -964,11 +963,6 @@ function updateMealChipsBar() {
     `;
   }).join("");
 
-  const pendingSummary = Array.from(pendingByCategory.entries())
-    .filter(([, portion]) => portion > 0.001)
-    .map(([category, portion]) => `${category}${formatPortion(portion)}份`)
-    .join("、");
-
   container.innerHTML = `
     <div class="meal-guidance-wrap">
       <table class="meal-guidance-table">
@@ -976,14 +970,24 @@ function updateMealChipsBar() {
           <tr>
             <th>食物大類</th>
             <th>設計份數</th>
-            ${activeMeals.map(meal => `<th>${meal.name}</th>`).join("")}
+            ${activeMeals.map(meal => {
+              const pending = pendingByMeal.get(meal.key)
+                .filter(item => item.portion > 0.001)
+                .map(item => `${item.label}${formatPortion(item.portion)}份`)
+                .join("、");
+              return `
+                <th>
+                  ${pending ? `<div class="meal-guidance-pending-label">尚未開立：${pending}</div>` : ""}
+                  <div>${meal.name}</div>
+                </th>
+              `;
+            }).join("")}
           </tr>
         </thead>
         <tbody>
           ${rows || `<tr><td colspan="${activeMeals.length + 2}" class="meal-guidance-empty">尚未設定食物代換份數</td></tr>`}
         </tbody>
       </table>
-      ${pendingSummary ? `<div class="meal-guidance-pending-note">尚未開立：${pendingSummary}</div>` : ""}
       <div class="meal-guidance-note">灰色：該餐次已符合食物大類份數；淡紅色：尚未開立完成。點擊餐次欄位可篩選下方菜單。</div>
     </div>
   `;
