@@ -74,10 +74,6 @@ function applyDeviceModeClass(isMobile) {
   } else {
     document.body.classList.remove("mobile-mode");
   }
-  // 同步切換病歷號列顯示狀態
-  document.querySelectorAll(".row-chart-no").forEach(el => {
-    el.style.display = isMobile ? "none" : "";
-  });
   if (typeof updateSubtotalColspans === "function") {
     updateSubtotalColspans();
   }
