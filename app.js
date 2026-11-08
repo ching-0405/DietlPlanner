@@ -1066,6 +1066,40 @@ function getMenuFoodCategoryKey(category, foodName = "") {
   return normalized;
 }
 
+function getOverDesignedMenuCategories(mealName) {
+  const meal = getActiveMealDefinitions().find(item => item.name === mealName);
+  if (!meal) return new Set();
+
+  const requiredByCategory = new Map();
+  exchangesData.forEach(item => {
+    const categoryKey = getMenuFoodCategoryKey(item.category);
+    const required = Number(item[meal.key]) || 0;
+    requiredByCategory.set(
+      categoryKey,
+      (requiredByCategory.get(categoryKey) || 0) + required
+    );
+  });
+
+  const openedByCategory = new Map();
+  menuRecipes
+    .filter(recipe => recipe.meal === mealName)
+    .forEach(recipe => {
+      const categoryKey = getMenuFoodCategoryKey(recipe.category, recipe.food);
+      openedByCategory.set(
+        categoryKey,
+        (openedByCategory.get(categoryKey) || 0) + (Number(recipe.ex) || 0)
+      );
+    });
+
+  const overDesigned = new Set();
+  openedByCategory.forEach((opened, categoryKey) => {
+    const required = requiredByCategory.get(categoryKey) || 0;
+    if (PROTEIN_EXCHANGE_CATEGORIES.includes(categoryKey) && required <= 0) return;
+    if (opened > required + 0.001) overDesigned.add(categoryKey);
+  });
+  return overDesigned;
+}
+
 function filterByMeal(mealName) {
   document.getElementById("cboMealFilter").value = mealName;
   renderMenuRecipes();
@@ -1082,6 +1116,9 @@ function renderMenuRecipes() {
   const activeMeals = getActiveMealDefinitions();
   const mealOptions = activeMeals.map(m => m.name);
   const categoryOptions = getFoodCategoryOptions();
+  const overDesignedCategoriesByMeal = new Map(
+    activeMeals.map(meal => [meal.name, getOverDesignedMenuCategories(meal.name)])
+  );
 
   let totalEx = 0;
   let totalWeight = 0;
@@ -1097,6 +1134,10 @@ function renderMenuRecipes() {
     const normalizedRecipeCategory = normalizeFoodCategory(r.category, r.food);
     const isNonPortionSeasoning = normalizedRecipeCategory === "調味" || normalizedRecipeCategory === "調味蔬菜";
     const mealDefinition = activeMeals.find(meal => meal.name === r.meal);
+    const normalizedMenuCategory = getMenuFoodCategoryKey(r.category, r.food);
+    const isOverDesigned = overDesignedCategoriesByMeal
+      .get(r.meal)
+      ?.has(normalizedMenuCategory);
     const proteinCategoryMismatch = getProteinCategoryMismatch(
       r.category,
       r.food,
@@ -1140,7 +1181,10 @@ function renderMenuRecipes() {
     ` : `<span style="color: #94a3b8; font-size: 12px;">—</span>`;
 
     return `
-      <tr id="recipeRow_${realIndex}" data-index="${realIndex}" class="${startsNewMealGroup ? "meal-group-start" : ""}">
+      <tr id="recipeRow_${realIndex}" data-index="${realIndex}" class="${[
+        startsNewMealGroup ? "meal-group-start" : "",
+        isOverDesigned ? "recipe-row-over" : ""
+      ].filter(Boolean).join(" ")}">
         <td class="col-meal-cell" style="min-width: 120px; width: 125px;">
           <div style="display: flex; align-items: center; gap: 4px;">
             <button type="button" class="btn btn-teal" style="padding: 2px 7px; font-size: 13px; line-height: 1.2; border-radius: 4px; flex-shrink: 0;" title="在下方新增一列餐次/菜名/食材" onclick="insertRecipeItemAfter(${realIndex})">➕</button>
