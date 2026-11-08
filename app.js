@@ -1157,8 +1157,8 @@ function renderMenuRecipes() {
           <input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="1" min="1" 
             value="${r.rawWeight}" oninput="updateRecipeRawWeight(${realIndex}, this.value)">
         </td>
-        <td class="col-color-cell" style="text-align: center;">${colorTagHtml}</td>
-        <td class="col-cat-cell${proteinCategoryMismatch ? " protein-category-mismatch" : ""}" style="min-width: 110px; width: 115px;">
+        <td class="col-color-cell" style="min-width: 60px; width: 65px; max-width: 65px; text-align: center;">${colorTagHtml}</td>
+        <td class="col-cat-cell${proteinCategoryMismatch ? " protein-category-mismatch" : ""}" style="min-width: 175px; width: 180px;">
           <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
             onchange="updateRecipeCategory(${realIndex}, this.value)" title="${proteinCategoryMismatch ? `脂肪類型不符：${proteinCategoryMismatch}` : "可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）"}">
             ${categoryOptions.map(option => `<option value="${option.value}" ${getRecipeCategoryOptionValue(r.category, categoryOptions) === option.value ? "selected" : ""}>${option.label}</option>`).join("")}

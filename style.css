@@ -1793,7 +1793,7 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
 /* 顏色標籤膠囊 */
 .color-tag {
   display: inline-block;
-  padding: 3px 12px;
+  padding: 3px 8px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 700;
@@ -2750,8 +2750,17 @@ body.mobile-mode .row-chart-no,
 
 #menuRecipeTable td.col-cat-cell,
 #menuRecipeTable th.col-cat-th {
-  min-width: 110px !important;
-  width: 115px !important;
+  min-width: 175px !important;
+  width: 180px !important;
+}
+
+#menuRecipeTable td.col-color-cell,
+#menuRecipeTable th.col-color-th {
+  min-width: 60px !important;
+  width: 65px !important;
+  max-width: 65px !important;
+  padding-left: 3px !important;
+  padding-right: 3px !important;
 }
 
 #menuRecipeTable td.col-ex-cell,
