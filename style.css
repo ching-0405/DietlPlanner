@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --primary: #10b981;
   --primary-hover: #059669;
   --teal-header: #e6f6f3;
@@ -126,10 +126,6 @@ body {
   color: #4b5563;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.nav-label-mobile {
-  display: none;
 }
 
 .nav-tab:hover {
@@ -446,16 +442,22 @@ body {
 }
 
 .ratio-calc-grid th, .ratio-calc-grid td {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid #e2e8f0;
   vertical-align: middle;
+  font-size: 15px;
 }
 
 .ratio-calc-grid thead th {
   background: #f1f5f9;
   color: #1e293b;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 15px;
+}
+
+.ratio-calc-grid .form-input {
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .ratio-calc-grid.disease-mode th:nth-child(5),
@@ -491,10 +493,10 @@ body {
 
 .badge-suggest {
   display: inline-block;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 4px;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .badge-suggest.red { background: #fee2e2; color: #dc2626; }
@@ -638,7 +640,7 @@ body {
 }
 
 .val-highlight {
-  font-size: 17px;
+  font-size: 18px;
   white-space: nowrap;
 }
 
@@ -981,22 +983,6 @@ body {
   font-size: 12px;
 }
 
-@media (min-width: 769px) {
-  .exchange-table {
-    font-size: 14px;
-  }
-
-  .exchange-table thead th,
-  .exchange-table thead .header-main th {
-    font-size: 14px;
-  }
-
-  .exchange-table td.cat-cell,
-  .exchange-table input.cell-input {
-    font-size: 14px;
-  }
-}
-
 .exchange-table .col-category { width: 18%; }
 .exchange-table .col-macro { width: 4%; }
 .exchange-table .col-design-ex { width: 8%; }
@@ -1143,15 +1129,15 @@ body {
   box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
 }
 
-/* 緊鄰堅果種子下方的加總列 */
+/* 緊鄰堅果種子下方的加總列 (適度緊湊舒適字體) */
 .subtotal-tbody {
-  border-top: 3px solid #0d9488;
+  border-top: 2px solid #0d9488;
 }
 
 .subtotal-row {
   background: #f8fafc;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .subtotal-row.grams-row {
@@ -1159,7 +1145,8 @@ body {
 }
 
 .subtotal-row.grams-row td {
-  font-size: 14px;
+  font-size: 13px;
+  padding: 6px 4px;
 }
 
 .subtotal-row.percent-row {
@@ -1167,14 +1154,15 @@ body {
 }
 
 .subtotal-row.percent-row td {
-  font-size: 14px;
+  font-size: 13px;
+  padding: 6px 4px;
 }
 
 .subtotal-title {
   text-align: left !important;
-  padding-left: 16px !important;
+  padding-left: 12px !important;
   color: #0f172a;
-  font-size: 15px !important;
+  font-size: 13px !important;
 }
 
 /* 警示橫幅 Alert Banner */
@@ -1382,84 +1370,6 @@ body.mobile-mode .btn-device-toggle {
   font-size: 11px;
 }
 
-body.mobile-mode .modal-overlay {
-  padding: 12px;
-}
-
-body.mobile-mode .modal-box.modal-lg {
-  width: 100%;
-  max-width: none;
-}
-
-body.mobile-mode #modalExchangeQuery .modal-body {
-  padding: 12px;
-}
-
-body.mobile-mode #modalExchangeQuery .query-search-bar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-}
-
-body.mobile-mode #modalExchangeQuery #inFoodSearch {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
-  height: 42px;
-  font-size: 15px;
-}
-
-body.mobile-mode #modalExchangeQuery #cboCategoryFilter {
-  width: 100% !important;
-  min-width: 0;
-  height: 42px;
-  font-size: 14px;
-}
-
-body.mobile-mode #modalExchangeQuery .query-search-bar .btn {
-  min-width: 82px;
-  height: 42px;
-  white-space: nowrap;
-  font-size: 14px;
-}
-
-@media (max-width: 768px) {
-  .modal-overlay {
-    padding: 10px !important;
-  }
-  .modal-box.modal-lg {
-    width: 100% !important;
-    max-width: none !important;
-  }
-  #modalExchangeQuery .modal-body {
-    padding: 10px !important;
-  }
-  #modalExchangeQuery .query-search-bar {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    gap: 8px !important;
-  }
-  #modalExchangeQuery #inFoodSearch {
-    grid-column: 1 / -1 !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    height: 42px !important;
-    font-size: 15px !important;
-  }
-  #modalExchangeQuery #cboCategoryFilter {
-    width: 100% !important;
-    min-width: 0 !important;
-    height: 42px !important;
-    font-size: 14px !important;
-  }
-  #modalExchangeQuery .query-search-bar .btn {
-    min-width: 82px !important;
-    height: 42px !important;
-    white-space: nowrap !important;
-    font-size: 14px !important;
-  }
-}
-
 /* 試算表底部分頁切換欄 (Bottom Sheet Tabs：在手機外框底部居中) */
 body.mobile-mode .nav-tabs {
   position: fixed;
@@ -1494,14 +1404,6 @@ body.mobile-mode .nav-tab {
   padding: 4px 2px;
   line-height: 1.2;
   box-shadow: none;
-}
-
-body.mobile-mode .nav-label-desktop {
-  display: none;
-}
-
-body.mobile-mode .nav-label-mobile {
-  display: inline;
 }
 
 body.mobile-mode .nav-tab.active {
@@ -1556,20 +1458,32 @@ body.mobile-mode .exchange-table {
 .subtotal-row {
   background: #f8fafc;
   font-weight: 700;
+  font-size: 13px;
 }
 
 .subtotal-row.grams-row {
   background: #f0fdf4;
 }
 
+.subtotal-row.grams-row td {
+  font-size: 13px;
+  padding: 6px 4px;
+}
+
 .subtotal-row.percent-row {
   background: #fefce8;
 }
 
+.subtotal-row.percent-row td {
+  font-size: 13px;
+  padding: 6px 4px;
+}
+
 .subtotal-title {
   text-align: left !important;
-  padding-left: 14px !important;
+  padding-left: 12px !important;
   color: #1f2937;
+  font-size: 13px !important;
 }
 
 .val-blue { color: #2563eb; font-weight: 700; }
@@ -1666,71 +1580,6 @@ body.mobile-mode .exchange-table {
   color: #334155;
   font-weight: 700;
   white-space: nowrap;
-}
-
-/* 手機版菜單開立表：保留可左右滑動，但讓編輯欄位有足夠寬度 */
-body.mobile-mode #menuRecipeTable {
-  min-width: 860px;
-  table-layout: fixed;
-}
-
-body.mobile-mode #menuRecipeTable th,
-body.mobile-mode #menuRecipeTable td {
-  padding: 8px 6px;
-  vertical-align: middle;
-}
-
-body.mobile-mode #menuRecipeTable th:nth-child(1),
-body.mobile-mode #menuRecipeTable td:nth-child(1) {
-  width: 125px !important;
-}
-
-body.mobile-mode #menuRecipeTable th:nth-child(2),
-body.mobile-mode #menuRecipeTable td:nth-child(2) {
-  width: 145px !important;
-}
-
-body.mobile-mode #menuRecipeTable th:nth-child(3),
-body.mobile-mode #menuRecipeTable td:nth-child(3) {
-  width: 165px !important;
-}
-
-body.mobile-mode #menuRecipeTable th:nth-child(5),
-body.mobile-mode #menuRecipeTable td:nth-child(5) {
-  width: 90px !important;
-}
-
-body.mobile-mode #menuRecipeTable td:nth-child(1) select {
-  width: 80px !important;
-  min-width: 80px !important;
-  height: 36px;
-  padding: 4px 6px !important;
-  font-size: 14px !important;
-}
-
-body.mobile-mode #menuRecipeTable td:nth-child(1) .btn {
-  width: 34px;
-  min-width: 34px;
-  height: 36px;
-  padding: 2px 4px !important;
-  font-size: 16px !important;
-}
-
-body.mobile-mode #menuRecipeTable td:nth-child(2) input,
-body.mobile-mode #menuRecipeTable td:nth-child(3) input {
-  width: 100% !important;
-  min-width: 0;
-  height: 36px;
-  padding: 4px 8px !important;
-  font-size: 14px !important;
-}
-
-body.mobile-mode #menuRecipeTable td:nth-child(5) input {
-  width: 72px !important;
-  min-width: 72px;
-  height: 36px;
-  padding: 4px !important;
-  font-size: 14px !important;
 }
 
 /* 顏色標籤膠囊 */
@@ -1869,13 +1718,52 @@ body.mobile-mode #menuRecipeTable td:nth-child(5) input {
   display: flex;
   gap: 10px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-#modalExchangeQuery #cboCategoryFilter {
-  width: 180px;
+.query-search-bar .form-input,
+.query-search-bar #inFoodSearch,
+.query-search-bar #inSampleSearch {
+  flex: 1 1 200px;
+  min-width: 160px;
+  width: auto;
 }
 
-.flex-1 { flex: 1; }
+.query-search-bar .form-select {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.query-search-bar .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .query-search-bar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .query-search-bar .form-input,
+  .query-search-bar #inFoodSearch,
+  .query-search-bar #inSampleSearch {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+  .query-search-bar .form-select {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+  .query-search-bar .btn {
+    width: 100% !important;
+  }
+}
+
+.flex-1 { flex: 1; min-width: 0; }
 
 .query-info-banner {
   background: #eff6ff;
@@ -2222,4 +2110,233 @@ body.mobile-mode .subtotal-title {
   background: #f8fafc;
   padding: 4px 6px;
   border-radius: 4px;
+}
+
+
+/* 每日飲食指南卡片樣式 */
+.food-guide-card {
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.food-guide-card .card-header {
+  padding: 10px 16px;
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+}
+
+.food-guide-card .card-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0;
+}
+
+.food-guide-body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 20px;
+  background: #ffffff;
+}
+
+.food-guide-img-box {
+  flex: 0 0 auto;
+  max-width: 480px;
+  text-align: center;
+}
+
+.food-guide-img-box img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 4px;
+  background: #ffffff;
+}
+
+.food-guide-principles {
+  flex: 1 1 320px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+
+.food-guide-principles h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.food-guide-principles ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.food-guide-principles ul li strong {
+  color: #0f766e;
+}
+
+@media (max-width: 768px) {
+  .food-guide-body {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+  .food-guide-img-box {
+    max-width: 100%;
+  }
+}
+
+
+/* ==========================================
+   衛教處方單預覽與列印樣式 (相容手機與列印輸出)
+   ========================================== */
+#modalPrescriptionReport {
+  z-index: 99999 !important;
+}
+
+.prescription-modal-box {
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 860px;
+  width: 95%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.prescription-sheet {
+  color: #1e293b;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.prescription-sheet .report-header {
+  text-align: center;
+  border-bottom: 2px solid #0d9488;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.prescription-sheet .report-header h2 {
+  margin: 0;
+  color: #0f766e;
+  font-size: 20px;
+}
+
+.prescription-sheet .report-header p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.prescription-sheet .section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0d9488;
+  margin: 16px 0 8px;
+  border-left: 4px solid #0d9488;
+  padding-left: 8px;
+}
+
+.prescription-sheet table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 14px;
+}
+
+.prescription-sheet th,
+.prescription-sheet td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.prescription-sheet th {
+  background: #f1f5f9;
+  font-weight: 600;
+}
+
+.prescription-sheet .highlight-green {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.prescription-sheet .highlight-red {
+  color: #e11d48;
+  font-weight: bold;
+}
+
+.prescription-sheet .highlight-orange {
+  color: #d97706;
+  font-weight: bold;
+}
+
+.prescription-sheet .advice-box {
+  border: 1px solid #cbd5e1;
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: #f8fafc;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.prescription-sheet .report-footer {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px dashed #cbd5e1;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #64748b;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 列印專屬樣式（當在手機或電腦觸發 window.print 時） */
+@media print {
+  body.printing-prescription > *:not(#modalPrescriptionReport) {
+    display: none !important;
+  }
+  body.printing-prescription #modalPrescriptionReport {
+    position: static !important;
+    background: transparent !important;
+    display: block !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  body.printing-prescription .prescription-modal-box {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  body.printing-prescription .modal-header {
+    display: none !important;
+  }
+  body.printing-prescription #prescriptionReportModalBody {
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 15mm 10mm;
+  }
 }

@@ -20,7 +20,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 7, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 5, unit: "mg", type: "AI", max: 7 },
     p: { val: 200, unit: "mg", type: "AI" },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 400, unit: "μg RE", type: "AI", max: 600 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 25 },
+    vitE: { val: 3, unit: "mg α-TE", type: "AI" },
+    vitK: { val: 5, unit: "μg", type: "AI" },
+    vitC: { val: 40, unit: "mg", type: "AI" },
+    vitB1: { val: 0.2, unit: "mg", type: "AI" },
+    vitB2: { val: 0.3, unit: "mg", type: "AI" },
+    niacin: { val: 2, unit: "mg NE", type: "AI" },
+    vitB6: { val: 0.1, unit: "mg", type: "AI" },
+    vitB12: { val: 0.4, unit: "μg", type: "AI" },
+    folate: { val: 70, unit: "μg", type: "AI" }
   },
   {
     id: "7_12m",
@@ -39,7 +50,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 5, unit: "mg", type: "AI", max: 7 },
     p: { val: 300, unit: "mg", type: "AI" },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 250, unit: "μg RE", type: "AI", max: 600 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 35 },
+    vitE: { val: 4, unit: "mg α-TE", type: "AI" },
+    vitK: { val: 10, unit: "μg", type: "AI" },
+    vitC: { val: 50, unit: "mg", type: "AI" },
+    vitB1: { val: 0.3, unit: "mg", type: "AI" },
+    vitB2: { val: 0.4, unit: "mg", type: "AI" },
+    niacin: { val: 3, unit: "mg NE", type: "AI" },
+    vitB6: { val: 0.3, unit: "mg", type: "AI" },
+    vitB12: { val: 0.6, unit: "μg", type: "AI" },
+    folate: { val: 85, unit: "μg", type: "AI" }
   },
   {
     id: "1_3y",
@@ -58,7 +80,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 5, unit: "mg", type: "AI", max: 9 },
     p: { val: 400, unit: "mg", type: "AI", max: 3000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 300, unit: "μg RE", type: "RDA", max: 800 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 50 },
+    vitE: { val: 5, unit: "mg α-TE", type: "AI", max: 100 },
+    vitK: { val: 30, unit: "μg", type: "AI" },
+    vitC: { val: 40, unit: "mg", type: "RDA", max: 400 },
+    vitB1: { val: 0.5, unit: "mg", type: "RDA" },
+    vitB2: { val: 0.6, unit: "mg", type: "RDA" },
+    niacin: { val: 6, unit: "mg NE", type: "RDA", max: 10 },
+    vitB6: { val: 0.6, unit: "mg", type: "RDA", max: 30 },
+    vitB12: { val: 1.0, unit: "μg", type: "RDA" },
+    folate: { val: 170, unit: "μg", type: "RDA", max: 300 }
   },
   {
     id: "4_6y",
@@ -77,7 +110,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 5, unit: "mg", type: "AI", max: 11 },
     p: { val: 500, unit: "mg", type: "AI", max: 3000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 350, unit: "μg RE", type: "RDA", max: 1200 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 50 },
+    vitE: { val: 6, unit: "mg α-TE", type: "AI", max: 130 },
+    vitK: { val: 55, unit: "μg", type: "AI" },
+    vitC: { val: 50, unit: "mg", type: "RDA", max: 650 },
+    vitB1: { val: 0.7, unit: "mg", type: "RDA" },
+    vitB2: { val: 0.8, unit: "mg", type: "RDA" },
+    niacin: { val: 9, unit: "mg NE", type: "RDA", max: 15 },
+    vitB6: { val: 0.8, unit: "mg", type: "RDA", max: 40 },
+    vitB12: { val: 1.2, unit: "μg", type: "RDA" },
+    folate: { val: 200, unit: "μg", type: "RDA", max: 400 }
   },
   {
     id: "7_9y_m",
@@ -96,7 +140,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 8, unit: "mg", type: "AI", max: 15 },
     p: { val: 600, unit: "mg", type: "AI", max: 3000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 400, unit: "μg RE", type: "RDA", max: 1500 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 50 },
+    vitE: { val: 8, unit: "mg α-TE", type: "AI", max: 170 },
+    vitK: { val: 55, unit: "μg", type: "AI" },
+    vitC: { val: 60, unit: "mg", type: "RDA", max: 650 },
+    vitB1: { val: 0.9, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.0, unit: "mg", type: "RDA" },
+    niacin: { val: 11, unit: "mg NE", type: "RDA", max: 20 },
+    vitB6: { val: 1.0, unit: "mg", type: "RDA", max: 40 },
+    vitB12: { val: 1.6, unit: "μg", type: "RDA" },
+    folate: { val: 250, unit: "μg", type: "RDA", max: 500 }
   },
   {
     id: "7_9y_f",
@@ -115,7 +170,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 8, unit: "mg", type: "AI", max: 15 },
     p: { val: 600, unit: "mg", type: "AI", max: 3000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 400, unit: "μg RE", type: "RDA", max: 1500 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 50 },
+    vitE: { val: 8, unit: "mg α-TE", type: "AI", max: 170 },
+    vitK: { val: 55, unit: "μg", type: "AI" },
+    vitC: { val: 60, unit: "mg", type: "RDA", max: 650 },
+    vitB1: { val: 0.8, unit: "mg", type: "RDA" },
+    vitB2: { val: 0.9, unit: "mg", type: "RDA" },
+    niacin: { val: 10, unit: "mg NE", type: "RDA", max: 20 },
+    vitB6: { val: 1.0, unit: "mg", type: "RDA", max: 40 },
+    vitB12: { val: 1.6, unit: "μg", type: "RDA" },
+    folate: { val: 250, unit: "μg", type: "RDA", max: 500 }
   },
   {
     id: "10_12y_m",
@@ -134,7 +200,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 10, unit: "mg", type: "AI", max: 22 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 550, unit: "μg RE", type: "RDA", max: 2000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 10, unit: "mg α-TE", type: "AI", max: 220 },
+    vitK: { val: 60, unit: "μg", type: "AI" },
+    vitC: { val: 80, unit: "mg", type: "RDA", max: 1200 },
+    vitB1: { val: 1.1, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 25 },
+    vitB6: { val: 1.2, unit: "mg", type: "RDA", max: 60 },
+    vitB12: { val: 2.2, unit: "μg", type: "RDA" },
+    folate: { val: 350, unit: "μg", type: "RDA", max: 700 }
   },
   {
     id: "10_12y_f",
@@ -153,7 +230,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 30 },
     zn: { val: 10, unit: "mg", type: "AI", max: 22 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 550, unit: "μg RE", type: "RDA", max: 2000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 10, unit: "mg α-TE", type: "AI", max: 220 },
+    vitK: { val: 60, unit: "μg", type: "AI" },
+    vitC: { val: 80, unit: "mg", type: "RDA", max: 1200 },
+    vitB1: { val: 1.1, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.2, unit: "mg", type: "RDA" },
+    niacin: { val: 13, unit: "mg NE", type: "RDA", max: 25 },
+    vitB6: { val: 1.4, unit: "mg", type: "RDA", max: 60 },
+    vitB12: { val: 2.2, unit: "μg", type: "RDA" },
+    folate: { val: 350, unit: "μg", type: "RDA", max: 700 }
   },
   {
     id: "13_15y_m",
@@ -172,7 +260,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 29 },
     p: { val: 1000, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 750, unit: "μg RE", type: "RDA", max: 2500 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 270 },
+    vitK: { val: 75, unit: "μg", type: "AI" },
+    vitC: { val: 90, unit: "mg", type: "RDA", max: 1800 },
+    vitB1: { val: 1.3, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.5, unit: "mg", type: "RDA" },
+    niacin: { val: 16, unit: "mg NE", type: "RDA", max: 30 },
+    vitB6: { val: 1.5, unit: "mg", type: "RDA", max: 60 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 800 }
   },
   {
     id: "13_15y_f",
@@ -191,7 +290,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 12, unit: "mg", type: "AI", max: 29 },
     p: { val: 1000, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 650, unit: "μg RE", type: "RDA", max: 2500 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 270 },
+    vitK: { val: 75, unit: "μg", type: "AI" },
+    vitC: { val: 90, unit: "mg", type: "RDA", max: 1800 },
+    vitB1: { val: 1.1, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.2, unit: "mg", type: "RDA" },
+    niacin: { val: 13, unit: "mg NE", type: "RDA", max: 30 },
+    vitB6: { val: 1.4, unit: "mg", type: "RDA", max: 60 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 800 }
   },
   {
     id: "16_18y_m",
@@ -210,7 +320,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 1000, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 700, unit: "μg RE", type: "RDA", max: 2600 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 280 },
+    vitK: { val: 75, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 1800 },
+    vitB1: { val: 1.4, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.5, unit: "mg", type: "RDA" },
+    niacin: { val: 16, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.7, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 900 }
   },
   {
     id: "16_18y_f",
@@ -229,7 +350,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 12, unit: "mg", type: "AI", max: 35 },
     p: { val: 1000, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 550, unit: "μg RE", type: "RDA", max: 2600 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 280 },
+    vitK: { val: 75, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 1800 },
+    vitB1: { val: 1.0, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.2, unit: "mg", type: "RDA" },
+    niacin: { val: 12, unit: "mg NE", type: "RDA", max: 30 },
+    vitB6: { val: 1.4, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 900 }
   },
   {
     id: "19_30y_m",
@@ -248,7 +380,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 700, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 120, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.2, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.5, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "19_30y_f",
@@ -267,7 +410,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 12, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 600, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.0, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.1, unit: "mg", type: "RDA" },
+    niacin: { val: 12, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.5, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "31_50y_m",
@@ -286,7 +440,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 700, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 120, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.2, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.5, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "31_50y_f",
@@ -305,7 +470,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 12, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 600, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.0, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.1, unit: "mg", type: "RDA" },
+    niacin: { val: 12, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.5, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "51_64y_m",
@@ -324,7 +500,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 700, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 15, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 120, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.2, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.6, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "51_64y_f",
@@ -343,7 +530,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 12, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 600, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 15, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.0, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.1, unit: "mg", type: "RDA" },
+    niacin: { val: 12, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.6, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "65_74y_m",
@@ -362,7 +560,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 650, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 15, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 120, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.2, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.6, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "65_74y_f",
@@ -381,7 +590,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 12, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 550, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 15, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.0, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.1, unit: "mg", type: "RDA" },
+    niacin: { val: 12, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.6, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "75y_m",
@@ -400,7 +620,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 3000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 650, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 15, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 120, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.2, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.6, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "75y_f",
@@ -419,7 +650,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 10, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 12, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 3000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 550, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 15, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 100, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.0, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.1, unit: "mg", type: "RDA" },
+    niacin: { val: 12, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.6, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.4, unit: "μg", type: "RDA" },
+    folate: { val: 400, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "preg_t1",
@@ -438,7 +680,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 15, unit: "mg", type: "RDA", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 3500 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 600, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 110, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.0, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.1, unit: "mg", type: "RDA" },
+    niacin: { val: 12, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.9, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.6, unit: "μg", type: "RDA" },
+    folate: { val: 600, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "preg_t2",
@@ -457,7 +710,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 30, unit: "mg", type: "RDA", note: "+15 mg", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 3500 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 600, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 110, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.1, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.2, unit: "mg", type: "RDA" },
+    niacin: { val: 13, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.9, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.6, unit: "μg", type: "RDA" },
+    folate: { val: 600, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "preg_t3",
@@ -476,7 +740,18 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 30, unit: "mg", type: "RDA", note: "+15 mg", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 3500 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 600, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 12, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 110, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.2, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.9, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.6, unit: "μg", type: "RDA" },
+    folate: { val: 600, unit: "μg", type: "RDA", max: 1000 }
   },
   {
     id: "lactation",
@@ -495,6 +770,17 @@ const DRIS_NINTH_EDITION = [
     fe: { val: 30, unit: "mg", type: "RDA", note: "+15 mg", max: 40 },
     zn: { val: 15, unit: "mg", type: "AI", max: 35 },
     p: { val: 800, unit: "mg", type: "AI", max: 4000 },
-    cholesterol: { max: 300, unit: "mg" }
+    cholesterol: { max: 300, unit: "mg" },
+    vitA: { val: 1250, unit: "μg RE", type: "RDA", max: 3000 },
+    vitD: { val: 10, unit: "μg", type: "AI", max: 100 },
+    vitE: { val: 15, unit: "mg α-TE", type: "AI", max: 300 },
+    vitK: { val: 90, unit: "μg", type: "AI" },
+    vitC: { val: 140, unit: "mg", type: "RDA", max: 2000 },
+    vitB1: { val: 1.2, unit: "mg", type: "RDA" },
+    vitB2: { val: 1.3, unit: "mg", type: "RDA" },
+    niacin: { val: 14, unit: "mg NE", type: "RDA", max: 35 },
+    vitB6: { val: 1.9, unit: "mg", type: "RDA", max: 80 },
+    vitB12: { val: 2.8, unit: "μg", type: "RDA" },
+    folate: { val: 500, unit: "μg", type: "RDA", max: 1000 }
   }
 ];

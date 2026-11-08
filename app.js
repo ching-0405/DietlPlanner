@@ -16,8 +16,8 @@ const mealCountMap = {
   6: ["b", "ms", "l", "as", "d", "ns"]
 };
 let menuRecipes = [
-  { meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 95, color: "黃色" },
-  { meal: "早餐", dish: "", food: "牛奶", category: "低脂奶", ex: 1, rawWeight: 240, color: "白色" },
+  { meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 70, color: "黃色" },
+  { meal: "早餐", dish: "", food: "牛奶", category: "乳品類", ex: 1, rawWeight: 240, color: "白色" },
   { meal: "早餐", dish: "", food: "燕麥", category: "全穀雜糧", ex: 2, rawWeight: 40, color: "白色" },
   { meal: "午餐", dish: "胡蘿蔔炒雞胸肉", food: "胡蘿蔔", category: "蔬菜類", ex: 1, rawWeight: 100, color: "橙色" },
   { meal: "午餐", dish: "", food: "雞胸肉", category: "豆魚蛋肉", ex: 2, rawWeight: 60, color: "白色" },
@@ -641,8 +641,6 @@ function renderExchangeTable() {
   renderMobileMacroSpecsCard();
   updateSubtotalColspans();
   calcExchangeTotals();
-  updateMenuMealOptions();
-  updateMealChipsBar();
 }
 
 
@@ -842,35 +840,8 @@ function initMenu() {
     openModal("modalExchangeQuery");
   });
   document.getElementById("btnAddCustomItem").addEventListener("click", addCustomRecipeItem);
-  updateMenuMealOptions();
   renderMenuRecipes();
   updateMealChipsBar();
-}
-
-function getActiveMenuMealNames() {
-  const mealNames = {
-    b: "早餐",
-    ms: "早點",
-    l: "午餐",
-    as: "午點",
-    d: "晚餐",
-    ns: "晚點"
-  };
-  return activeMealKeys.map(key => mealNames[key]).filter(Boolean);
-}
-
-function updateMenuMealOptions() {
-  const select = document.getElementById("cboMealFilter");
-  if (!select) return;
-
-  const activeMealNames = getActiveMenuMealNames();
-  Array.from(select.options).forEach(option => {
-    const isAll = option.value === "全部";
-    option.hidden = !isAll && !activeMealNames.includes(option.value);
-  });
-  if (select.value !== "全部" && !activeMealNames.includes(select.value)) {
-    select.value = "全部";
-  }
 }
 
 function updateMealChipsBar() {
@@ -884,7 +855,7 @@ function updateMealChipsBar() {
     { key: "as", name: "午點", cls: "as" },
     { key: "d", name: "晚餐", cls: "d" },
     { key: "ns", name: "晚點", cls: "ns" }
-  ].filter(meal => activeMealKeys.includes(meal.key));
+  ];
 
   container.innerHTML = meals.map(m => {
     const details = exchangesData
@@ -908,15 +879,14 @@ function filterByMeal(mealName) {
 }
 
 function renderMenuRecipes() {
-  updateMenuMealOptions();
   const filter = document.getElementById("cboMealFilter").value;
   const tbody = document.getElementById("menuRecipeTableBody");
-  const activeMealNames = getActiveMenuMealNames();
+  
   const filtered = filter === "全部" 
-    ? menuRecipes.filter(r => activeMealNames.includes(r.meal))
-    : menuRecipes.filter(r => r.meal === filter && activeMealNames.includes(r.meal));
+    ? menuRecipes 
+    : menuRecipes.filter(r => r.meal === filter);
 
-  const mealOptions = activeMealNames;
+  const mealOptions = ["早餐", "早點", "午餐", "午點", "晚餐", "晚點"];
 
   let totalEx = 0;
   let totalWeight = 0;
@@ -956,13 +926,13 @@ function renderMenuRecipes() {
       </select>
     `;
 
-    // 食材顏色：完全由 AI 自動辨識純色膠囊呈現，絕非手動下拉
-    const colorTagHtml = `
+    // 食材顏色：先辨識食材名稱，若無法辨識則空白
+    const colorTagHtml = r.color ? `
       <span class="color-tag ${colorClass}" title="AI 自動辨識：${r.color}">${r.color}</span>
-    `;
+    ` : `<span style="color: #94a3b8; font-size: 12px;">—</span>`;
 
     return `
-      <tr data-recipe-index="${realIndex}">
+      <tr id="recipeRow_${realIndex}" data-index="${realIndex}">
         <td style="width: 125px;">
           <div style="display: flex; align-items: center; gap: 4px;">
             <button type="button" class="btn btn-teal" style="padding: 2px 7px; font-size: 13px; line-height: 1.2; border-radius: 4px; flex-shrink: 0;" title="在下方新增一列餐次/菜名/食材" onclick="insertRecipeItemAfter(${realIndex})">➕</button>
@@ -977,7 +947,12 @@ function renderMenuRecipes() {
           <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px; font-weight: 600;" value="${r.food || ""}" placeholder="輸入食材" 
             oninput="updateFoodName(${realIndex}, this.value)" onchange="updateFoodNameAndRender(${realIndex}, this.value)">
         </td>
-        <td><span class="text-teal font-bold">${r.category || "自訂食材"}</span></td>
+        <td>
+          <select class="form-select" style="padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
+            onchange="updateRecipeCategory(${realIndex}, this.value)" title="可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）">
+            ${STANDARD_FOOD_CATEGORIES.map(cat => `<option value="${cat}" ${(r.category === cat || (!r.category && cat === "自訂食材")) ? "selected" : ""}>${cat}</option>`).join("")}
+          </select>
+        </td>
         <td class="val-red">
           <input type="number" class="form-input" style="width: 70px; text-align: center; padding: 4px;" step="any" min="0.1" 
             value="${r.ex}" oninput="updateRecipeEx(${realIndex}, this.value)">
@@ -1062,7 +1037,18 @@ function updateAllCompositionNutrientSummary() {
     fe: 0,
     zn: 0,
     p: 0,
-    cholesterol: 0
+    cholesterol: 0,
+    vitA: 0,
+    vitD: 0,
+    vitE: 0,
+    vitK: 0,
+    vitC: 0,
+    vitB1: 0,
+    vitB2: 0,
+    niacin: 0,
+    vitB6: 0,
+    vitB12: 0,
+    folate: 0
   };
 
   const rowsHtml = menuRecipes.map((r, idx) => {
@@ -1083,6 +1069,17 @@ function updateAllCompositionNutrientSummary() {
     sum.zn += (nut.zn || 0);
     sum.p += (nut.p || 0);
     sum.cholesterol += (nut.cholesterol || 0);
+    sum.vitA += (nut.vitA || 0);
+    sum.vitD += (nut.vitD || 0);
+    sum.vitE += (nut.vitE || 0);
+    sum.vitK += (nut.vitK || 0);
+    sum.vitC += (nut.vitC || 0);
+    sum.vitB1 += (nut.vitB1 || 0);
+    sum.vitB2 += (nut.vitB2 || 0);
+    sum.niacin += (nut.niacin || 0);
+    sum.vitB6 += (nut.vitB6 || 0);
+    sum.vitB12 += (nut.vitB12 || 0);
+    sum.folate += (nut.folate || 0);
 
     return `
       <tr>
@@ -1114,13 +1111,24 @@ function updateAllCompositionNutrientSummary() {
         <td style="text-align: right;">${nut.zn ? nut.zn.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.p ? nut.p.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.cholesterol ? nut.cholesterol.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.vitA ? nut.vitA.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.vitD ? nut.vitD.toFixed(2) : 0}</td>
+        <td style="text-align: right;">${nut.vitE ? nut.vitE.toFixed(2) : 0}</td>
+        <td style="text-align: right;">${nut.vitK ? nut.vitK.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.vitC ? nut.vitC.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.vitB1 ? nut.vitB1.toFixed(3) : 0}</td>
+        <td style="text-align: right;">${nut.vitB2 ? nut.vitB2.toFixed(3) : 0}</td>
+        <td style="text-align: right;">${nut.niacin ? nut.niacin.toFixed(2) : 0}</td>
+        <td style="text-align: right;">${nut.vitB6 ? nut.vitB6.toFixed(3) : 0}</td>
+        <td style="text-align: right;">${nut.vitB12 ? nut.vitB12.toFixed(2) : 0}</td>
+        <td style="text-align: right;">${nut.folate ? nut.folate.toFixed(1) : 0}</td>
       </tr>
     `;
   }).join("");
 
   const menuTableBody = document.getElementById("menuCompositionItemsBody");
   if (menuTableBody) {
-    menuTableBody.innerHTML = rowsHtml || '<tr><td colspan="21" style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</td></tr>';
+    menuTableBody.innerHTML = rowsHtml || '<tr><td colspan="32" style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</td></tr>';
   }
 
   const setVal = (id, val, unit = "") => {
@@ -1148,6 +1156,17 @@ function updateAllCompositionNutrientSummary() {
   setVal("sumCompZn", sum.zn, "mg");
   setVal("sumCompP", sum.p, "mg");
   setVal("sumCompCholesterol", sum.cholesterol, "mg");
+  setVal("sumCompVitA", sum.vitA, "μg RE");
+  setVal("sumCompVitD", sum.vitD, "μg");
+  setVal("sumCompVitE", sum.vitE, "mg");
+  setVal("sumCompVitK", sum.vitK, "μg");
+  setVal("sumCompVitC", sum.vitC, "mg");
+  setVal("sumCompVitB1", sum.vitB1, "mg");
+  setVal("sumCompVitB2", sum.vitB2, "mg");
+  setVal("sumCompNiacin", sum.niacin, "mg");
+  setVal("sumCompVitB6", sum.vitB6, "mg");
+  setVal("sumCompVitB12", sum.vitB12, "μg");
+  setVal("sumCompFolate", sum.folate, "μg");
 
   // 評估國人膳食營養素參考攝取量 (DRIs 第九版草案) 是否符合
   renderDriCompliance(sum);
@@ -1156,6 +1175,90 @@ function updateAllCompositionNutrientSummary() {
 /**
  * 智慧比對衛福部食品成分資料庫 (2025版，共2,213項)，依據生重克數精確換算完整營養素
  */
+
+/**
+ * 食物代換表智慧對應核心引擎 (當食物代換表中有此食物名稱時，自動匹配 1份(Ex)對應之生重克數)
+ * 水果類、油脂及堅果種子類嚴格以「可食量」為生重標準（非採購毛重）
+ */
+function findOfficialFoodExchangeItem(foodName, category = "") {
+  if (typeof FOOD_EXCHANGE_DB === "undefined" || !Array.isArray(FOOD_EXCHANGE_DB)) return null;
+  const n = (foodName || "").trim().toLowerCase();
+  if (!n) return null;
+
+  // 常見別名快速精準映射
+  const SPECIAL_ALIASES = {
+    "空心菜": "空心菜",
+    "香蕉": "香蕉",
+    "牛奶": "低脂奶",
+    "全脂牛奶": "全脂奶",
+    "低脂牛奶": "低脂奶",
+    "脫脂牛奶": "脫脂奶",
+    "低脂奶": "低脂奶",
+    "全脂奶": "全脂奶",
+    "脫脂奶": "脫脂奶",
+    "低脂鮮乳": "低脂奶",
+    "全脂鮮乳": "全脂奶",
+    "脫脂鮮乳": "脫脂奶",
+    "鮮乳": "低脂奶",
+    "鮮奶": "低脂奶",
+    "保久乳": "低脂奶",
+    "玉米": "玉米、玉米粒",
+    "甜玉米": "玉米、玉米粒",
+    "黃玉米": "玉米、玉米粒",
+    "玉米粒": "玉米、玉米粒",
+    "紫米": "米、黑米、小米、糯米",
+    "黑米": "米、黑米、小米、糯米",
+    "糙米": "糙米、什穀米、胚芽米",
+    "白米": "米、黑米、小米、糯米",
+    "米飯": "飯 (白飯、糙米飯)",
+    "白飯": "飯 (白飯、糙米飯)",
+    "豆腐": "傳統豆腐",
+    "板豆腐": "傳統豆腐",
+    "嫩豆腐": "嫩豆腐",
+    "雞肉": "雞里肉、雞胸肉",
+    "雞胸肉": "雞里肉、雞胸肉",
+    "里肌肉": "豬里肌肉",
+    "地瓜": "蕃薯 (地瓜)",
+    "馬鈴薯": "馬鈴薯 (洋芋)",
+    "芋頭": "芋頭",
+    "紅豆": "紅豆、綠豆、花豆、黑豆",
+    "綠豆": "紅豆、綠豆、花豆、黑豆",
+    "花生": "各式花生仁",
+    "油": "大豆油、玉米油、花生油、葵花油、麻油、橄欖油、芥花油",
+    "植物油": "大豆油、玉米油、花生油、葵花油、麻油、橄欖油、芥花油"
+  };
+
+  if (SPECIAL_ALIASES[n]) {
+    const targetName = SPECIAL_ALIASES[n];
+    const found = FOOD_EXCHANGE_DB.find(it => it.foodName === targetName || it.foodName.includes(targetName));
+    if (found) return found;
+  }
+
+  // 1. 完全相同
+  let match = FOOD_EXCHANGE_DB.find(it => it.foodName.toLowerCase() === n);
+  if (match) return match;
+
+  // 2. 別名符合 (以頓號、斜線、逗號或括號分割)
+  match = FOOD_EXCHANGE_DB.find(it => {
+    const parts = it.foodName.replace(/、|\/|，/g, ",").replace(/[()（）]/g, ",").split(",").map(p => p.trim().toLowerCase()).filter(Boolean);
+    return parts.includes(n);
+  });
+  if (match) return match;
+
+  // 3. 包含比對 (若有指定類別則優先同類別)
+  const candidates = FOOD_EXCHANGE_DB.filter(it => it.foodName.toLowerCase().includes(n) || n.includes(it.foodName.toLowerCase()));
+  if (candidates.length > 0) {
+    if (category) {
+      const cClean = category.replace(/類/g, "").trim();
+      const inCat = candidates.find(it => it.category.includes(cClean) || cClean.includes(it.category.replace(/類/g, "").trim()));
+      if (inCat) return inCat;
+    }
+    return candidates[0];
+  }
+
+  return null;
+}
+
 function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampleName = null) {
   const weight = Number(rawWeight) || 0;
   const portions = Number(ex) || 1;
@@ -1165,7 +1268,10 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampl
     return {
       kcal: 0, protein: 0, fat: 0, saturatedFat: 0, carbs: 0,
       fiber: 0, sugars: 0, water: 0, na: 0, k: 0, ca: 0, mg: 0,
-      fe: 0, zn: 0, p: 0, cholesterol: 0, matchedName: ""
+      fe: 0, zn: 0, p: 0, cholesterol: 0,
+      vitA: 0, vitD: 0, vitE: 0, vitK: 0, vitC: 0,
+      vitB1: 0, vitB2: 0, niacin: 0, vitB6: 0, vitB12: 0, folate: 0,
+      matchedName: ""
     };
   }
 
@@ -1248,6 +1354,17 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampl
         zn: (matched.Zinc || 0) * factor,
         p: (matched.Phosphorus || 0) * factor,
         cholesterol: (matched.Cholesterol || 0) * factor,
+        vitA: (matched.VitaminA_RE || 0) * factor,
+        vitD: (matched.VitaminD_ug || 0) * factor,
+        vitE: (matched.VitaminE_mg || 0) * factor,
+        vitK: (matched.VitaminK1_ug || 0) * factor,
+        vitC: (matched.VitaminC || 0) * factor,
+        vitB1: (matched.VitaminB1 || 0) * factor,
+        vitB2: (matched.VitaminB2 || 0) * factor,
+        niacin: (matched.Niacin || 0) * factor,
+        vitB6: (matched.VitaminB6 || 0) * factor,
+        vitB12: (matched.VitaminB12 || 0) * factor,
+        folate: (matched.Folate || 0) * factor,
         matchedName: matched.Name
       };
     }
@@ -1362,6 +1479,12 @@ function updateMenuSummaryCards() {
       ratioDesc.innerText = `三大營養素熱量佔比：碳水化合物 0% ｜ 蛋白質 0% ｜ 脂肪 0%`;
     }
   }
+
+  // 同步更新菜單表格 Footer 加總列
+  const elEx = document.getElementById("recipeSumEx");
+  const elWeight = document.getElementById("recipeSumWeight");
+  if (elEx) elEx.innerText = totalEx.toFixed(1);
+  if (elWeight) elWeight.innerText = `${Math.round(totalWeight)} g`;
 }
 
 function updateRecipeMeal(index, val) {
@@ -1381,8 +1504,45 @@ function updateDishName(index, val) {
 function updateFoodName(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].food = val;
+    
+    // 1. 食物類別：若代換表中有此食材優先套用並標準化；若無則使用 AI 自動智慧辨識
+    const matchedEx = findOfficialFoodExchangeItem(val, menuRecipes[index].category);
+    if (matchedEx && matchedEx.category) {
+      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category);
+      if (matchedEx.rawWeight > 0) {
+        const exVal = Number(menuRecipes[index].ex) || 1;
+        menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
+      }
+    } else {
+      // 食物代換表中沒有的食物，食物類別使用 AI 自動辨識
+      const aiCat = detectFoodCategory(val);
+      if (aiCat && (!menuRecipes[index].category || menuRecipes[index].category === "自訂食材")) {
+        menuRecipes[index].category = normalizeFoodCategory(aiCat);
+      }
+    }
+
+    // 2. 食材顏色：先辨識食材名稱，若無法辨識請空白
     menuRecipes[index].color = detectFoodColor(val, menuRecipes[index].category);
-    // 更新即時加總與營養成分列表，但不觸發重新渲染整張表格以免輸入法中斷與失去游標焦點
+
+    // 即時精準同步該列 DOM (使用 id="recipeRow_${index}")
+    const row = document.getElementById(`recipeRow_${index}`) || document.querySelectorAll("#menuRecipeTableBody tr")[index];
+    if (row) {
+      const weightInput = row.children[5] ? row.children[5].querySelector("input") : null;
+      if (weightInput && menuRecipes[index].rawWeight !== undefined) {
+        weightInput.value = menuRecipes[index].rawWeight;
+      }
+      const catSelect = row.children[3] ? row.children[3].querySelector("select") : null;
+      if (catSelect) {
+        catSelect.value = normalizeFoodCategory(menuRecipes[index].category);
+      }
+      const colorCell = row.children[6];
+      if (colorCell) {
+        colorCell.innerHTML = menuRecipes[index].color 
+          ? `<span class="color-tag ${menuRecipes[index].color.replace("/", "\/")}" title="AI 自動辨識：${menuRecipes[index].color}">${menuRecipes[index].color}</span>`
+          : `<span style="color: #94a3b8; font-size: 12px;">—</span>`;
+      }
+    }
+
     updateMenuSummaryCards();
     updateAllCompositionNutrientSummary();
   }
@@ -1391,7 +1551,24 @@ function updateFoodName(index, val) {
 function updateFoodNameAndRender(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].food = val;
-    applyFoodExchangeMatch(menuRecipes[index]);
+    
+    // 當食物代換表中有此食物名稱時優先連動；無則以 AI 自動辨識分類
+    const matchedEx = findOfficialFoodExchangeItem(val, menuRecipes[index].category);
+    if (matchedEx && matchedEx.category) {
+      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category);
+      if (matchedEx.rawWeight > 0) {
+        const exVal = Number(menuRecipes[index].ex) || 1;
+        menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
+      }
+    } else {
+      const aiCat = detectFoodCategory(val);
+      if (aiCat && (!menuRecipes[index].category || menuRecipes[index].category === "自訂食材")) {
+        menuRecipes[index].category = normalizeFoodCategory(aiCat);
+      }
+    }
+
+    // 食材顏色：先辨識食材名稱，無法辨識請空白
+    menuRecipes[index].color = detectFoodColor(val, menuRecipes[index].category);
     renderMenuRecipes();
   }
 }
@@ -1400,23 +1577,23 @@ function updateRecipeEx(index, val) {
   const num = parseFloat(val);
   if (menuRecipes[index] && Number.isFinite(num) && num > 0) {
     menuRecipes[index].ex = num;
-    const matchedEx = findFoodExchangeMatch(menuRecipes[index].food);
-    if (matchedEx) {
-      menuRecipes[index].rawWeight = Number((matchedEx.rawWeight * num).toFixed(1));
-    } else {
-      menuRecipes[index].rawWeight = "";
+    
+    // 當食物代換表中有此食物名稱時，輸入份數 (EX) 會自動連動顯示後面生重克數
+    // 例如：空心菜 0.5 EX => 50g；玉米 (1 EX = 85g) 2 EX => 170g；低脂牛奶 (1 EX = 240g) 0.5 EX => 120g
+    const matchedEx = findOfficialFoodExchangeItem(menuRecipes[index].food, menuRecipes[index].category);
+    if (matchedEx && matchedEx.rawWeight > 0) {
+      const calcWeight = Math.round(matchedEx.rawWeight * num * 10) / 10;
+      menuRecipes[index].rawWeight = calcWeight;
+      
+      const row = document.getElementById(`recipeRow_${index}`) || document.querySelectorAll("#menuRecipeTableBody tr")[index];
+      if (row) {
+        const weightInput = row.children[5] ? row.children[5].querySelector("input") : null;
+        if (weightInput) weightInput.value = calcWeight;
+      }
     }
+
     updateMenuSummaryCards();
     updateAllCompositionNutrientSummary();
-    const row = document.querySelector(`#menuRecipeTableBody tr[data-recipe-index="${index}"]`);
-    if (row) {
-      const weightInput = row.querySelector('td:nth-child(6) input');
-      if (weightInput) weightInput.value = menuRecipes[index].rawWeight;
-    }
-    if (row && menuRecipes[index]._calc) {
-      const kcalCell = row.querySelector(".rec-kcal");
-      if (kcalCell) kcalCell.innerText = Math.round(menuRecipes[index]._calc.kcal);
-    }
   }
 }
 
@@ -1424,48 +1601,165 @@ function updateRecipeRawWeight(index, val) {
   const num = parseFloat(val);
   if (menuRecipes[index] && Number.isFinite(num) && num > 0) {
     menuRecipes[index].rawWeight = num;
+    updateMenuSummaryCards();
+    updateAllCompositionNutrientSummary();
+  }
+}
+
+
+// ==========================================
+// 4.1 AI 食物類別智慧推論引擎 (當食物代換表未直接匹配時自動辨識)
+// ==========================================
+function normalizeFoodCategory(cat) {
+  if (!cat) return "自訂食材";
+  const c = String(cat).trim();
+  if (c.includes("乳品") || c.includes("奶") || c.includes("乳")) return "乳品類";
+  if (c.includes("全穀") || c.includes("雜糧") || c.includes("米") || c.includes("麵") || c.includes("澱粉") || c.includes("根莖")) return "全穀雜糧";
+  if (c.includes("豆") || c.includes("魚") || c.includes("蛋") || c.includes("肉") || c.includes("海鮮") || c.includes("家禽")) return "豆魚蛋肉";
+  if (c.includes("蔬") || c.includes("菜") || c.includes("菇") || c.includes("藻")) return "蔬菜類";
+  if (c.includes("果")) return "水果類";
+  if (c.includes("油") || c.includes("堅果") || c.includes("種子")) return "油脂與堅果種子";
+  return STANDARD_FOOD_CATEGORIES.includes(c) ? c : "自訂食材";
+}
+
+const STANDARD_FOOD_CATEGORIES = [
+  "豆魚蛋肉",
+  "全穀雜糧",
+  "蔬菜類",
+  "水果類",
+  "乳品類",
+  "油脂與堅果種子",
+  "自訂食材"
+];
+
+function detectFoodCategory(foodName) {
+  if (!foodName) return "自訂食材";
+  const n = foodName.trim().toLowerCase();
+  if (!n) return "自訂食材";
+
+  // 1. 優先查詢衛福部 261 項食物代換表
+  const matchedEx = findOfficialFoodExchangeItem(n);
+  if (matchedEx && matchedEx.category) {
+    return matchedEx.category;
+  }
+
+  // 2. 查詢 2025 年台灣食品營養成分資料庫 (2,213項) 的官方分類
+  if (typeof FOOD_COMPOSITION_2025 !== "undefined" && Array.isArray(FOOD_COMPOSITION_2025)) {
+    const compMatch = FOOD_COMPOSITION_2025.find(it => 
+      it.Name === n || it.Name.startsWith(n) || it.Name.includes(n) || 
+      (it.CommonName && it.CommonName.includes(n))
+    );
+    if (compMatch && compMatch.Category) {
+      const c = compMatch.Category;
+      if (c.includes("肉") || c.includes("魚") || c.includes("蛋") || c.includes("豆") || c.includes("家禽") || c.includes("水產")) {
+        return "豆魚蛋肉";
+      }
+      if (c.includes("穀") || c.includes("澱粉") || c.includes("米") || c.includes("麥") || c.includes("根莖")) {
+        return "全穀雜糧";
+      }
+      if (c.includes("蔬菜") || c.includes("菇") || c.includes("藻")) {
+        return "蔬菜類";
+      }
+      if (c.includes("水果")) {
+        return "水果類";
+      }
+      if (c.includes("乳") || c.includes("奶")) {
+        return "乳品類";
+      }
+      if (c.includes("油脂") || c.includes("堅果") || c.includes("種子")) {
+        return "油脂與堅果種子";
+      }
+    }
+  }
+
+  // 3. 語意關鍵詞 AI 辨識規則
+  // (1) 豆魚蛋肉類（如鴨腿、鴨肉、雞肉、豬肉、牛肉、魚排、海鮮、豆腐、雞蛋等）
+  if (n.includes("鴨") || n.includes("雞") || n.includes("豬") || n.includes("牛") || n.includes("羊") ||
+      n.includes("魚") || n.includes("蝦") || n.includes("蟹") || n.includes("貝") || n.includes("肉") ||
+      n.includes("蛋") || n.includes("排") || n.includes("腿") || n.includes("翅") || n.includes("胸") ||
+      n.includes("豆腐") || n.includes("豆乾") || n.includes("豆干") || n.includes("豆包") || n.includes("豆漿") ||
+      n.includes("毛豆") || n.includes("黑豆") || n.includes("干貝") || n.includes("蚵") || n.includes("蛤") ||
+      n.includes("花枝") || n.includes("透抽") || n.includes("魷魚") || n.includes("章魚")) {
+    return "豆魚蛋肉";
+  }
+
+  // (2) 全穀雜糧類（米、飯、麵、麥、地瓜、南瓜、芋頭、玉米、紅豆、綠豆等）
+  if (n.includes("飯") || n.includes("米") || n.includes("麵") || n.includes("麥") || n.includes("地瓜") ||
+      n.includes("南瓜") || n.includes("芋頭") || n.includes("馬鈴薯") || n.includes("玉米") || n.includes("冬粉") ||
+      n.includes("米粉") || n.includes("紅豆") || n.includes("綠豆") || n.includes("燕麥") || n.includes("薏仁") ||
+      n.includes("小米") || n.includes("蕎麥") || n.includes("山藥") || n.includes("栗子") || n.includes("年糕") ||
+      n.includes("麵包") || n.includes("吐司") || n.includes("饅頭") || n.includes("粉圓") || n.includes("湯圓")) {
+    return "全穀雜糧";
+  }
+
+  // (3) 蔬菜類（菜、葉、椒、菇、花椰、瓜類除水果外、筍、蔥蒜等）
+  if (n.includes("菜") || n.includes("葉") || n.includes("菇") || n.includes("椒") || n.includes("蘿蔔") ||
+      n.includes("花椰") || n.includes("小黃瓜") || n.includes("絲瓜") || n.includes("冬瓜") || n.includes("苦瓜") ||
+      n.includes("秋葵") || n.includes("蘆筍") || n.includes("芹菜") || n.includes("茄子") || n.includes("筍") ||
+      n.includes("蔥") || n.includes("蒜") || n.includes("洋蔥") || n.includes("韭菜") || n.includes("木耳") ||
+      n.includes("番茄") || n.includes("大番茄") || n.includes("海帶") || n.includes("紫菜") || n.includes("豆芽")) {
+    return "蔬菜類";
+  }
+
+  // (4) 水果類
+  if (n.includes("蘋果") || n.includes("香蕉") || n.includes("芭樂") || n.includes("番石榴") || n.includes("柑橘") ||
+      n.includes("橘") || n.includes("柳丁") || n.includes("葡萄") || n.includes("西瓜") || n.includes("木瓜") ||
+      n.includes("奇異果") || n.includes("芒果") || n.includes("鳳梨") || n.includes("檸檬") || n.includes("草莓") ||
+      n.includes("火龍果") || n.includes("哈密瓜") || n.includes("櫻桃") || n.includes("荔枝") || n.includes("龍眼") ||
+      n.includes("水梨") || n.includes("梨") || n.includes("桃") || n.includes("李") || n.includes("釋迦") ||
+      n.includes("蓮霧") || n.includes("柿") || n.includes("柚") || n.includes("果")) {
+    return "水果類";
+  }
+
+  // (5) 乳品類
+  if (n.includes("奶") || n.includes("乳") || n.includes("起司") || n.includes("優格") || n.includes("優酪乳") || n.includes("乳酪")) {
+    return "乳品類";
+  }
+
+  // (6) 油脂與堅果種子類
+  if (n.includes("油") || n.includes("堅果") || n.includes("花生") || n.includes("核桃") || n.includes("杏仁") ||
+      n.includes("腰果") || n.includes("芝麻") || n.includes("葵花子") || n.includes("南瓜子") || n.includes("酪梨")) {
+    return "油脂與堅果種子";
+  }
+
+  return "自訂食材";
+}
+
+function updateRecipeCategory(index, newCategory) {
+  if (menuRecipes[index]) {
+    menuRecipes[index].category = newCategory;
+    // 重新評估顏色
+    menuRecipes[index].color = detectFoodColor(menuRecipes[index].food, newCategory);
+    
+    // 若該食材在食物代換表有克數，或依新類別自動給予建議基準生重
+    const matchedEx = findOfficialFoodExchangeItem(menuRecipes[index].food, newCategory);
+    if (matchedEx && matchedEx.rawWeight > 0) {
+      const exVal = Number(menuRecipes[index].ex) || 1;
+      menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
+    } else if (!menuRecipes[index].rawWeight || menuRecipes[index].rawWeight <= 0) {
+      const defaultWeights = {
+        "豆魚蛋肉": 35,
+        "全穀雜糧": 50,
+        "蔬菜類": 100,
+        "水果類": 100,
+        "乳品類": 240,
+        "油脂與堅果種子": 10,
+        "自訂食材": 100
+      };
+      menuRecipes[index].rawWeight = (defaultWeights[newCategory] || 100) * (Number(menuRecipes[index].ex) || 1);
+    }
+
     renderMenuRecipes();
+    updateMenuSummaryCards();
+    updateAllCompositionNutrientSummary();
   }
 }
 
-function findFoodExchangeMatch(foodName) {
-  const name = (foodName || "").trim().toLowerCase();
-  if (!name || typeof FOOD_EXCHANGE_DB === "undefined" || !Array.isArray(FOOD_EXCHANGE_DB)) {
-    return null;
-  }
-
-  return FOOD_EXCHANGE_DB.find(item => {
-    const itemName = (item.foodName || "").trim().toLowerCase();
-    const aliases = itemName.split(/[、,，/]/).map(alias => alias.trim()).filter(Boolean);
-    return itemName === name ||
-      aliases.includes(name) ||
-      name.includes(itemName) ||
-      itemName.includes(name) ||
-      aliases.some(alias => name.includes(alias) || alias.includes(name));
-  }) || null;
-}
-
-function applyFoodExchangeMatch(recipe) {
-  const matchedEx = findFoodExchangeMatch(recipe.food);
-  recipe.color = detectFoodColor(recipe.food, matchedEx ? matchedEx.category : recipe.category);
-
-  if (!matchedEx) {
-    recipe.category = "自訂食材";
-    recipe.rawWeight = "";
-    return;
-  }
-
-  recipe.category = matchedEx.category;
-  const portions = Number(recipe.ex);
-  if (Number.isFinite(portions) && portions > 0 && Number(matchedEx.rawWeight) > 0) {
-    recipe.rawWeight = Number((matchedEx.rawWeight * portions).toFixed(1));
-  }
-}
 
 function detectFoodColor(foodName, category = "") {
-  let color = "白色";
-  if (!foodName) return color;
+  if (!foodName) return "";
   const name = foodName.trim().toLowerCase();
+  if (!name) return "";
 
   // 0. 特殊蔬菜專用
   if (name.includes("小白菜")) return "嫩綠色";
@@ -1484,7 +1778,7 @@ function detectFoodColor(foodName, category = "") {
   if (name.includes("香蕉") || name.includes("玉米") || name.includes("蛋") || 
       name.includes("起司") || name.includes("黃豆") || name.includes("鳳梨") || 
       name.includes("檸檬") || name.includes("黃椒") || name.includes("黃甜椒") || 
-      name.includes("芒果") || name.includes("小米") || name.includes("黃")) {
+      name.includes("芒果") || name.includes("小米") || name.includes("黃肉") || name.includes("薑黃")) {
     return "黃色";
   }
 
@@ -1495,7 +1789,7 @@ function detectFoodColor(foodName, category = "") {
       name.includes("蘋果") || name.includes("牛肉") || name.includes("豬肉") || 
       name.includes("羊肉") || name.includes("紅豆") || name.includes("紅麴") || 
       name.includes("洛神花") || name.includes("蔓越莓") || name.includes("紅棗") || 
-      name.includes("火龍果") || name.includes("紅")) {
+      name.includes("火龍果") || name.includes("櫻桃") || name.includes("鴨肉") || name.includes("鴨腿") || name.includes("鴨胸") || name.includes("鴨")) {
     return "紅色";
   }
 
@@ -1529,20 +1823,22 @@ function detectFoodColor(foodName, category = "") {
     return "棕褐色";
   }
 
-  // 7. 白色 (White)
-  if (name.includes("米") || name.includes("飯") || name.includes("麵") || 
-      name.includes("豆腐") || name.includes("豆漿") || name.includes("牛奶") || 
+  // 7. 白色 (White) - 必須有具體白色食材詞彙，不隨便預設
+  if (name.includes("白米") || name.includes("白飯") || name.includes("米飯") || name.includes("麵條") || name.includes("白麵") || 
+      name.includes("豆腐") || name.includes("豆漿") || name.includes("牛奶") || name.includes("鮮奶") ||
       name.includes("白蘿蔔") || name.includes("洋蔥") || name.includes("大蒜") || 
       name.includes("蒜") || name.includes("山藥") || name.includes("白花椰") || 
       name.includes("冬瓜") || name.includes("竹筍") || name.includes("筊白筍") || 
       name.includes("雞肉") || name.includes("雞胸") || name.includes("魚") || 
       name.includes("蛋白") || name.includes("燕麥") || name.includes("水梨") || 
-      name.includes("馬鈴薯") || name.includes("白")) {
+      name.includes("馬鈴薯") || name.includes("白肉") || name.includes("花枝") || name.includes("透抽")) {
     return "白色";
   }
 
   if (category && category.includes("蔬菜")) return "綠色";
-  return "白色";
+  
+  // 若食材名稱無法明確辨識出色彩特徵，依要求顯示空白（不強加預設白色）
+  return "";
 }
 
 function deleteRecipeItem(index) {
@@ -1561,7 +1857,7 @@ function addCustomRecipeItem() {
     food: "新食材",
     category: "自訂食材",
     ex: 1,
-    rawWeight: "",
+    rawWeight: 100,
     color: "白色"
   };
 
@@ -1822,7 +2118,7 @@ function addCompositionToMenu(name, category) {
     food: name,
     category: category,
     ex: 1,
-    rawWeight: "",
+    rawWeight: 100,
     color: "白色"
   });
 
@@ -1833,294 +2129,181 @@ function addCompositionToMenu(name, category) {
 // ==========================================
 // 8. 列印衛教處方單張功能 (Print Report)
 // ==========================================
-function printPrescriptionReport() {
-  const escapeHtml = (value) => String(value ?? "—")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-  const formatNumber = (value, digits = 1) => {
-    const number = Number(value);
-    return Number.isFinite(number) ? number.toFixed(digits) : "0.0";
-  };
+// 8. 列印衛教處方單張功能 (相容手機與桌面端)
+// ==========================================
+function getPrescriptionReportHtml() {
+  const name = document.getElementById("inName")?.value || "個案";
+  const chartNo = document.getElementById("inChartNo")?.value || "—";
+  const gender = document.getElementById("inGender")?.value || "—";
+  const age = document.getElementById("inAge")?.value || "—";
+  const height = document.getElementById("inHeight")?.value || "—";
+  const weight = document.getElementById("inWeight")?.value || "—";
+  const bmi = document.getElementById("valBmi")?.innerText || "—";
+  const ibw = document.getElementById("valIbw")?.innerText || "—";
+  const targetKcal = document.getElementById("inTargetKcal")?.value || "—";
+  const carbGrams = document.getElementById("lblTargetCarbGrams")?.innerText || "—";
+  const fatGrams = document.getElementById("lblTargetFatGrams")?.innerText || "—";
+  const protGrams = document.getElementById("lblTargetProteinGrams")?.innerText || "—";
+  const egfr = document.getElementById("valEgfr")?.innerText || "—";
 
-  const name = document.getElementById("inName").value || "個案";
-  const chartNo = document.getElementById("inChartNo").value || "—";
-  const gender = document.getElementById("inGender").value;
-  const age = document.getElementById("inAge").value;
-  const height = document.getElementById("inHeight").value;
-  const weight = document.getElementById("inWeight").value;
-  const bmi = document.getElementById("valBmi").innerText;
-  const ibw = document.getElementById("valIbw").innerText;
-  const targetKcal = document.getElementById("inTargetKcal").value;
-  const egfr = document.getElementById("valEgfr").innerText;
-
-  const totalKcal = Number(targetKcal) || 0;
-  const macroDefinitions = [
-    { name: "醣類 (碳水化合物)", ratio: Number(document.getElementById("inRatioC").value) || 0, kcalPerGram: 4, color: "#e11d48" },
-    { name: "脂質 (Lipids)", ratio: Number(document.getElementById("inRatioF").value) || 0, kcalPerGram: 9, color: "#d97706" },
-    { name: "蛋白質 (Protein)", ratio: Number(document.getElementById("inRatioP").value) || 0, kcalPerGram: 4, color: "#16a34a" }
-  ];
-  const macroRowsHtml = macroDefinitions.map(macro => {
-    const kcal = totalKcal * macro.ratio / 100;
-    const grams = kcal / macro.kcalPerGram;
-    return `
-      <tr>
-        <td>${escapeHtml(macro.name)}</td>
-        <td style="text-align:right;">${formatNumber(kcal, 0)} kcal</td>
-        <td style="text-align:right;">${formatNumber(macro.ratio)}%</td>
-        <td style="text-align:right;color:${macro.color};font-weight:bold;">${formatNumber(grams)} g</td>
-      </tr>`;
-  });
-
-  const exchangeMealLabels = { b: "早", ms: "早點", l: "午", as: "午點", d: "晚", ns: "晚點" };
-  const exchangeMealHeaders = activeMealKeys
-    .map(key => `<th class="numeric">${exchangeMealLabels[key]}</th>`)
-    .join("");
-  const exchangeRowsHtml = exchangesData.map(item => {
-    const mealCells = activeMealKeys
-      .map(key => `<td class="numeric">${formatNumber(item[key], 1)}</td>`)
-      .join("");
-    return `
-      <tr>
-        <td>${escapeHtml(item.icon)} ${escapeHtml(item.category)}</td>
-        <td class="numeric">${formatNumber(item.p, 1)}</td>
-        <td class="numeric">${formatNumber(item.f, 1)}</td>
-        <td class="numeric">${formatNumber(item.c, 1)}</td>
-        <td class="numeric">${formatNumber(item.kcal, 0)}</td>
-        <td class="numeric" style="font-weight:bold;">${formatNumber(item.ex, 1)}</td>
-        ${mealCells}
-        <td class="numeric">${formatNumber(item.p * item.ex, 1)}</td>
-        <td class="numeric">${formatNumber(item.f * item.ex, 1)}</td>
-        <td class="numeric">${formatNumber(item.c * item.ex, 1)}</td>
-        <td class="numeric">${formatNumber(item.kcal * item.ex, 0)}</td>
-      </tr>`;
-  }).join("");
-  const exchangeTotals = exchangesData.reduce((totals, item) => {
-    totals.ex += Number(item.ex) || 0;
-    totals.p += (Number(item.p) || 0) * (Number(item.ex) || 0);
-    totals.f += (Number(item.f) || 0) * (Number(item.ex) || 0);
-    totals.c += (Number(item.c) || 0) * (Number(item.ex) || 0);
-    totals.kcal += (Number(item.kcal) || 0) * (Number(item.ex) || 0);
-    return totals;
-  }, { ex: 0, p: 0, f: 0, c: 0, kcal: 0 });
-  const exchangeMealTotals = activeMealKeys.map(key => exchangesData.reduce(
-    (total, item) => total + (Number(item[key]) || 0), 0
-  ));
-  const exchangeTotalMealCells = exchangeMealTotals
-    .map(total => `<td class="numeric">${formatNumber(total, 1)}</td>`)
-    .join("");
-
-  const menuRowsHtml = [];
-  for (let index = 0; index < menuRecipes.length;) {
-    const meal = menuRecipes[index].meal;
-    let end = index;
-    while (end < menuRecipes.length && menuRecipes[end].meal === meal) end += 1;
-    for (let rowIndex = index; rowIndex < end; rowIndex += 1) {
-      const recipe = menuRecipes[rowIndex];
-      menuRowsHtml.push(`
-        <tr>
-          ${rowIndex === index ? `<td rowspan="${end - index}" class="meal-group-cell">${escapeHtml(meal)}</td>` : ""}
-          <td>${escapeHtml(recipe.dish || "—")}</td>
-          <td>${escapeHtml(recipe.food)}</td>
-          <td class="numeric">${formatNumber(recipe.ex, 1)} 份</td>
-          <td class="numeric">${recipe.rawWeight === "" || recipe.rawWeight == null ? "—" : `${formatNumber(recipe.rawWeight, 1)} g`}</td>
-        </tr>
-      `);
-    }
-    index = end;
-  }
-  const menuRows = menuRowsHtml.join("");
-
-  const compositionSum = {
-    kcal: 0, protein: 0, fat: 0, saturatedFat: 0, carbs: 0, fiber: 0,
-    sugars: 0, water: 0, na: 0, k: 0, ca: 0, mg: 0, fe: 0, zn: 0,
-    p: 0, cholesterol: 0
-  };
-  menuRecipes.forEach(recipe => {
-    const nutrient = calculateRecipeNutrients(
-      recipe.food,
-      recipe.category,
-      recipe.rawWeight,
-      recipe.ex,
-      recipe.sampleName
-    );
-    Object.keys(compositionSum).forEach(key => {
-      compositionSum[key] += Number(nutrient[key]) || 0;
+  // 取得各餐菜單
+  const mealGroups = {};
+  if (Array.isArray(menuRecipes)) {
+    menuRecipes.forEach(r => {
+      const meal = r.meal || "其他";
+      if (!mealGroups[meal]) mealGroups[meal] = [];
+      mealGroups[meal].push(`${r.dish ? r.dish + ' - ' : ''}${r.food || ''} (${r.ex || 1}份)`);
     });
-  });
-
-  const compositionItems = [
-    ["熱量", `${formatNumber(compositionSum.kcal, 0)} kcal`],
-    ["粗蛋白", `${formatNumber(compositionSum.protein)} g`],
-    ["粗脂肪", `${formatNumber(compositionSum.fat)} g`],
-    ["飽和脂肪", `${formatNumber(compositionSum.saturatedFat)} g`],
-    ["總碳水", `${formatNumber(compositionSum.carbs)} g`],
-    ["膳食纖維", `${formatNumber(compositionSum.fiber)} g`],
-    ["糖質總量", `${formatNumber(compositionSum.sugars)} g`],
-    ["水分", `${formatNumber(compositionSum.water)} g`],
-    ["鈉", `${formatNumber(compositionSum.na)} mg`],
-    ["鉀", `${formatNumber(compositionSum.k)} mg`],
-    ["鈣", `${formatNumber(compositionSum.ca)} mg`],
-    ["鎂", `${formatNumber(compositionSum.mg)} mg`],
-    ["鐵", `${formatNumber(compositionSum.fe)} mg`],
-    ["鋅", `${formatNumber(compositionSum.zn)} mg`],
-    ["磷", `${formatNumber(compositionSum.p)} mg`],
-    ["膽固醇", `${formatNumber(compositionSum.cholesterol)} mg`]
-  ];
-  const compositionRowsHtml = [];
-  for (let index = 0; index < compositionItems.length; index += 2) {
-    const left = compositionItems[index];
-    const right = compositionItems[index + 1];
-    compositionRowsHtml.push(`
-      <tr>
-        <th>${left[0]}</th><td style="text-align:right;">${left[1]}</td>
-        ${right ? `<th>${right[0]}</th><td style="text-align:right;">${right[1]}</td>` : "<th></th><td></td>"}
-      </tr>
-    `);
   }
 
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    alert("無法開啟列印頁面，請允許此網站開啟新視窗後再試一次。");
-    return;
+  let menuHtml = "";
+  for (let m in mealGroups) {
+    menuHtml += `<tr><td style="font-weight:bold;width:90px;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;">${m}</td><td style="padding:8px;border:1px solid #cbd5e1;">${mealGroups[m].join("、 ")}</td></tr>`;
   }
 
-  const reportHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>臨床營養諮詢衛教處方單 - ${escapeHtml(name)}</title>
-      <style>
-        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; padding: 24px; color: #1e293b; line-height: 1.6; }
-        .header { text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 16px; }
-        .header h1 { margin: 0; color: #0f766e; font-size: 24px; }
-        .section-title { font-size: 16px; font-weight: bold; color: #0d9488; margin: 16px 0 8px; border-left: 4px solid #0d9488; padding-left: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-        th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; font-size: 13px; }
-        th { background: #f1f5f9; }
-        .highlight { font-weight: bold; color: #0f766e; }
-        .footer { margin-top: 30px; text-align: right; font-size: 13px; color: #64748b; }
-        .numeric { text-align: right; white-space: nowrap; }
-        .macro-table { width: 72%; margin-left: 0; }
-        .macro-table th, .macro-table td { width: 20%; }
-        .macro-table th:first-child, .macro-table td:first-child { width: 40%; }
-        .meal-group-cell { vertical-align: middle; font-weight: bold; background: #f8fafc; }
-        @media print { body { padding: 10mm; } .section-title { break-after: avoid; } table { break-inside: avoid; } }
-        @media screen and (max-width: 700px) { .macro-table { width: 100%; } }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>🏥 飲食營養諮詢評估與菜單處方單</h1>
+  return `
+    <div class="prescription-sheet">
+      <div class="report-header">
+        <h2>🏥 飲食營養諮詢評估與菜單處方單</h2>
         <p>專業臨床營養照護記錄 ｜ 衛教指導單張</p>
       </div>
 
       <div class="section-title">一、個案基本體位與生理評估</div>
       <table>
         <tr>
-          <th>姓名 / 暱稱</th><td>${escapeHtml(name)}</td>
-          <th>編號</th><td>${escapeHtml(chartNo)}</td>
-          <th>性別 / 年齡</th><td>${escapeHtml(gender)} / ${escapeHtml(age)} 歲</td>
+          <th>姓名 / 暱稱</th><td>${name}</td>
+          <th>病歷號</th><td>${chartNo}</td>
+          <th>性別 / 年齡</th><td>${gender} / ${age} 歲</td>
         </tr>
         <tr>
-          <th>身高</th><td>${escapeHtml(height)} cm</td>
-          <th>體重</th><td>${escapeHtml(weight)} kg</td>
-          <th>BMI 指數</th><td class="highlight">${escapeHtml(bmi)}</td>
+          <th>身高</th><td>${height} cm</td>
+          <th>體重</th><td>${weight} kg</td>
+          <th>BMI 指數</th><td class="highlight-green">${bmi}</td>
         </tr>
         <tr>
-          <th>理想體重 (IBW)</th><td>${escapeHtml(ibw)}</td>
-          <th>腎功能 (eGFR)</th><td>${escapeHtml(egfr)} ml/min</td>
-          <th>目標規劃熱量</th><td class="highlight" style="color:#e11d48;font-size:16px;">${escapeHtml(targetKcal)} kcal</td>
+          <th>理想體重 (IBW)</th><td>${ibw}</td>
+          <th>腎功能 (eGFR)</th><td>${egfr} ml/min</td>
+          <th>目標規劃熱量</th><td class="highlight-red" style="font-size:16px;">${targetKcal} kcal</td>
         </tr>
       </table>
 
       <div class="section-title">二、三大營養素目標熱量與克數分配</div>
-      <table class="macro-table">
-        <tr><th>三大營養素</th><th class="numeric">目標熱量</th><th class="numeric">百分比</th><th class="numeric">目標克數</th></tr>
-        ${macroRowsHtml}
-        <tr><th>合計</th><th class="numeric">${formatNumber(totalKcal, 0)} kcal</th><th class="numeric">${formatNumber(macroDefinitions.reduce((sum, macro) => sum + macro.ratio, 0), 1)}%</th><th></th></tr>
-      </table>
-
-      <div class="section-title">三、食物代換表設計份數</div>
       <table>
         <tr>
-          <th rowspan="2">食物大類</th>
-          <th colspan="4">每份三大營養素</th>
-          <th rowspan="2" class="numeric">設計份數</th>
-          ${activeMealKeys.length ? `<th colspan="${activeMealKeys.length}">設計餐次</th>` : ""}
-          <th colspan="4">設計份數加總</th>
+          <th>醣類 (碳水化合物)</th>
+          <th>脂質 (Lipids)</th>
+          <th>蛋白質 (Protein)</th>
         </tr>
         <tr>
-          <th class="numeric">蛋白質 (g)</th>
-          <th class="numeric">脂肪 (g)</th>
-          <th class="numeric">醣類 (g)</th>
-          <th class="numeric">熱量 (kcal)</th>
-          ${exchangeMealHeaders}
-          <th class="numeric">總蛋白質 (g)</th>
-          <th class="numeric">總脂肪 (g)</th>
-          <th class="numeric">總醣類 (g)</th>
-          <th class="numeric">總熱量 (kcal)</th>
-        </tr>
-        ${exchangeRowsHtml}
-        <tr>
-          <th colspan="5">三大營養素加總克數</th>
-          <th class="numeric">${formatNumber(exchangeTotals.ex, 1)}</th>
-          ${exchangeTotalMealCells}
-          <th class="numeric">${formatNumber(exchangeTotals.p, 1)}</th>
-          <th class="numeric">${formatNumber(exchangeTotals.f, 1)}</th>
-          <th class="numeric">${formatNumber(exchangeTotals.c, 1)}</th>
-          <th class="numeric">${formatNumber(exchangeTotals.kcal, 0)}</th>
+          <td class="highlight-red" style="font-size:16px;">${carbGrams}</td>
+          <td class="highlight-orange" style="font-size:16px;">${fatGrams}</td>
+          <td class="highlight-green" style="font-size:16px;">${protGrams}</td>
         </tr>
       </table>
 
-      <div class="section-title">四、客製化飲食菜單規劃</div>
+      <div class="section-title">三、客製化飲食菜單規劃</div>
       <table>
-        <tr><th>餐次</th><th>菜名</th><th>食材名稱</th><th class="numeric">份數</th><th class="numeric">克數</th></tr>
-        ${menuRows || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">尚未開立菜單食材</td></tr>'}
+        ${menuHtml || '<tr><td colspan="2" style="text-align:center;color:#94a3b8;padding:12px;">尚未開立菜單食材</td></tr>'}
       </table>
 
-      <div class="section-title">五、食品營養成分資料庫：食材加總營養素</div>
-      <p style="font-size:12px;color:#64748b;margin:0 0 8px;">依菜單各食材開立克數，套用衛生福利部食品營養成分資料庫 (2025版) 換算加總。</p>
-      <table>
-        ${compositionRowsHtml.join("")}
-      </table>
-
-      <div class="section-title">六、營養師專業指導與衛教叮嚀</div>
-      <div style="border:1px solid #cbd5e1;padding:12px;border-radius:6px;background:#f8fafc;font-size:14px;">
+      <div class="section-title">四、營養師專業指導與衛教叮嚀</div>
+      <div class="advice-box">
         1. 每日維持規律三餐與點心，補充足量水分（建議每日至少 2000 ml）。<br>
         2. 烹調宜清淡，以蒸、煮、滷、涼拌為原則，避免油炸及高鈉加工食品。<br>
         3. 如有任何身體不適或體重急遽變化，請立即向營養諮詢門診洽詢。
       </div>
 
-      <div class="footer">
-        評估日期：${new Date().toLocaleDateString()} ｜ 營養師簽章：____________________
+      <div class="report-footer">
+        <div>評估日期：${new Date().toLocaleDateString()}</div>
+        <div>營養師簽章：____________________</div>
       </div>
-      <script>
-        window.addEventListener("load", function() {
-          setTimeout(function() {
-            window.focus();
-            window.print();
-          }, 300);
-        });
-      </script>
-    </body>
-    </html>
+    </div>
   `;
-  const reportUrl = URL.createObjectURL(new Blob([reportHtml], {
-    type: "text/html;charset=utf-8"
-  }));
-  printWindow.location.href = reportUrl;
-  setTimeout(() => {
-    try {
-      printWindow.focus();
-      printWindow.print();
-    } catch (error) {
-      console.warn("列印視窗已開啟，等待使用者從瀏覽器列印。", error);
+}
+
+function printPrescriptionReport() {
+  const contentHtml = getPrescriptionReportHtml();
+  const modal = document.getElementById("modalPrescriptionReport");
+  const modalBody = document.getElementById("prescriptionReportModalBody");
+
+  // 無論在手機、平板或電腦，一律開啟高質感頁面內預覽 Modal，徹底解決彈窗阻擋與 blank 頁面問題
+  if (modalBody && modal) {
+    modalBody.innerHTML = contentHtml;
+    const lineNotice = document.getElementById("lineInAppNotice");
+    if (lineNotice) {
+      lineNotice.style.display = isInAppBrowser() ? "flex" : "none";
     }
-  }, 800);
+    openModal("modalPrescriptionReport");
+    return;
+  }
+
+  // 若極端情況找不到 modal，才以原視窗備援
+  let printWindow = window.open("", "_blank");
+  if (printWindow) {
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>臨床營養諮詢衛教處方單</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif; padding: 20px; color: #1e293b; line-height: 1.6; }
+          .report-header { text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 16px; }
+          .report-header h2 { margin: 0; color: #0f766e; font-size: 20px; }
+          .section-title { font-size: 15px; font-weight: bold; color: #0d9488; margin: 16px 0 8px; border-left: 4px solid #0d9488; padding-left: 8px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+          th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; font-size: 13px; }
+          th { background: #f1f5f9; }
+          .highlight-green { font-weight: bold; color: #16a34a; }
+          .highlight-red { font-weight: bold; color: #e11d48; }
+          .highlight-orange { font-weight: bold; color: #d97706; }
+          .advice-box { border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; background: #f8fafc; font-size: 13px; line-height: 1.8; }
+          .report-footer { margin-top: 24px; padding-top: 10px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; font-size: 13px; color: #64748b; }
+        </style>
+      </head>
+      <body>
+        ${contentHtml}
+        <script>
+          window.onload = function() {
+            setTimeout(function() { window.print(); }, 300);
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }
+}
+
+// 判斷是否處於 LINE, FB, IG, WeChat 等 App 內嵌瀏覽器 (In-App WebView)
+function isInAppBrowser() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera || "";
+  return /Line|FBAN|FBAV|Instagram|MicroMessenger/i.test(ua);
+}
+
+// Modal 內執行列印（相容手機列印、LINE 內嵌瀏覽器相容性引導與另存 PDF）
+function doPrintPrescriptionModal() {
+  // 檢測是否在 LINE 內嵌瀏覽器中，LINE In-App WebView 禁用了 window.print()
+  if (isInAppBrowser()) {
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const msg = isIOS
+      ? "💡 提示：LINE 內建瀏覽器不支援直接列印功能！\n\n請點擊 LINE 畫面右下角的「...」或分享圖示，選擇【以 Safari 瀏覽器開啟】，即可正常列印或儲存為 PDF！"
+      : "💡 提示：LINE 內建瀏覽器不支援直接列印功能！\n\n請點擊 LINE 畫面右上角的「⋮」選單，選擇【在 Chrome 中開啟】，即可正常列印或儲存為 PDF！";
+    alert(msg);
+    return;
+  }
+
+  try {
+    document.body.classList.add("printing-prescription");
+    window.print();
+  } catch (err) {
+    alert("列印功能受瀏覽器限制，請以 Safari 或 Chrome 開啟網頁列印。");
+  } finally {
+    setTimeout(() => {
+      document.body.classList.remove("printing-prescription");
+    }, 1200);
+  }
 }
 
 /**
@@ -2148,19 +2331,30 @@ function renderDriCompliance(sum) {
   const container = document.getElementById("driComplianceContainer");
   if (!container) return;
 
-  // 核心指標檢核清單
+  // 核心指標檢核清單（涵蓋宏量、礦物質與 DRIs 所有維生素）
   const items = [
-    { name: "總熱量", val: Math.round(sum.kcal), target: dri.kcal.min, targetMax: dri.kcal.max, unit: "kcal", note: dri.kcal.note },
-    { name: "蛋白質", val: sum.protein, target: dri.protein.val, unit: dri.protein.unit, type: dri.protein.type, max: dri.protein.max },
-    { name: "總碳水", val: sum.carbs, target: dri.carbs.val, unit: dri.carbs.unit, note: `${dri.carbs.minPct || 50}-${dri.carbs.maxPct || 65}%` },
-    { name: "膳食纖維", val: sum.fiber, target: dri.fiber.val, unit: dri.fiber.unit, type: dri.fiber.type },
-    { name: "鈉 (Sodium)", val: sum.na, max: dri.na.max || 2300, unit: "mg", isLimit: true, type: dri.na.type },
-    { name: "鉀 (Potassium)", val: sum.k, target: dri.k.val, unit: "mg", type: dri.k.type },
-    { name: "鈣 (Calcium)", val: sum.ca, target: dri.ca.val, unit: "mg", type: dri.ca.type, max: dri.ca.max },
-    { name: "鎂 (Magnesium)", val: sum.mg, target: dri.mg.val, unit: "mg", type: dri.mg.type, max: dri.mg.max },
-    { name: "鐵 (Iron)", val: sum.fe, target: dri.fe.val, unit: "mg", type: dri.fe.type, max: dri.fe.max },
-    { name: "鋅 (Zinc)", val: sum.zn, target: dri.zn.val, unit: "mg", type: dri.zn.type, max: dri.zn.max },
-    { name: "磷 (Phosphorus)", val: sum.p, target: dri.p.val, unit: "mg", type: dri.p.type, max: dri.p.max }
+    { name: "總熱量", val: Math.round(sum.kcal), target: dri.kcal?.min, targetMax: dri.kcal?.max, unit: "kcal", note: dri.kcal?.note },
+    { name: "蛋白質", val: sum.protein, target: dri.protein?.val, unit: dri.protein?.unit || "g", type: dri.protein?.type, max: dri.protein?.max },
+    { name: "總碳水", val: sum.carbs, target: dri.carbs?.val, unit: dri.carbs?.unit || "g", note: `${dri.carbs?.minPct || 50}-${dri.carbs?.maxPct || 65}%` },
+    { name: "膳食纖維", val: sum.fiber, target: dri.fiber?.val, unit: dri.fiber?.unit || "g", type: dri.fiber?.type },
+    { name: "鈉 (Sodium)", val: sum.na, max: dri.na?.max || 2300, unit: "mg", isLimit: true, type: dri.na?.type },
+    { name: "鉀 (Potassium)", val: sum.k, target: dri.k?.val, unit: "mg", type: dri.k?.type },
+    { name: "鈣 (Calcium)", val: sum.ca, target: dri.ca?.val, unit: "mg", type: dri.ca?.type, max: dri.ca?.max },
+    { name: "鎂 (Magnesium)", val: sum.mg, target: dri.mg?.val, unit: "mg", type: dri.mg?.type, max: dri.mg?.max },
+    { name: "鐵 (Iron)", val: sum.fe, target: dri.fe?.val, unit: "mg", type: dri.fe?.type, max: dri.fe?.max },
+    { name: "鋅 (Zinc)", val: sum.zn, target: dri.zn?.val, unit: "mg", type: dri.zn?.type, max: dri.zn?.max },
+    { name: "磷 (Phosphorus)", val: sum.p, target: dri.p?.val, unit: "mg", type: dri.p?.type, max: dri.p?.max },
+    { name: "維生素 A", val: sum.vitA, target: dri.vitA?.val, unit: dri.vitA?.unit || "μg RE", type: dri.vitA?.type, max: dri.vitA?.max },
+    { name: "維生素 D", val: sum.vitD, target: dri.vitD?.val, unit: dri.vitD?.unit || "μg", type: dri.vitD?.type, max: dri.vitD?.max },
+    { name: "維生素 E", val: sum.vitE, target: dri.vitE?.val, unit: dri.vitE?.unit || "mg α-TE", type: dri.vitE?.type, max: dri.vitE?.max },
+    { name: "維生素 K1", val: sum.vitK, target: dri.vitK?.val, unit: dri.vitK?.unit || "μg", type: dri.vitK?.type },
+    { name: "維生素 C", val: sum.vitC, target: dri.vitC?.val, unit: dri.vitC?.unit || "mg", type: dri.vitC?.type, max: dri.vitC?.max },
+    { name: "維生素 B1", val: sum.vitB1, target: dri.vitB1?.val, unit: dri.vitB1?.unit || "mg", type: dri.vitB1?.type },
+    { name: "維生素 B2", val: sum.vitB2, target: dri.vitB2?.val, unit: dri.vitB2?.unit || "mg", type: dri.vitB2?.type },
+    { name: "菸鹼素", val: sum.niacin, target: dri.niacin?.val, unit: dri.niacin?.unit || "mg NE", type: dri.niacin?.type, max: dri.niacin?.max },
+    { name: "維生素 B6", val: sum.vitB6, target: dri.vitB6?.val, unit: dri.vitB6?.unit || "mg", type: dri.vitB6?.type, max: dri.vitB6?.max },
+    { name: "維生素 B12", val: sum.vitB12, target: dri.vitB12?.val, unit: dri.vitB12?.unit || "μg", type: dri.vitB12?.type },
+    { name: "葉酸", val: sum.folate, target: dri.folate?.val, unit: dri.folate?.unit || "μg", type: dri.folate?.type, max: dri.folate?.max }
   ];
 
   const cardsHtml = items.map(it => {
@@ -2253,7 +2447,7 @@ function insertRecipeItemAfter(index) {
     food: "新食材",
     category: "自訂食材",
     ex: 1,
-    rawWeight: "",
+    rawWeight: 100,
     color: "白色",
     sampleName: null
   };
