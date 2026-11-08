@@ -855,7 +855,6 @@ function initMenu() {
   document.getElementById("btnOpenExchangeQuery").addEventListener("click", () => {
     openModal("modalExchangeQuery");
   });
-  document.getElementById("btnAddCustomItem").addEventListener("click", addCustomRecipeItem);
   updateMealChipsBar();
   updateMenuMealFilters();
   renderMenuRecipes();
