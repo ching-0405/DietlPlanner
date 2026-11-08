@@ -1084,6 +1084,7 @@ function getOverDesignedMenuCategories(mealName) {
   menuRecipes
     .filter(recipe => recipe.meal === mealName)
     .forEach(recipe => {
+      if (!String(recipe.food || "").trim()) return;
       const categoryKey = getMenuFoodCategoryKey(recipe.category, recipe.food);
       openedByCategory.set(
         categoryKey,
@@ -1115,7 +1116,6 @@ function renderMenuRecipes() {
 
   const activeMeals = getActiveMealDefinitions();
   const mealOptions = activeMeals.map(m => m.name);
-  const categoryOptions = getFoodCategoryOptions();
   const overDesignedCategoriesByMeal = new Map(
     activeMeals.map(meal => [meal.name, getOverDesignedMenuCategories(meal.name)])
   );
@@ -1143,6 +1143,7 @@ function renderMenuRecipes() {
       r.food,
       mealDefinition?.key
     );
+    const categoryOptions = getFoodCategoryOptions(r.category);
     if (isNonPortionSeasoning) {
       r.category = normalizedRecipeCategory;
       r.ex = 0;
@@ -2022,7 +2023,7 @@ function getDesignedProteinLabel() {
     : "豆魚蛋肉類";
 }
 
-function getFoodCategoryOptions() {
+function getFoodCategoryOptions(currentCategory = "") {
   return STANDARD_FOOD_CATEGORIES.flatMap(category => {
     if (category === "乳品類") {
       return getDesignedDairyCategories().map(dairyCategory => ({
@@ -2031,7 +2032,14 @@ function getFoodCategoryOptions() {
       }));
     }
     if (category === "豆魚蛋肉") {
-      return getDesignedProteinCategories().map(proteinCategory => ({
+      const proteinCategories = [...getDesignedProteinCategories()];
+      if (
+        PROTEIN_EXCHANGE_CATEGORIES.includes(currentCategory) &&
+        !proteinCategories.includes(currentCategory)
+      ) {
+        proteinCategories.push(currentCategory);
+      }
+      return proteinCategories.map(proteinCategory => ({
         value: proteinCategory,
         label: getFoodCategoryLabel(proteinCategory)
       }));
@@ -2291,8 +2299,8 @@ function addCustomRecipeItem() {
     food: "",
     category: "自訂食材",
     ex: 1,
-    rawWeight: 100,
-    color: "白色"
+    rawWeight: "",
+    color: ""
   };
 
   menuRecipes.unshift(newItem);
