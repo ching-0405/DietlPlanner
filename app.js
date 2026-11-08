@@ -1635,6 +1635,7 @@ function updateFoodName(index, val) {
     if (seasoningCategory) {
       menuRecipes[index].category = seasoningCategory;
       menuRecipes[index].ex = 0;
+      menuRecipes[index].rawWeight = "";
     } else if (matchedEx && matchedEx.category) {
       menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
@@ -1687,6 +1688,7 @@ function updateFoodNameAndRender(index, val) {
     if (seasoningCategory) {
       menuRecipes[index].category = seasoningCategory;
       menuRecipes[index].ex = 0;
+      menuRecipes[index].rawWeight = "";
     } else if (matchedEx && matchedEx.category) {
       menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
@@ -1938,6 +1940,7 @@ function updateRecipeCategory(index, newCategory) {
     if (normalizeFoodCategory(newCategory, menuRecipes[index].food) === "調味蔬菜") {
       menuRecipes[index].category = "調味蔬菜";
       menuRecipes[index].ex = 0;
+      menuRecipes[index].rawWeight = "";
     }
     // 重新評估顏色
     menuRecipes[index].color = detectFoodColor(menuRecipes[index].food, newCategory);
@@ -2015,7 +2018,8 @@ function detectFoodColor(foodName, category = "") {
       name.includes("青椒") || name.includes("毛豆") || name.includes("綠豆") || 
       name.includes("奇異果") || name.includes("芭樂") || name.includes("蔥") || 
       name.includes("蘆筍") || name.includes("絲瓜") || name.includes("苦瓜") ||
-      name.includes("秋葵") || name.includes("酪梨") || name.includes("綠") || 
+      name.includes("秋葵") || name.includes("酪梨") || name.includes("九層塔") ||
+      name.includes("香菜") || name.includes("芫荽") || name.includes("綠") || 
       name.includes("菜") || name.includes("葉") || name.includes("苗")) {
     return "綠色";
   }
@@ -2049,7 +2053,7 @@ function detectFoodColor(foodName, category = "") {
     return "白色";
   }
 
-  if (category === "蔬菜類") return "綠色";
+  if (category === "蔬菜類" || category === "調味蔬菜") return "綠色";
   
   // 若食材名稱無法明確辨識出色彩特徵，依要求顯示空白（不強加預設白色）
   return "";

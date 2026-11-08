@@ -2634,6 +2634,24 @@ body.mobile-mode .row-chart-no,
   width: 90px !important;
 }
 
+/* 餐次分配不符合設計份數時，整列明確提示 */
+#exchangeTableBody tr.allocation-invalid {
+  background-color: #fff1f2 !important;
+}
+
+#exchangeTableBody tr.allocation-invalid td {
+  background-color: #fff1f2 !important;
+}
+
+#exchangeTableBody .allocation-status {
+  display: block;
+  margin-top: 3px;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
 #menuRecipeTable .form-input,
 #menuRecipeTable .form-select {
   box-sizing: border-box !important;
