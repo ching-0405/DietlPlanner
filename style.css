@@ -1736,6 +1736,21 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
   font-weight: 700;
 }
 
+#menuRecipeTable tr.recipe-row-over td {
+  background: #f5f3ff !important;
+  color: #5b21b6;
+}
+
+#menuRecipeTable tr.recipe-row-over td input,
+#menuRecipeTable tr.recipe-row-over td select {
+  background-color: #f5f3ff !important;
+}
+
+#menuRecipeTable tr.recipe-row-over td.protein-category-mismatch,
+#menuRecipeTable tr.recipe-row-over td.protein-category-mismatch select {
+  background-color: #fff1f2 !important;
+}
+
 .meal-guidance-note {
   padding: 6px 10px;
   border-top: 1px solid #e2e8f0;
