@@ -2489,3 +2489,11 @@ body.mobile-mode .subtotal-title {
   font-size: 11px !important;
   padding-left: 6px !important;
 }
+
+/* 手機版隱藏病歷號及後方編號欄位 */
+body.mobile-mode .row-chart-no,
+@media (max-width: 768px) {
+  .row-chart-no {
+    display: none !important;
+  }
+}
