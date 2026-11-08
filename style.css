@@ -2652,6 +2652,10 @@ body.mobile-mode .row-chart-no,
   line-height: 1.25;
 }
 
+#exchangeTableBody .allocation-status[hidden] {
+  display: none !important;
+}
+
 #menuRecipeTable .form-input,
 #menuRecipeTable .form-select {
   box-sizing: border-box !important;
