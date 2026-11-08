@@ -625,14 +625,14 @@ function renderExchangeTable() {
   tbody.innerHTML = exchangesData.map((item, idx) => {
     return `
       <tr>
-        <td class="cat-cell">${item.icon} ${item.category}</td>
+        <td class="cat-cell">${item.icon} ${getFoodCategoryLabel(item.category)}</td>
         <td class="col-macro-cell">${item.p}</td>
         <td class="col-macro-cell">${item.f}</td>
         <td class="col-macro-cell">${item.c}</td>
         <td class="col-macro-cell">${item.kcal}</td>
         <td class="design-ex-cell">
           <input type="number" class="cell-input design-ex-input" step="any" min="0"
-            value="${item.ex}" aria-label="${item.category}設計份數"
+            value="${item.ex}" aria-label="${getFoodCategoryLabel(item.category)}設計份數"
             oninput="onDesignExChanged(${idx}, this.value)">
           <span class="allocation-status" id="row_allocation_status_${idx}" hidden></span>
         </td>
@@ -687,7 +687,7 @@ function renderMobileMacroSpecsCard() {
             <tr>
               <td class="spec-td-cat">
                 <span class="cat-icon">${item.icon}</span>
-                <span class="cat-name">${item.category}</span>
+                <span class="cat-name">${getFoodCategoryLabel(item.category)}</span>
               </td>
               <td class="spec-td-val val-green font-bold">${item.p}</td>
               <td class="spec-td-val val-orange font-bold">${item.f}</td>
@@ -766,6 +766,8 @@ function onDesignExChanged(idx, val) {
   }
   validateMealAllocation(idx);
   calcExchangeTotals();
+  updateMealChipsBar();
+  renderMenuRecipes();
 }
 
 function validateMealAllocation(idx) {
@@ -909,7 +911,7 @@ function updateMealChipsBar() {
   const activeMeals = getActiveMealDefinitions();
 
   const categoryGroups = [
-    { key: "乳品類", label: getFoodCategoryLabel("乳品類"), matches: category => category.includes("奶") || category.includes("乳") },
+    { key: "乳品類", label: getDesignedDairyLabel(), matches: category => category.includes("奶") || category.includes("乳") },
     { key: "全穀雜糧", label: "全穀雜糧", matches: category => category.includes("穀") || category.includes("米食") || category.includes("麵食") },
     { key: "豆魚蛋肉", label: "豆魚蛋肉", matches: category => category.includes("豆魚蛋肉") },
     { key: "蔬菜類", label: "蔬菜類", matches: category => category === "蔬菜類" },
@@ -1000,6 +1002,7 @@ function renderMenuRecipes() {
 
   const activeMeals = getActiveMealDefinitions();
   const mealOptions = activeMeals.map(m => m.name);
+  const categoryOptions = getFoodCategoryOptions();
 
   let totalEx = 0;
   let totalWeight = 0;
@@ -1063,7 +1066,7 @@ function renderMenuRecipes() {
         <td class="col-cat-cell" style="min-width: 110px; width: 115px;">
           <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
             onchange="updateRecipeCategory(${realIndex}, this.value)" title="可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）">
-            ${STANDARD_FOOD_CATEGORIES.map(cat => `<option value="${cat}" ${(r.category === cat || (!r.category && cat === "自訂食材")) ? "selected" : ""}>${getFoodCategoryLabel(cat)}</option>`).join("")}
+            ${categoryOptions.map(option => `<option value="${option.value}" ${getRecipeCategoryOptionValue(r.category, categoryOptions) === option.value ? "selected" : ""}>${option.label}</option>`).join("")}
           </select>
         </td>
         <td class="col-ex-cell val-red" style="min-width: 75px; width: 80px;">
@@ -1775,11 +1778,48 @@ const STANDARD_FOOD_CATEGORIES = [
 ];
 
 const FOOD_CATEGORY_LABELS = {
-  "乳品類": "乳品類 (全脂、低脂、脫脂)"
+  "全脂奶": "乳品類 (全脂)",
+  "低脂奶": "乳品類 (低脂)",
+  "脫脂奶": "乳品類 (脫脂)",
+  "乳品類": "乳品類"
 };
 
 function getFoodCategoryLabel(category) {
   return FOOD_CATEGORY_LABELS[category] || category;
+}
+
+const DAIRY_EXCHANGE_CATEGORIES = ["全脂奶", "低脂奶", "脫脂奶"];
+
+function getDesignedDairyCategories() {
+  const designed = exchangesData
+    .filter(item => DAIRY_EXCHANGE_CATEGORIES.includes(item.category) && Number(item.ex) > 0)
+    .map(item => item.category);
+  return designed.length > 0 ? designed : DAIRY_EXCHANGE_CATEGORIES;
+}
+
+function getDesignedDairyLabel() {
+  const designed = getDesignedDairyCategories();
+  return designed.length === 1 ? getFoodCategoryLabel(designed[0]) : getFoodCategoryLabel("乳品類");
+}
+
+function getFoodCategoryOptions() {
+  return STANDARD_FOOD_CATEGORIES.flatMap(category => {
+    if (category === "乳品類") {
+      return getDesignedDairyCategories().map(dairyCategory => ({
+        value: dairyCategory,
+        label: getFoodCategoryLabel(dairyCategory)
+      }));
+    }
+    return [{ value: category, label: getFoodCategoryLabel(category) }];
+  });
+}
+
+function getRecipeCategoryOptionValue(category, options) {
+  if (options.some(option => option.value === category)) return category;
+  if (normalizeFoodCategory(category) === "乳品類") {
+    return getDesignedDairyCategories()[0];
+  }
+  return category || "自訂食材";
 }
 
 function detectFoodCategory(foodName) {
@@ -1900,7 +1940,8 @@ function updateRecipeCategory(index, newCategory) {
         "油脂與堅果種子": 10,
         "自訂食材": 100
       };
-      menuRecipes[index].rawWeight = (defaultWeights[newCategory] || 100) * (Number(menuRecipes[index].ex) || 1);
+      const normalizedCategory = normalizeFoodCategory(newCategory, menuRecipes[index].food);
+      menuRecipes[index].rawWeight = (defaultWeights[normalizedCategory] || 100) * (Number(menuRecipes[index].ex) || 1);
     }
 
     renderMenuRecipes();
@@ -2345,7 +2386,7 @@ function getPrescriptionReportHtml() {
     const mealTds = activeMeals.map(m => `<td style="text-align:center;">${item[m.key] > 0 ? item[m.key] : "—"}</td>`).join("");
     return `
       <tr>
-        <td style="font-weight:600;">${item.icon} ${item.category}</td>
+        <td style="font-weight:600;">${item.icon} ${getFoodCategoryLabel(item.category)}</td>
         <td style="text-align:center;">${item.p}</td>
         <td style="text-align:center;">${item.f}</td>
         <td style="text-align:center;">${item.c}</td>
