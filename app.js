@@ -403,6 +403,8 @@ function initExchanges() {
     btnDiabetic.classList.toggle("btn-warning", isDiabeticMode);
     exchangesData = getDefaultExchanges(isDiabeticMode);
     renderExchangeTable();
+    updateMealChipsBar();
+    renderMenuRecipes();
   });
 
   // 目標熱量與比例監聽
@@ -709,6 +711,8 @@ function initMealCountSelector() {
       });
     });
     renderExchangeTable();
+    updateMealChipsBar();
+    renderMenuRecipes();
   });
 }
 
@@ -846,15 +850,13 @@ function initMenu() {
     openModal("modalExchangeQuery");
   });
   document.getElementById("btnAddCustomItem").addEventListener("click", addCustomRecipeItem);
-  renderMenuRecipes();
   updateMealChipsBar();
+  updateMenuMealFilters();
+  renderMenuRecipes();
 }
 
-function updateMealChipsBar() {
-  const container = document.getElementById("mealChipsBar");
-  if (!container) return;
-
-  const meals = [
+function getActiveMealDefinitions() {
+  const allMeals = [
     { key: "b", name: "早餐", cls: "b" },
     { key: "ms", name: "早點", cls: "ms" },
     { key: "l", name: "午餐", cls: "l" },
@@ -862,8 +864,46 @@ function updateMealChipsBar() {
     { key: "d", name: "晚餐", cls: "d" },
     { key: "ns", name: "晚點", cls: "ns" }
   ];
+  return allMeals.filter(m => activeMealKeys.includes(m.key));
+}
 
-  container.innerHTML = meals.map(m => {
+function updateMenuMealFilters() {
+  const activeMeals = getActiveMealDefinitions();
+  const activeNames = activeMeals.map(m => m.name);
+
+  const filterSelect = document.getElementById("cboMealFilter");
+  if (filterSelect) {
+    const currentVal = filterSelect.value;
+    filterSelect.innerHTML = `
+      <option value="全部">全部餐次 (顯示所有)</option>
+      ${activeMeals.map(m => `<option value="${m.name}">${m.name}</option>`).join("")}
+    `;
+    if (activeNames.includes(currentVal) || currentVal === "全部") {
+      filterSelect.value = currentVal;
+    } else {
+      filterSelect.value = activeNames[0] || "全部";
+    }
+  }
+
+  const wizardSelect = document.getElementById("wizardTargetMeal");
+  if (wizardSelect) {
+    const currentVal = wizardSelect.value;
+    wizardSelect.innerHTML = activeMeals.map(m => `<option value="${m.name}">${m.name}</option>`).join("");
+    if (activeNames.includes(currentVal)) {
+      wizardSelect.value = currentVal;
+    } else {
+      wizardSelect.value = activeNames[0] || "早餐";
+    }
+  }
+}
+
+function updateMealChipsBar() {
+  const container = document.getElementById("mealChipsBar");
+  if (!container) return;
+
+  const activeMeals = getActiveMealDefinitions();
+
+  container.innerHTML = activeMeals.map(m => {
     const details = exchangesData
       .filter(it => it[m.key] > 0)
       .map(it => `${it.category} ${it[m.key]}份`)
@@ -877,6 +917,8 @@ function updateMealChipsBar() {
       </div>
     `;
   }).join("");
+
+  updateMenuMealFilters();
 }
 
 function filterByMeal(mealName) {
@@ -892,7 +934,8 @@ function renderMenuRecipes() {
     ? menuRecipes 
     : menuRecipes.filter(r => r.meal === filter);
 
-  const mealOptions = ["早餐", "早點", "午餐", "午點", "晚餐", "晚點"];
+  const activeMeals = getActiveMealDefinitions();
+  const mealOptions = activeMeals.map(m => m.name);
 
   let totalEx = 0;
   let totalWeight = 0;
@@ -1854,9 +1897,11 @@ function deleteRecipeItem(index) {
 
 function addCustomRecipeItem() {
   const currentMeal = document.getElementById("cboMealFilter").value;
-  const meal = currentMeal === "全部" ? "早餐" : currentMeal;
+  const activeMeals = getActiveMealDefinitions();
+  const defaultMealName = activeMeals[0]?.name || "早餐";
+  const meal = currentMeal === "全部" ? defaultMealName : currentMeal;
 
-  // 直接新增一列可自由輸入菜名與食材名稱的空白列
+  // 新增一列可自由輸入菜名與食材名稱的空白列
   const newItem = {
     meal: meal,
     dish: "",
