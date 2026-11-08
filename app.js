@@ -1438,7 +1438,7 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampl
         fat: f,
         saturatedFat: Number((f * 0.3).toFixed(1)),
         carbs: (matchedEx.carbs || 0) * factor,
-        fiber: Number(((category && category.includes("蔬菜") ? 2 : (category && category.includes("水果") ? 2 : 1)) * portions).toFixed(1)),
+        fiber: Number(((category === "蔬菜類" || (category && category.includes("水果")) ? 2 : 1) * portions).toFixed(1)),
         sugars: 0,
         water: Number((weight > 0 ? weight * 0.8 : 80).toFixed(1)),
         na: 0, k: 0, ca: 0, mg: 0, fe: 0, zn: 0, p: 0, cholesterol: 0,
@@ -1473,7 +1473,7 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampl
     fat: def.f * portions,
     saturatedFat: Number(((def.f || 0) * 0.3 * portions).toFixed(1)),
     carbs: def.c * portions,
-    fiber: Number(((category && category.includes("蔬菜") ? 2 : (category && category.includes("水果") ? 2 : 1)) * portions).toFixed(1)),
+    fiber: Number(((category === "蔬菜類" || (category && category.includes("水果")) ? 2 : 1) * portions).toFixed(1)),
     sugars: 0,
     water: Number((weight > 0 ? weight * 0.8 : 80).toFixed(1)),
     na: 0, k: 0, ca: 0, mg: 0, fe: 0, zn: 0, p: 0, cholesterol: 0,
@@ -1562,7 +1562,7 @@ function updateFoodName(index, val) {
     // 1. 食物類別：若代換表中有此食材優先套用並標準化；若無則使用 AI 自動智慧辨識
     const matchedEx = findOfficialFoodExchangeItem(val, menuRecipes[index].category);
     if (matchedEx && matchedEx.category) {
-      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category);
+      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
         const exVal = Number(menuRecipes[index].ex) || 1;
         menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
@@ -1609,7 +1609,7 @@ function updateFoodNameAndRender(index, val) {
     // 當食物代換表中有此食物名稱時優先連動；無則以 AI 自動辨識分類
     const matchedEx = findOfficialFoodExchangeItem(val, menuRecipes[index].category);
     if (matchedEx && matchedEx.category) {
-      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category);
+      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
         const exVal = Number(menuRecipes[index].ex) || 1;
         menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
@@ -1664,9 +1664,35 @@ function updateRecipeRawWeight(index, val) {
 // ==========================================
 // 4.1 AI 食物類別智慧推論引擎 (當食物代換表未直接匹配時自動辨識)
 // ==========================================
-function normalizeFoodCategory(cat) {
+function getSeasoningCategory(foodName) {
+  const n = String(foodName || "").trim().toLowerCase();
+  if (!n) return "";
+
+  if (
+    n.includes("蔥") || n.includes("青蔥") || n.includes("蔥花") ||
+    n.includes("薑") || n.includes("蒜") || n.includes("八角") ||
+    n.includes("九層塔") || n.includes("香菜") || n.includes("芫荽")
+  ) {
+    return "調味蔬菜";
+  }
+  if (
+    n.includes("鹽") || n.includes("醬油") || n.includes("醬") ||
+    n.includes("醋") || n.includes("胡椒") || n.includes("辣椒醬") ||
+    n.includes("香油") || n.includes("麻油") || n.includes("味精") ||
+    n.includes("米酒") || n.includes("蠔油") || n.includes("調味")
+  ) {
+    return "調味";
+  }
+  return "";
+}
+
+function normalizeFoodCategory(cat, foodName = "") {
+  const seasoningCategory = getSeasoningCategory(foodName);
+  if (seasoningCategory) return seasoningCategory;
   if (!cat) return "自訂食材";
   const c = String(cat).trim();
+  if (c.includes("調味蔬菜")) return "調味蔬菜";
+  if (c === "調味" || c.includes("調味料")) return "調味";
   if (c.includes("乳品") || c.includes("奶") || c.includes("乳")) return "乳品類";
   if (c.includes("全穀") || c.includes("雜糧") || c.includes("米") || c.includes("麵") || c.includes("澱粉") || c.includes("根莖")) return "全穀雜糧";
   if (c.includes("豆") || c.includes("魚") || c.includes("蛋") || c.includes("肉") || c.includes("海鮮") || c.includes("家禽")) return "豆魚蛋肉";
@@ -1680,6 +1706,8 @@ const STANDARD_FOOD_CATEGORIES = [
   "豆魚蛋肉",
   "全穀雜糧",
   "蔬菜類",
+  "調味",
+  "調味蔬菜",
   "水果類",
   "乳品類",
   "油脂與堅果種子",
@@ -1690,6 +1718,8 @@ function detectFoodCategory(foodName) {
   if (!foodName) return "自訂食材";
   const n = foodName.trim().toLowerCase();
   if (!n) return "自訂食材";
+  const seasoningCategory = getSeasoningCategory(n);
+  if (seasoningCategory) return seasoningCategory;
 
   // 1. 優先查詢衛福部 261 項食物代換表
   const matchedEx = findOfficialFoodExchangeItem(n);
@@ -1795,6 +1825,8 @@ function updateRecipeCategory(index, newCategory) {
         "豆魚蛋肉": 35,
         "全穀雜糧": 50,
         "蔬菜類": 100,
+        "調味": 5,
+        "調味蔬菜": 10,
         "水果類": 100,
         "乳品類": 240,
         "油脂與堅果種子": 10,
@@ -1889,7 +1921,7 @@ function detectFoodColor(foodName, category = "") {
     return "白色";
   }
 
-  if (category && category.includes("蔬菜")) return "綠色";
+  if (category === "蔬菜類") return "綠色";
   
   // 若食材名稱無法明確辨識出色彩特徵，依要求顯示空白（不強加預設白色）
   return "";
@@ -2256,17 +2288,32 @@ function getPrescriptionReportHtml() {
   activeMeals.forEach(m => {
     const items = mealGroups[m.name] || [];
     if (items.length > 0) {
-      items.forEach((it, index) => {
+      let itemIndex = 0;
+      while (itemIndex < items.length) {
+        const dishName = items[itemIndex].dish || "";
+        let groupEnd = itemIndex + 1;
+        while (
+          groupEnd < items.length &&
+          (!items[groupEnd].dish || items[groupEnd].dish === dishName)
+        ) {
+          groupEnd += 1;
+        }
+        const dishRowspan = groupEnd - itemIndex;
+
+        for (let index = itemIndex; index < groupEnd; index += 1) {
+          const it = items[index];
         menuRowsHtml += `
           <tr>
             ${index === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${m.name}</td>` : ""}
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.dish || "—"}</td>
+            ${index === itemIndex ? `<td rowspan="${dishRowspan}" style="padding:6px 8px;border:1px solid #cbd5e1;vertical-align:middle;">${dishName || "—"}</td>` : ""}
             <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.food || ""}</td>
             <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuPortion(it.ex)} 份</td>
             <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuWeight(it.rawWeight)} g</td>
           </tr>
         `;
-      });
+        }
+        itemIndex = groupEnd;
+      }
     }
   });
 
@@ -2932,7 +2979,7 @@ const GUIDED_STEPS = [
     desc: "開立深綠色與各色彩色蔬菜（如菠菜、甘藍/高麗菜、胡蘿蔔、花椰菜、菇類等），促進腸道健康並穩定血糖。",
     defaultMeal: "午餐",
     categoryFilter: (item) => {
-      return item.category === "蔬菜類" || (item.category && item.category.includes("菜"));
+      return item.category === "蔬菜類";
     }
   },
   {
