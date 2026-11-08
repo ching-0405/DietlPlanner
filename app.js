@@ -1014,6 +1014,11 @@ function renderMenuRecipes() {
 
   tbody.innerHTML = filtered.map((r, i) => {
     const realIndex = menuRecipes.indexOf(r);
+    const isSeasoningVegetable = normalizeFoodCategory(r.category, r.food) === "調味蔬菜";
+    if (isSeasoningVegetable) {
+      r.category = "調味蔬菜";
+      r.ex = 0;
+    }
     
     // AI 自動辨識顏色（隨食材名稱與類別自動精準推算）
     r.color = detectFoodColor(r.food, r.category);
@@ -1023,7 +1028,7 @@ function renderMenuRecipes() {
     const nutrient = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
     r._calc = nutrient;
 
-    const rowEx = Number(r.ex) || 0;
+    const rowEx = isSeasoningVegetable ? 0 : (Number(r.ex) || 0);
     const rowWeight = Number(r.rawWeight) || 0;
     totalEx += rowEx;
     totalWeight += rowWeight;
@@ -1070,8 +1075,10 @@ function renderMenuRecipes() {
           </select>
         </td>
         <td class="col-ex-cell val-red" style="min-width: 75px; width: 80px;">
-          <input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="any" min="0.1" 
-            value="${r.ex}" oninput="updateRecipeEx(${realIndex}, this.value)">
+          ${isSeasoningVegetable
+            ? `<span class="text-muted" title="調味蔬菜不計入食物代換份數">不計份數</span>`
+            : `<input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="any" min="0.1" 
+            value="${r.ex}" oninput="updateRecipeEx(${realIndex}, this.value)">`}
         </td>
         <td class="col-weight-cell" style="min-width: 85px; width: 90px;">
           <input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="1" min="1" 
@@ -1621,10 +1628,14 @@ function updateDishName(index, val) {
 function updateFoodName(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].food = val;
+    const seasoningCategory = getSeasoningCategory(val);
     
     // 1. 食物類別：若代換表中有此食材優先套用並標準化；若無則使用 AI 自動智慧辨識
     const matchedEx = findOfficialFoodExchangeItem(val, menuRecipes[index].category);
-    if (matchedEx && matchedEx.category) {
+    if (seasoningCategory) {
+      menuRecipes[index].category = seasoningCategory;
+      menuRecipes[index].ex = 0;
+    } else if (matchedEx && matchedEx.category) {
       menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
         const exVal = Number(menuRecipes[index].ex) || 1;
@@ -1650,7 +1661,8 @@ function updateFoodName(index, val) {
       }
       const catSelect = row.children[3] ? row.children[3].querySelector("select") : null;
       if (catSelect) {
-        catSelect.value = normalizeFoodCategory(menuRecipes[index].category);
+        const categoryOptions = getFoodCategoryOptions();
+        catSelect.value = getRecipeCategoryOptionValue(menuRecipes[index].category, categoryOptions);
       }
       const colorCell = row.children[6];
       if (colorCell) {
@@ -1668,10 +1680,14 @@ function updateFoodName(index, val) {
 function updateFoodNameAndRender(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].food = val;
+    const seasoningCategory = getSeasoningCategory(val);
     
     // 當食物代換表中有此食物名稱時優先連動；無則以 AI 自動辨識分類
     const matchedEx = findOfficialFoodExchangeItem(val, menuRecipes[index].category);
-    if (matchedEx && matchedEx.category) {
+    if (seasoningCategory) {
+      menuRecipes[index].category = seasoningCategory;
+      menuRecipes[index].ex = 0;
+    } else if (matchedEx && matchedEx.category) {
       menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
         const exVal = Number(menuRecipes[index].ex) || 1;
@@ -1919,6 +1935,10 @@ function detectFoodCategory(foodName) {
 function updateRecipeCategory(index, newCategory) {
   if (menuRecipes[index]) {
     menuRecipes[index].category = newCategory;
+    if (normalizeFoodCategory(newCategory, menuRecipes[index].food) === "調味蔬菜") {
+      menuRecipes[index].category = "調味蔬菜";
+      menuRecipes[index].ex = 0;
+    }
     // 重新評估顏色
     menuRecipes[index].color = detectFoodColor(menuRecipes[index].food, newCategory);
     
@@ -2050,7 +2070,7 @@ function addCustomRecipeItem() {
   const newItem = {
     meal: meal,
     dish: "",
-    food: "新食材",
+    food: "",
     category: "自訂食材",
     ex: 1,
     rawWeight: 100,
@@ -2943,7 +2963,7 @@ function insertRecipeItemAfter(index) {
   const newItem = {
     meal: meal,
     dish: dish,
-    food: "新食材",
+    food: "",
     category: "自訂食材",
     ex: 1,
     rawWeight: 100,
