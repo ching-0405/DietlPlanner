@@ -2183,6 +2183,7 @@ function addCompositionToMenu(name, category) {
 // 8. 列印衛教處方單張功能 (相容手機與桌面端)
 // ==========================================
 function getPrescriptionReportHtml() {
+  // 1. 個案基本體位與生理評估
   const name = document.getElementById("inName")?.value || "個案";
   const chartNo = document.getElementById("inChartNo")?.value || "—";
   const gender = document.getElementById("inGender")?.value || "—";
@@ -2191,82 +2192,372 @@ function getPrescriptionReportHtml() {
   const weight = document.getElementById("inWeight")?.value || "—";
   const bmi = document.getElementById("valBmi")?.innerText || "—";
   const ibw = document.getElementById("valIbw")?.innerText || "—";
-  const targetKcal = document.getElementById("inTargetKcal")?.value || "—";
-  const carbGrams = document.getElementById("lblTargetCarbGrams")?.innerText || "—";
-  const fatGrams = document.getElementById("lblTargetFatGrams")?.innerText || "—";
-  const protGrams = document.getElementById("lblTargetProteinGrams")?.innerText || "—";
   const egfr = document.getElementById("valEgfr")?.innerText || "—";
+  const actLevel = document.getElementById("cboActivity")?.options[document.getElementById("cboActivity")?.selectedIndex]?.text || "輕度工作";
+  const diseaseNote = isDiseaseMode ? "疾病飲食模式 (自由調配)" : "標準健康平衡模式";
 
-  // 取得各餐菜單
+  // 2. 三大營養素目標設定 vs 食物代換實際設計
+  const targetKcal = document.getElementById("inTargetKcal")?.value || "—";
+  const targetCarbGrams = parseFloat(document.getElementById("lblTargetCarbGrams")?.innerText) || 0;
+  const targetFatGrams = parseFloat(document.getElementById("lblTargetFatGrams")?.innerText) || 0;
+  const targetProtGrams = parseFloat(document.getElementById("lblTargetProteinGrams")?.innerText) || 0;
+  const targetCarbPct = document.getElementById("inRatioCarb")?.value || "—";
+  const targetFatPct = document.getElementById("inRatioFat")?.value || "—";
+  const targetProtPct = document.getElementById("inRatioProtein")?.value || "—";
+
+  // 食物代換表實際設計數值
+  const actualExTotal = document.getElementById("sumTotalEx")?.innerText || "0";
+  const actualProtGrams = parseFloat(document.getElementById("sumProteinGrams")?.innerText) || 0;
+  const actualFatGrams = parseFloat(document.getElementById("sumFatGrams")?.innerText) || 0;
+  const actualCarbGrams = parseFloat(document.getElementById("sumCarbGrams")?.innerText) || 0;
+  const actualTotalKcal = document.getElementById("sumTotalCalories")?.innerText || "0";
+  const actualProtPct = document.getElementById("pctProtein")?.innerText || "0%";
+  const actualFatPct = document.getElementById("pctFat")?.innerText || "0%";
+  const actualCarbPct = document.getElementById("pctCarb")?.innerText || "0%";
+
+  // 3. 食物代換表設計份數與餐次分配
+  const activeMeals = getActiveMealDefinitions();
+  const mealThs = activeMeals.map(m => `<th style="text-align:center;min-width:40px;">${m.name}</th>`).join("");
+  
+  const exchangeRowsHtml = exchangesData.map(item => {
+    const mealTds = activeMeals.map(m => `<td style="text-align:center;">${item[m.key] > 0 ? item[m.key] : "—"}</td>`).join("");
+    return `
+      <tr>
+        <td style="font-weight:600;">${item.icon} ${item.category}</td>
+        <td style="text-align:center;">${item.p}</td>
+        <td style="text-align:center;">${item.f}</td>
+        <td style="text-align:center;">${item.c}</td>
+        <td style="text-align:center;">${item.kcal}</td>
+        <td style="text-align:center;font-weight:bold;color:#0f766e;">${item.ex > 0 ? item.ex : "—"}</td>
+        ${mealTds}
+      </tr>
+    `;
+  }).join("");
+
+  // 各餐次份數加總
+  const mealTotalTds = activeMeals.map(m => {
+    const sum = exchangesData.reduce((tot, it) => tot + (it[m.key] || 0), 0);
+    return `<td style="text-align:center;font-weight:bold;color:#0369a1;">${sum > 0 ? sum : 0}</td>`;
+  }).join("");
+
+  // 4. 客製化菜單開立明細（依餐次分組，含生重克數與份數）
   const mealGroups = {};
-  if (Array.isArray(menuRecipes)) {
-    menuRecipes.forEach(r => {
-      const meal = r.meal || "其他";
-      if (!mealGroups[meal]) mealGroups[meal] = [];
-      mealGroups[meal].push(`${r.dish ? r.dish + ' - ' : ''}${r.food || ''} (${r.ex || 1}份)`);
-    });
+  menuRecipes.forEach(r => {
+    const m = r.meal || "其他";
+    if (!mealGroups[m]) mealGroups[m] = [];
+    mealGroups[m].push(r);
+  });
+
+  let menuDetailsHtml = "";
+  activeMeals.forEach(m => {
+    const items = mealGroups[m.name] || [];
+    if (items.length > 0) {
+      const itemsList = items.map(it => {
+        const nut = calculateRecipeNutrients(it.food, it.category, it.rawWeight, it.ex, it.sampleName);
+        return `
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #e2e8f0;font-size:12.5px;">
+            <div>
+              <strong>${it.dish ? '【' + it.dish + '】' : ''}</strong>
+              <span style="color:#0f766e;font-weight:600;">${it.food}</span>
+              <span style="color:#64748b;font-size:11.5px;">(${it.category})</span>
+              ${it.color ? `<span style="display:inline-block;padding:1px 6px;border-radius:10px;font-size:10.5px;background:#f1f5f9;color:#475569;margin-left:4px;">${it.color}</span>` : ''}
+            </div>
+            <div style="text-align:right;">
+              <span style="font-weight:600;color:#0369a1;">${it.ex || 1} 份</span> ｜ 
+              <strong>${it.rawWeight || 0} g</strong> ｜ 
+              <span style="color:#dc2626;">${Math.round(nut.kcal || 0)} kcal</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      menuDetailsHtml += `
+        <div style="margin-bottom:10px;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;">
+          <div style="background:#f1f5f9;padding:6px 12px;font-weight:bold;color:#0f766e;display:flex;justify-content:space-between;align-items:center;">
+            <span>🍽️ ${m.name}</span>
+            <span style="font-size:11.5px;color:#64748b;">共 ${items.length} 項食材</span>
+          </div>
+          <div style="padding:6px 12px;background:#ffffff;">
+            ${itemsList}
+          </div>
+        </div>
+      `;
+    }
+  });
+
+  if (!menuDetailsHtml) {
+    menuDetailsHtml = '<div style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</div>';
   }
 
-  let menuHtml = "";
-  for (let m in mealGroups) {
-    menuHtml += `<tr><td style="font-weight:bold;width:90px;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;">${m}</td><td style="padding:8px;border:1px solid #cbd5e1;">${mealGroups[m].join("、 ")}</td></tr>`;
-  }
+  // 5. 食品營養成分資料庫加總 (2025 官方資料庫依生重精確換算)
+  const compSum = {
+    kcal: 0, water: 0, protein: 0, fat: 0, saturatedFat: 0, carbs: 0, fiber: 0, sugars: 0,
+    na: 0, k: 0, ca: 0, mg: 0, fe: 0, zn: 0, p: 0,
+    vitA: 0, vitD: 0, vitE: 0, vitK: 0, vitB1: 0, vitB2: 0, niacin: 0, vitB6: 0, vitB12: 0, folate: 0, vitC: 0,
+    cholesterol: 0
+  };
+
+  menuRecipes.forEach(r => {
+    const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
+    compSum.kcal += (nut.kcal || 0);
+    compSum.water += (nut.water || 0);
+    compSum.protein += (nut.protein || 0);
+    compSum.fat += (nut.fat || 0);
+    compSum.saturatedFat += (nut.saturatedFat || 0);
+    compSum.carbs += (nut.carbs || 0);
+    compSum.fiber += (nut.fiber || 0);
+    compSum.sugars += (nut.sugars || 0);
+    compSum.na += (nut.na || 0);
+    compSum.k += (nut.k || 0);
+    compSum.ca += (nut.ca || 0);
+    compSum.mg += (nut.mg || 0);
+    compSum.fe += (nut.fe || 0);
+    compSum.zn += (nut.zn || 0);
+    compSum.p += (nut.p || 0);
+    compSum.vitA += (nut.vitA || 0);
+    compSum.vitD += (nut.vitD || 0);
+    compSum.vitE += (nut.vitE || 0);
+    compSum.vitK += (nut.vitK || 0);
+    compSum.vitB1 += (nut.vitB1 || 0);
+    compSum.vitB2 += (nut.vitB2 || 0);
+    compSum.niacin += (nut.niacin || 0);
+    compSum.vitB6 += (nut.vitB6 || 0);
+    compSum.vitB12 += (nut.vitB12 || 0);
+    compSum.folate += (nut.folate || 0);
+    compSum.vitC += (nut.vitC || 0);
+    compSum.cholesterol += (nut.cholesterol || 0);
+  });
+
+  // DRIs 第九版草案符合度評估
+  const driAgeGroup = document.getElementById("cboDriAgeGroup")?.options[document.getElementById("cboDriAgeGroup")?.selectedIndex]?.text || "19-30 歲 (成年，男)";
+  const dri = (typeof DRIS_NINTH_EDITION !== "undefined" && Array.isArray(DRIS_NINTH_EDITION))
+    ? (DRIS_NINTH_EDITION.find(d => d.id === currentSelectedDriId) || DRIS_NINTH_EDITION[12])
+    : null;
+
+  const getDriStatusBadge = (val, target, isLimit = false, max = null) => {
+    if (isLimit) {
+      if (val <= max) return '<span style="color:#16a34a;font-weight:600;">適量安全</span>';
+      return '<span style="color:#dc2626;font-weight:600;">超標注意</span>';
+    }
+    if (!target) return '<span style="color:#64748b;">—</span>';
+    const pct = Math.round((val / target) * 100);
+    if (pct >= 100) return `<span style="color:#16a34a;font-weight:600;">達成 ${pct}%</span>`;
+    if (pct >= 70) return `<span style="color:#d97706;font-weight:600;">接近 ${pct}%</span>`;
+    return `<span style="color:#dc2626;font-weight:600;">偏低 ${pct}%</span>`;
+  };
 
   return `
-    <div class="prescription-sheet">
-      <div class="report-header">
-        <h2>🏥 飲食營養諮詢評估與菜單處方單</h2>
-        <p>專業臨床營養照護記錄 ｜ 衛教指導單張</p>
+    <div class="prescription-sheet" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Microsoft JhengHei',sans-serif;color:#1e293b;line-height:1.5;">
+      <!-- 表頭 -->
+      <div class="report-header" style="text-align:center;border-bottom:2px solid #0d9488;padding-bottom:10px;margin-bottom:14px;">
+        <h2 style="margin:0;color:#0f766e;font-size:20px;letter-spacing:1px;">🏥 飲食營養諮詢評估與菜單處方單</h2>
+        <div style="font-size:12px;color:#64748b;margin-top:4px;">專業臨床營養照護記錄 ｜ 衛教指導單張 ｜ 個案客製化飲食計畫</div>
       </div>
 
-      <div class="section-title">一、個案基本體位與生理評估</div>
-      <table>
+      <!-- 一、個案基本體位與生理評估 -->
+      <div style="font-size:14px;font-weight:bold;color:#0f766e;margin:12px 0 6px;border-left:4px solid #0d9488;padding-left:8px;">一、個案基本體位與生理評估</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px;">
         <tr>
-          <th>姓名 / 暱稱</th><td>${name}</td>
-          <th>病歷號</th><td>${chartNo}</td>
-          <th>性別 / 年齡</th><td>${gender} / ${age} 歲</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:13%;">姓名 / 暱稱</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:20%;font-weight:600;">${name}</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:13%;">病歷編號</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:20%;">${chartNo}</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:14%;">性別 / 年齡</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:20%;">${gender} / ${age} 歲</td>
         </tr>
         <tr>
-          <th>身高</th><td>${height} cm</td>
-          <th>體重</th><td>${weight} kg</td>
-          <th>BMI 指數</th><td class="highlight-green">${bmi}</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">身高 / 體重</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;">${height} cm / ${weight} kg</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">BMI 指數</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:bold;color:#16a34a;">${bmi}</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">理想體重 (IBW)</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;">${ibw} kg</td>
         </tr>
         <tr>
-          <th>理想體重 (IBW)</th><td>${ibw}</td>
-          <th>腎功能 (eGFR)</th><td>${egfr} ml/min</td>
-          <th>目標規劃熱量</th><td class="highlight-red" style="font-size:16px;">${targetKcal} kcal</td>
-        </tr>
-      </table>
-
-      <div class="section-title">二、三大營養素目標熱量與克數分配</div>
-      <table>
-        <tr>
-          <th>醣類 (碳水化合物)</th>
-          <th>脂質 (Lipids)</th>
-          <th>蛋白質 (Protein)</th>
-        </tr>
-        <tr>
-          <td class="highlight-red" style="font-size:16px;">${carbGrams}</td>
-          <td class="highlight-orange" style="font-size:16px;">${fatGrams}</td>
-          <td class="highlight-green" style="font-size:16px;">${protGrams}</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">活動量度</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;">${actLevel}</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">腎功能 (eGFR)</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;">${egfr} ml/min</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">飲食模式</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;font-size:11.5px;color:#0f766e;">${diseaseNote}</td>
         </tr>
       </table>
 
-      <div class="section-title">三、客製化飲食菜單規劃</div>
-      <table>
-        ${menuHtml || '<tr><td colspan="2" style="text-align:center;color:#94a3b8;padding:12px;">尚未開立菜單食材</td></tr>'}
+      <!-- 二、三大營養素目標熱量與食物代換實際達成對照 -->
+      <div style="font-size:14px;font-weight:bold;color:#0f766e;margin:12px 0 6px;border-left:4px solid #0d9488;padding-left:8px;">二、三大營養素目標熱量與實際達成對照</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px;text-align:center;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="padding:6px;border:1px solid #cbd5e1;text-align:left;">營養素項目</th>
+            <th style="padding:6px;border:1px solid #cbd5e1;">目標設定克數</th>
+            <th style="padding:6px;border:1px solid #cbd5e1;">目標熱量佔比</th>
+            <th style="padding:6px;border:1px solid #cbd5e1;">食物代換實際克數</th>
+            <th style="padding:6px;border:1px solid #cbd5e1;">食物代換實際熱量</th>
+            <th style="padding:6px;border:1px solid #cbd5e1;">代換實際熱量佔比</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px;border:1px solid #cbd5e1;text-align:left;font-weight:600;color:#16a34a;">蛋白質 (Protein)</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:bold;">${targetProtGrams.toFixed(1)} g</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;">${targetProtPct}%</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:bold;color:#16a34a;">${actualProtGrams.toFixed(1)} g</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;">${(actualProtGrams * 4).toFixed(0)} kcal</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:600;color:#16a34a;">${actualProtPct}</td>
+          </tr>
+          <tr>
+            <td style="padding:6px;border:1px solid #cbd5e1;text-align:left;font-weight:600;color:#d97706;">脂質 (Fat / Lipids)</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:bold;">${targetFatGrams.toFixed(1)} g</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;">${targetFatPct}%</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:bold;color:#d97706;">${actualFatGrams.toFixed(1)} g</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;">${(actualFatGrams * 9).toFixed(0)} kcal</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:600;color:#d97706;">${actualFatPct}</td>
+          </tr>
+          <tr>
+            <td style="padding:6px;border:1px solid #cbd5e1;text-align:left;font-weight:600;color:#dc2626;">總碳水化合物 (Carbohydrate)</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:bold;">${targetCarbGrams.toFixed(1)} g</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;">${targetCarbPct}%</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:bold;color:#dc2626;">${actualCarbGrams.toFixed(1)} g</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;">${(actualCarbGrams * 4).toFixed(0)} kcal</td>
+            <td style="padding:6px;border:1px solid #cbd5e1;font-weight:600;color:#dc2626;">${actualCarbPct}</td>
+          </tr>
+          <tr style="background:#f0fdf4;font-weight:bold;">
+            <td style="padding:6px;border:1px solid #cbd5e1;text-align:left;color:#0f766e;">總熱量加總 (Total Calories)</td>
+            <td colspan="2" style="padding:6px;border:1px solid #cbd5e1;color:#0284c7;font-size:13px;">目標規劃：${targetKcal} kcal</td>
+            <td colspan="3" style="padding:6px;border:1px solid #cbd5e1;color:#16a34a;font-size:13px;">實際規劃：${actualTotalKcal} kcal (共 ${actualExTotal} 份食物代換)</td>
+          </tr>
+        </tbody>
       </table>
 
-      <div class="section-title">四、營養師專業指導與衛教叮嚀</div>
-      <div class="advice-box">
-        1. 每日維持規律三餐與點心，補充足量水分（建議每日至少 2000 ml）。<br>
-        2. 烹調宜清淡，以蒸、煮、滷、涼拌為原則，避免油炸及高鈉加工食品。<br>
-        3. 如有任何身體不適或體重急遽變化，請立即向營養諮詢門診洽詢。
+      <!-- 三、六大類食物代換設計與各餐次分配 -->
+      <div style="font-size:14px;font-weight:bold;color:#0f766e;margin:12px 0 6px;border-left:4px solid #0d9488;padding-left:8px;">三、六大類食物代換設計份數與餐次分配</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11.5px;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="padding:5px;border:1px solid #cbd5e1;text-align:left;">食物大類</th>
+            <th style="padding:5px;border:1px solid #cbd5e1;text-align:center;">蛋白(g)</th>
+            <th style="padding:5px;border:1px solid #cbd5e1;text-align:center;">脂肪(g)</th>
+            <th style="padding:5px;border:1px solid #cbd5e1;text-align:center;">醣類(g)</th>
+            <th style="padding:5px;border:1px solid #cbd5e1;text-align:center;">熱量(k)</th>
+            <th style="padding:5px;border:1px solid #cbd5e1;text-align:center;background:#e6fffa;">設計份數</th>
+            ${mealThs}
+          </tr>
+        </thead>
+        <tbody>
+          ${exchangeRowsHtml}
+          <tr style="background:#f8fafc;font-weight:bold;">
+            <td colspan="5" style="padding:5px 8px;border:1px solid #cbd5e1;text-align:left;">各餐次食物總份數合計</td>
+            <td style="padding:5px;border:1px solid #cbd5e1;text-align:center;color:#0d9488;font-size:12px;">${actualExTotal} 份</td>
+            ${mealTotalTds}
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 四、客製化飲食菜單規劃（食材克數明細） -->
+      <div style="font-size:14px;font-weight:bold;color:#0f766e;margin:12px 0 6px;border-left:4px solid #0d9488;padding-left:8px;">四、客製化飲食菜單規劃（各餐開立食材與生重克數）</div>
+      ${menuDetailsHtml}
+
+      <!-- 五、菜單食品營養成分加總與 DRIs 達成分析 -->
+      <div style="font-size:14px;font-weight:bold;color:#0f766e;margin:14px 0 6px;border-left:4px solid #0d9488;padding-left:8px;">
+        五、菜單食品營養成分總計與 DRIs 符合度分析
+        <span style="font-size:11px;font-weight:normal;color:#64748b;margin-left:6px;">(對照年齡標準：${driAgeGroup})</span>
+      </div>
+      
+      <!-- 營養素加總摘要網格 -->
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11.5px;text-align:center;">
+        <tr style="background:#f8fafc;">
+          <th style="padding:4px;border:1px solid #cbd5e1;">總熱量</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">水分</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">粗蛋白</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">粗脂肪</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">飽和脂肪</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">總碳水化合物</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">膳食纖維</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">糖質總量</th>
+        </tr>
+        <tr>
+          <td style="padding:4px;border:1px solid #cbd5e1;font-weight:bold;color:#dc2626;">${Math.round(compSum.kcal)} kcal</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.water.toFixed(1)} g</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;font-weight:bold;color:#16a34a;">${compSum.protein.toFixed(1)} g</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;font-weight:bold;color:#d97706;">${compSum.fat.toFixed(1)} g</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.saturatedFat.toFixed(1)} g</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;font-weight:bold;color:#2563eb;">${compSum.carbs.toFixed(1)} g</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;color:#059669;">${compSum.fiber.toFixed(1)} g</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.sugars.toFixed(1)} g</td>
+        </tr>
+        <tr style="background:#f8fafc;">
+          <th style="padding:4px;border:1px solid #cbd5e1;">鈉 (Na)</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">鉀 (K)</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">鈣 (Ca)</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">鎂 (Mg)</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">鐵 (Fe)</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">鋅 (Zn)</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">磷 (P)</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">膽固醇</th>
+        </tr>
+        <tr>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.na.toFixed(1)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.k.toFixed(1)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.ca.toFixed(1)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.mg.toFixed(1)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.fe.toFixed(1)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.zn.toFixed(1)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.p.toFixed(1)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;color:#e11d48;">${compSum.cholesterol.toFixed(1)} mg</td>
+        </tr>
+        <tr style="background:#f8fafc;">
+          <th style="padding:4px;border:1px solid #cbd5e1;">維生素 A</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">維生素 D</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">維生素 E</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">維生素 K1</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">維生素 B1</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">維生素 B2</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">菸鹼素</th>
+          <th style="padding:4px;border:1px solid #cbd5e1;">維生素 C</th>
+        </tr>
+        <tr>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.vitA.toFixed(1)} μg RE</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;font-weight:bold;color:#ea580c;">${compSum.vitD.toFixed(2)} μg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.vitE.toFixed(2)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.vitK.toFixed(1)} μg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.vitB1.toFixed(3)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.vitB2.toFixed(3)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;">${compSum.niacin.toFixed(2)} mg</td>
+          <td style="padding:4px;border:1px solid #cbd5e1;font-weight:bold;color:#ea580c;">${compSum.vitC.toFixed(1)} mg</td>
+        </tr>
+      </table>
+
+      <!-- DRIs 符合度速覽清單 -->
+      ${dri ? `
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11.5px;">
+          <strong style="color:#166534;font-size:12px;">🎯 DRIs 第九版草案關鍵指標評估：</strong>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:6px;margin-top:6px;">
+            <div>熱量：${Math.round(compSum.kcal)} kcal (${getDriStatusBadge(compSum.kcal, dri.kcal?.min)})</div>
+            <div>蛋白質：${compSum.protein.toFixed(1)} g (${getDriStatusBadge(compSum.protein, dri.protein?.val)})</div>
+            <div>總碳水化合物：${compSum.carbs.toFixed(1)} g (${getDriStatusBadge(compSum.carbs, dri.carbs?.val)})</div>
+            <div>膳食纖維：${compSum.fiber.toFixed(1)} g (${getDriStatusBadge(compSum.fiber, dri.fiber?.val)})</div>
+            <div>鈣 (Ca)：${compSum.ca.toFixed(1)} mg (${getDriStatusBadge(compSum.ca, dri.ca?.val)})</div>
+            <div>鐵 (Fe)：${compSum.fe.toFixed(1)} mg (${getDriStatusBadge(compSum.fe, dri.fe?.val)})</div>
+            <div>維生素 D：${compSum.vitD.toFixed(1)} μg (${getDriStatusBadge(compSum.vitD, dri.vitD?.val)})</div>
+            <div>維生素 C：${compSum.vitC.toFixed(1)} mg (${getDriStatusBadge(compSum.vitC, dri.vitC?.val)})</div>
+            <div>鈉 (Na)：${compSum.na.toFixed(1)} mg (${getDriStatusBadge(compSum.na, null, true, dri.na?.max || 2300)})</div>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- 六、營養師專業指導與衛教叮嚀 -->
+      <div style="font-size:14px;font-weight:bold;color:#0f766e;margin:12px 0 6px;border-left:4px solid #0d9488;padding-left:8px;">六、營養師專業指導與生活衛教叮嚀</div>
+      <div class="advice-box" style="border:1px solid #cbd5e1;padding:10px 14px;border-radius:6px;background:#f8fafc;font-size:12px;line-height:1.7;">
+        1. <strong>規律飲食與份量控制</strong>：請依據上述各餐食物代換份數與開立克數進食，避免暴飲暴食，三餐定時定量。<br>
+        2. <strong>充足水分攝取</strong>：建議每日補充飲水量至少 2000 ~ 2500 ml（或體重 × 30~35 ml），有助維持正常代謝。<br>
+        3. <strong>清淡烹調與原型食物</strong>：多選擇全穀未精製雜糧、豐富色彩之多樣化蔬果；以低溫蒸、煮、滷、涼拌為主，少油炸與加工高鈉食品。<br>
+        4. <strong>個人化回饋追蹤</strong>：若體重有急遽波動或身體不適，請及時與臨床專業營養團隊聯絡諮詢。
       </div>
 
-      <div class="report-footer">
-        <div>評估日期：${new Date().toLocaleDateString()}</div>
-        <div>營養師簽章：____________________</div>
+      <!-- 頁尾 -->
+      <div class="report-footer" style="margin-top:20px;padding-top:10px;border-top:1px dashed #cbd5e1;display:flex;justify-content:space-between;font-size:12px;color:#64748b;">
+        <div>製表評估日期：${new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
+        <div>諮詢專業營養師簽章：___________________________</div>
       </div>
     </div>
   `;
