@@ -74,6 +74,10 @@ function applyDeviceModeClass(isMobile) {
   } else {
     document.body.classList.remove("mobile-mode");
   }
+  // 同步切換病歷號列顯示狀態
+  document.querySelectorAll(".row-chart-no").forEach(el => {
+    el.style.display = isMobile ? "none" : "";
+  });
   if (typeof updateSubtotalColspans === "function") {
     updateSubtotalColspans();
   }
@@ -982,32 +986,32 @@ function renderMenuRecipes() {
 
     return `
       <tr id="recipeRow_${realIndex}" data-index="${realIndex}">
-        <td style="width: 125px;">
+        <td class="col-meal-cell" style="min-width: 120px; width: 125px;">
           <div style="display: flex; align-items: center; gap: 4px;">
             <button type="button" class="btn btn-teal" style="padding: 2px 7px; font-size: 13px; line-height: 1.2; border-radius: 4px; flex-shrink: 0;" title="在下方新增一列餐次/菜名/食材" onclick="insertRecipeItemAfter(${realIndex})">➕</button>
-            <div style="flex: 1;">${mealSelectHtml}</div>
+            <div style="flex: 1; min-width: 75px;">${mealSelectHtml}</div>
           </div>
         </td>
-        <td>
-          <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px;" value="${r.dish || ""}" placeholder="輸入菜名" 
+        <td class="col-dish-cell" style="min-width: 140px; width: 160px;">
+          <input type="text" class="form-input" style="width: 100%; min-width: 120px; padding: 5px 8px; font-size: 13px;" value="${r.dish || ""}" placeholder="輸入菜名" 
             oninput="updateDishName(${realIndex}, this.value)">
         </td>
-        <td>
-          <input type="text" class="form-input" style="padding: 4px 8px; font-size: 13px; font-weight: 600;" value="${r.food || ""}" placeholder="輸入食材" 
+        <td class="col-food-cell" style="min-width: 130px; width: 140px;">
+          <input type="text" class="form-input" style="width: 100%; min-width: 110px; padding: 5px 8px; font-size: 13px; font-weight: 600;" value="${r.food || ""}" placeholder="輸入食材" 
             oninput="updateFoodName(${realIndex}, this.value)" onchange="updateFoodNameAndRender(${realIndex}, this.value)">
         </td>
-        <td>
-          <select class="form-select" style="padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
+        <td class="col-cat-cell" style="min-width: 110px; width: 115px;">
+          <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
             onchange="updateRecipeCategory(${realIndex}, this.value)" title="可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）">
             ${STANDARD_FOOD_CATEGORIES.map(cat => `<option value="${cat}" ${(r.category === cat || (!r.category && cat === "自訂食材")) ? "selected" : ""}>${cat}</option>`).join("")}
           </select>
         </td>
-        <td class="val-red">
-          <input type="number" class="form-input" style="width: 70px; text-align: center; padding: 4px;" step="any" min="0.1" 
+        <td class="col-ex-cell val-red" style="min-width: 75px; width: 80px;">
+          <input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="any" min="0.1" 
             value="${r.ex}" oninput="updateRecipeEx(${realIndex}, this.value)">
         </td>
-        <td>
-          <input type="number" class="form-input" style="width: 80px; text-align: center; padding: 4px;" step="1" min="1" 
+        <td class="col-weight-cell" style="min-width: 85px; width: 90px;">
+          <input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="1" min="1" 
             value="${r.rawWeight}" oninput="updateRecipeRawWeight(${realIndex}, this.value)">
         </td>
         <td style="text-align: center;">${colorTagHtml}</td>

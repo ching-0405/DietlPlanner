@@ -2497,3 +2497,62 @@ body.mobile-mode .row-chart-no,
     display: none !important;
   }
 }
+
+
+/* 菜單開立：手機版餐次與菜名輸入框自適應寬度，徹底解決方框過小問題 */
+#menuRecipeTable {
+  min-width: 780px !important; /* 確保在任何裝置下有足夠寬度進行水平滾動，避免 8 欄相互擠壓 */
+}
+
+#menuRecipeTable td.col-meal-cell,
+#menuRecipeTable th.col-meal-th {
+  min-width: 120px !important;
+  width: 125px !important;
+}
+
+#menuRecipeTable td.col-dish-cell,
+#menuRecipeTable th.col-dish-th {
+  min-width: 140px !important;
+  width: 160px !important;
+}
+
+#menuRecipeTable td.col-food-cell,
+#menuRecipeTable th.col-food-th {
+  min-width: 130px !important;
+  width: 140px !important;
+}
+
+#menuRecipeTable td.col-cat-cell,
+#menuRecipeTable th.col-cat-th {
+  min-width: 110px !important;
+  width: 115px !important;
+}
+
+#menuRecipeTable td.col-ex-cell,
+#menuRecipeTable th.col-ex-th {
+  min-width: 75px !important;
+  width: 80px !important;
+}
+
+#menuRecipeTable td.col-weight-cell,
+#menuRecipeTable th.col-weight-th {
+  min-width: 85px !important;
+  width: 90px !important;
+}
+
+#menuRecipeTable .form-input,
+#menuRecipeTable .form-select {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* 手機版個案評估：病歷號 / 編號完全隱藏 (包含 mobile-mode 與 max-width 768px/900px) */
+body.mobile-mode .row-chart-no,
+@media (max-width: 900px) {
+  .row-chart-no,
+  tr.row-chart-no,
+  #inChartNoRow {
+    display: none !important;
+  }
+}
