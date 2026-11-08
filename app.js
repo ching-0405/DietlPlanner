@@ -2212,7 +2212,6 @@ function getPrescriptionReportHtml() {
   const targetProtPct = document.getElementById("inRatioProtein")?.value || "—";
 
   // 食物代換表實際設計數值
-  const actualExTotal = document.getElementById("sumTotalEx")?.innerText || "0";
   const actualProtGrams = parseFloat(document.getElementById("sumProteinGrams")?.innerText) || 0;
   const actualFatGrams = parseFloat(document.getElementById("sumFatGrams")?.innerText) || 0;
   const actualCarbGrams = parseFloat(document.getElementById("sumCarbGrams")?.innerText) || 0;
@@ -2240,12 +2239,6 @@ function getPrescriptionReportHtml() {
     `;
   }).join("");
 
-  // 各餐次份數加總
-  const mealTotalTds = activeMeals.map(m => {
-    const sum = exchangesData.reduce((tot, it) => tot + (it[m.key] || 0), 0);
-    return `<td style="text-align:center;font-weight:bold;color:#0369a1;">${sum > 0 ? sum : 0}</td>`;
-  }).join("");
-
   // 4. 客製化菜單開立明細（依餐次分組，含生重克數與份數）
   const mealGroups = {};
   menuRecipes.forEach(r => {
@@ -2255,42 +2248,40 @@ function getPrescriptionReportHtml() {
   });
 
   let menuDetailsHtml = "";
+  let menuRowsHtml = "";
   activeMeals.forEach(m => {
     const items = mealGroups[m.name] || [];
     if (items.length > 0) {
-      const itemsList = items.map(it => {
-        const nut = calculateRecipeNutrients(it.food, it.category, it.rawWeight, it.ex, it.sampleName);
-        const dishLabel = it.dish ? `<strong style="color:#0f766e;">【${it.dish}】</strong> ` : '';
-        return `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px dashed #e2e8f0;font-size:13px;">
-            <div>
-              ${dishLabel}<span style="font-weight:600;color:#1e293b;">${it.food}</span>
-              <span style="color:#64748b;font-size:12px;">(${it.category})</span>
-            </div>
-            <div style="text-align:right;white-space:nowrap;">
-              <span style="font-weight:700;color:#0369a1;margin-right:8px;">${it.ex || 1} 份</span>
-              <strong style="color:#334155;">${it.rawWeight || 0} g</strong>
-              <span style="color:#dc2626;font-size:12px;margin-left:8px;">(${Math.round(nut.kcal || 0)} kcal)</span>
-            </div>
-          </div>
+      items.forEach((it, index) => {
+        menuRowsHtml += `
+          <tr>
+            ${index === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${m.name}</td>` : ""}
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.dish || "—"}</td>
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.food || ""}</td>
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${Number(it.ex || 0).toFixed(1)} 份</td>
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${Number(it.rawWeight || 0).toFixed(1)} g</td>
+          </tr>
         `;
-      }).join("");
-
-      menuDetailsHtml += `
-        <div style="margin-bottom:10px;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;">
-          <div style="background:#f1f5f9;padding:6px 12px;font-weight:bold;color:#0f766e;display:flex;justify-content:space-between;align-items:center;">
-            <span>🍽️ ${m.name}</span>
-            <span style="font-size:11.5px;color:#64748b;">共 ${items.length} 項食材</span>
-          </div>
-          <div style="padding:6px 12px;background:#ffffff;">
-            ${itemsList}
-          </div>
-        </div>
-      `;
+      });
     }
   });
 
-  if (!menuDetailsHtml) {
+  if (menuRowsHtml) {
+    menuDetailsHtml = `
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">餐次</th>
+            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">菜名</th>
+            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">食材名稱</th>
+            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">份數</th>
+            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">克數</th>
+          </tr>
+        </thead>
+        <tbody>${menuRowsHtml}</tbody>
+      </table>
+    `;
+  } else {
     menuDetailsHtml = '<div style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</div>';
   }
 
@@ -2429,7 +2420,7 @@ function getPrescriptionReportHtml() {
           <tr style="background:#f0fdf4;font-weight:bold;">
             <td style="padding:6px;border:1px solid #cbd5e1;text-align:left;color:#0f766e;">總熱量加總 (Total Calories)</td>
             <td colspan="2" style="padding:6px;border:1px solid #cbd5e1;color:#0284c7;font-size:13px;">目標規劃：${targetKcal} kcal</td>
-            <td colspan="3" style="padding:6px;border:1px solid #cbd5e1;color:#16a34a;font-size:13px;">實際規劃：${actualTotalKcal} kcal (共 ${actualExTotal} 份食物代換)</td>
+            <td colspan="3" style="padding:6px;border:1px solid #cbd5e1;color:#16a34a;font-size:13px;">實際規劃：${actualTotalKcal} kcal</td>
           </tr>
         </tbody>
       </table>
@@ -2450,11 +2441,6 @@ function getPrescriptionReportHtml() {
         </thead>
         <tbody>
           ${exchangeRowsHtml}
-          <tr style="background:#f8fafc;font-weight:bold;">
-            <td colspan="5" style="padding:5px 8px;border:1px solid #cbd5e1;text-align:left;">各餐次食物總份數合計</td>
-            <td style="padding:5px;border:1px solid #cbd5e1;text-align:center;color:#0d9488;font-size:12px;">${actualExTotal} 份</td>
-            ${mealTotalTds}
-          </tr>
         </tbody>
       </table>
 
