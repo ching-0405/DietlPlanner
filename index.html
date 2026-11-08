@@ -774,10 +774,14 @@
               </div>
               <span id="lblCompMenuStats" style="font-size: 12px; color: #15803d; font-weight: 600;">菜單共 10 項食材</span>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; font-size: 13px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; font-size: 13px;">
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
                 <div style="color: #64748b; font-size: 11px;">總熱量 (Calories)</div>
                 <strong id="sumCompKcal" style="color: #dc2626; font-size: 15px;">0 kcal</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">水分 (Water)</div>
+                <strong id="sumCompWater" style="color: #0284c7; font-size: 15px;">0 g</strong>
               </div>
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
                 <div style="color: #64748b; font-size: 11px;">粗蛋白 (Protein)</div>
@@ -792,7 +796,7 @@
                 <strong id="sumCompSatFat" style="color: #b45309; font-size: 15px;">0 g</strong>
               </div>
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
-                <div style="color: #64748b; font-size: 11px;">總碳水 (Carbs)</div>
+                <div style="color: #64748b; font-size: 11px;">總碳水化合物 (Carbs)</div>
                 <strong id="sumCompCarbs" style="color: #2563eb; font-size: 15px;">0 g</strong>
               </div>
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
@@ -802,10 +806,6 @@
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
                 <div style="color: #64748b; font-size: 11px;">糖質總量 (Sugars)</div>
                 <strong id="sumCompSugars" style="color: #7c3aed; font-size: 15px;">0 g</strong>
-              </div>
-              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
-                <div style="color: #64748b; font-size: 11px;">水分 (Water)</div>
-                <strong id="sumCompWater" style="color: #0284c7; font-size: 15px;">0 g</strong>
               </div>
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
                 <div style="color: #64748b; font-size: 11px;">鈉 (Sodium, Na)</div>
@@ -835,10 +835,6 @@
                 <div style="color: #64748b; font-size: 11px;">磷 (Phosphorus, P)</div>
                 <strong id="sumCompP" style="color: #475569; font-size: 15px;">0 mg</strong>
               </div>
-              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
-                <div style="color: #64748b; font-size: 11px;">膽固醇 (Cholesterol)</div>
-                <strong id="sumCompCholesterol" style="color: #e11d48; font-size: 15px;">0 mg</strong>
-              </div>
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #fed7aa;">
                 <div style="color: #64748b; font-size: 11px;">維生素 A (Vit A)</div>
                 <strong id="sumCompVitA" style="color: #ea580c; font-size: 15px;">0 μg RE</strong>
@@ -854,10 +850,6 @@
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #fed7aa;">
                 <div style="color: #64748b; font-size: 11px;">維生素 K1 (Vit K)</div>
                 <strong id="sumCompVitK" style="color: #ea580c; font-size: 15px;">0 μg</strong>
-              </div>
-              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #fed7aa;">
-                <div style="color: #64748b; font-size: 11px;">維生素 C (Vit C)</div>
-                <strong id="sumCompVitC" style="color: #ea580c; font-size: 15px;">0 mg</strong>
               </div>
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #e9d5ff;">
                 <div style="color: #64748b; font-size: 11px;">維生素 B1 (Thiamin)</div>
@@ -882,6 +874,14 @@
               <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #e9d5ff;">
                 <div style="color: #64748b; font-size: 11px;">葉酸 (Folate)</div>
                 <strong id="sumCompFolate" style="color: #9333ea; font-size: 15px;">0 μg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #fed7aa;">
+                <div style="color: #64748b; font-size: 11px;">維生素 C (Vit C)</div>
+                <strong id="sumCompVitC" style="color: #ea580c; font-size: 15px;">0 mg</strong>
+              </div>
+              <div style="background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #dcfce7;">
+                <div style="color: #64748b; font-size: 11px;">膽固醇 (Cholesterol)</div>
+                <strong id="sumCompCholesterol" style="color: #e11d48; font-size: 15px;">0 mg</strong>
               </div>
             </div>
           </div>
@@ -918,23 +918,23 @@
               </div>
               <span style="font-size: 12px; color: #64748b;">各欄位數值已按該食材之生重 (g) 換算</span>
             </div>
-            <div class="table-scroll-container" style="max-height: 40vh;">
-              <table class="data-table" id="menuCompositionItemsTable">
+                        <div class="table-scroll-container menu-comp-table-container">
+              <table class="data-table menu-comp-sticky-table" id="menuCompositionItemsTable">
                 <thead>
                   <tr style="background: #f8fafc; font-size: 12px; white-space: nowrap;">
-                    <th>餐次</th>
-                    <th>菜名</th>
-                    <th>食材名稱</th>
+                    <th class="sticky-col col-meal">餐次</th>
+                    <th class="sticky-col col-dish">菜名</th>
+                    <th class="sticky-col col-food">食材名稱</th>
                     <th style="min-width: 160px;">資料庫樣品名稱</th>
                     <th>生重 (g)</th>
                     <th style="text-align: right;">熱量 (kcal)</th>
+                    <th style="text-align: right;">水分 (g)</th>
                     <th style="text-align: right;">粗蛋白 (g)</th>
                     <th style="text-align: right;">粗脂肪 (g)</th>
                     <th style="text-align: right;">飽和脂肪 (g)</th>
-                    <th style="text-align: right;">總碳水 (g)</th>
+                    <th style="text-align: right;">總碳水化合物 (g)</th>
                     <th style="text-align: right;">膳食纖維 (g)</th>
                     <th style="text-align: right;">糖質總量 (g)</th>
-                    <th style="text-align: right;">水分 (g)</th>
                     <th style="text-align: right;">鈉 (mg)</th>
                     <th style="text-align: right;">鉀 (mg)</th>
                     <th style="text-align: right;">鈣 (mg)</th>
@@ -942,18 +942,18 @@
                     <th style="text-align: right;">鐵 (mg)</th>
                     <th style="text-align: right;">鋅 (mg)</th>
                     <th style="text-align: right;">磷 (mg)</th>
-                    <th style="text-align: right;">膽固醇 (mg)</th>
                     <th style="text-align: right; color: #ea580c;">維生素A (μg RE)</th>
                     <th style="text-align: right; color: #ea580c;">維生素D (μg)</th>
                     <th style="text-align: right; color: #ea580c;">維生素E (mg)</th>
                     <th style="text-align: right; color: #ea580c;">維生素K1 (μg)</th>
-                    <th style="text-align: right; color: #ea580c;">維生素C (mg)</th>
                     <th style="text-align: right; color: #9333ea;">維生素B1 (mg)</th>
                     <th style="text-align: right; color: #9333ea;">維生素B2 (mg)</th>
                     <th style="text-align: right; color: #9333ea;">菸鹼素 (mg)</th>
                     <th style="text-align: right; color: #9333ea;">維生素B6 (mg)</th>
                     <th style="text-align: right; color: #9333ea;">維生素B12 (μg)</th>
                     <th style="text-align: right; color: #9333ea;">葉酸 (μg)</th>
+                    <th style="text-align: right; color: #ea580c;">維生素C (mg)</th>
+                    <th style="text-align: right; color: #e11d48;">膽固醇 (mg)</th>
                   </tr>
                 </thead>
                 <tbody id="menuCompositionItemsBody">
@@ -981,7 +981,7 @@
                   <th style="width: 90px;">粗蛋白 (g)</th>
                   <th style="width: 90px;">粗脂肪 (g)</th>
                   <th style="width: 90px;">飽和脂肪 (g)</th>
-                  <th style="width: 90px;">總碳水 (g)</th>
+                  <th style="width: 120px;">總碳水化合物 (g)</th>
                   <th style="width: 90px;">膳食纖維 (g)</th>
                   <th style="width: 90px;">糖質總量 (g)</th>
                   <th style="width: 90px;">水分 (g)</th>
@@ -1106,7 +1106,7 @@
                 <th style="text-align: right; width: 85px;">熱量 (kcal)</th>
                 <th style="text-align: right; width: 75px;">粗蛋白</th>
                 <th style="text-align: right; width: 75px;">粗脂肪</th>
-                <th style="text-align: right; width: 75px;">總碳水</th>
+                <th style="text-align: right; width: 95px;">總碳水化合物</th>
                 <th style="width: 95px; text-align: center;">操作</th>
               </tr>
             </thead>
@@ -1332,10 +1332,10 @@
   </div>
 
   <!-- 資料腳本 -->
-  <script src="food_composition_2025.js?v=20261108-dris-v2"></script>
+  <script src="food_composition_2025.js?v=20261108-sticky-v3"></script>
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
-  <script src="dris_data.js?v=20261108-dris-v2"></script>
-  <script src="app.js?v=20261108-dris-v2"></script>
+  <script src="dris_data.js?v=20261108-sticky-v3"></script>
+  <script src="app.js?v=20261108-sticky-v3"></script>
 </body>
 </html>

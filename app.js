@@ -1085,10 +1085,10 @@ function updateAllCompositionNutrientSummary() {
     sum.folate += (nut.folate || 0);
 
     return `
-      <tr>
-        <td><span class="badge" style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; font-size: 11px;">${r.meal}</span></td>
-        <td><strong>${r.dish || "—"}</strong></td>
-        <td><strong style="color: #0f766e;">${r.food}</strong></td>
+            <tr>
+        <td class="sticky-col col-meal"><span class="badge" style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; font-size: 11px;">${r.meal}</span></td>
+        <td class="sticky-col col-dish"><strong>${r.dish || "—"}</strong></td>
+        <td class="sticky-col col-food"><strong style="color: #0f766e;">${r.food}</strong></td>
         <td>
           <div style="display: flex; align-items: center; gap: 6px;">
             <span class="badge" style="background: ${r.sampleName ? '#ecfdf5' : '#f1f5f9'}; color: ${r.sampleName ? '#047857' : '#334155'}; border: 1px solid ${r.sampleName ? '#6ee7b7' : '#cbd5e1'}; font-size: 11px; padding: 2px 6px; white-space: nowrap;" title="${r.sampleName ? '使用者指定選用樣品' : '系統自動智慧比對'}">
@@ -1099,13 +1099,13 @@ function updateAllCompositionNutrientSummary() {
         </td>
         <td style="text-align: right; font-weight: 600;">${r.rawWeight}</td>
         <td style="text-align: right;" class="val-red font-bold">${Math.round(nut.kcal)}</td>
+        <td style="text-align: right;">${nut.water ? nut.water.toFixed(1) : 0}</td>
         <td style="text-align: right;" class="val-green font-bold">${nut.protein.toFixed(1)}</td>
         <td style="text-align: right;" class="val-orange font-bold">${nut.fat.toFixed(1)}</td>
         <td style="text-align: right;">${nut.saturatedFat ? nut.saturatedFat.toFixed(1) : 0}</td>
         <td style="text-align: right;" class="val-blue font-bold">${nut.carbs.toFixed(1)}</td>
         <td style="text-align: right;">${nut.fiber ? nut.fiber.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.sugars ? nut.sugars.toFixed(1) : 0}</td>
-        <td style="text-align: right;">${nut.water ? nut.water.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.na ? nut.na.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.k ? nut.k.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.ca ? nut.ca.toFixed(1) : 0}</td>
@@ -1113,18 +1113,18 @@ function updateAllCompositionNutrientSummary() {
         <td style="text-align: right;">${nut.fe ? nut.fe.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.zn ? nut.zn.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.p ? nut.p.toFixed(1) : 0}</td>
-        <td style="text-align: right;">${nut.cholesterol ? nut.cholesterol.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.vitA ? nut.vitA.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.vitD ? nut.vitD.toFixed(2) : 0}</td>
         <td style="text-align: right;">${nut.vitE ? nut.vitE.toFixed(2) : 0}</td>
         <td style="text-align: right;">${nut.vitK ? nut.vitK.toFixed(1) : 0}</td>
-        <td style="text-align: right;">${nut.vitC ? nut.vitC.toFixed(1) : 0}</td>
         <td style="text-align: right;">${nut.vitB1 ? nut.vitB1.toFixed(3) : 0}</td>
         <td style="text-align: right;">${nut.vitB2 ? nut.vitB2.toFixed(3) : 0}</td>
         <td style="text-align: right;">${nut.niacin ? nut.niacin.toFixed(2) : 0}</td>
         <td style="text-align: right;">${nut.vitB6 ? nut.vitB6.toFixed(3) : 0}</td>
         <td style="text-align: right;">${nut.vitB12 ? nut.vitB12.toFixed(2) : 0}</td>
         <td style="text-align: right;">${nut.folate ? nut.folate.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.vitC ? nut.vitC.toFixed(1) : 0}</td>
+        <td style="text-align: right;">${nut.cholesterol ? nut.cholesterol.toFixed(1) : 0}</td>
       </tr>
     `;
   }).join("");
@@ -2338,7 +2338,7 @@ function renderDriCompliance(sum) {
   const items = [
     { name: "總熱量", val: Math.round(sum.kcal), target: dri.kcal?.min, targetMax: dri.kcal?.max, unit: "kcal", note: dri.kcal?.note },
     { name: "蛋白質", val: sum.protein, target: dri.protein?.val, unit: dri.protein?.unit || "g", type: dri.protein?.type, max: dri.protein?.max },
-    { name: "總碳水", val: sum.carbs, target: dri.carbs?.val, unit: dri.carbs?.unit || "g", note: `${dri.carbs?.minPct || 50}-${dri.carbs?.maxPct || 65}%` },
+    { name: "總碳水化合物", val: sum.carbs, target: dri.carbs?.val, unit: dri.carbs?.unit || "g", note: `${dri.carbs?.minPct || 50}-${dri.carbs?.maxPct || 65}%` },
     { name: "膳食纖維", val: sum.fiber, target: dri.fiber?.val, unit: dri.fiber?.unit || "g", type: dri.fiber?.type },
     { name: "鈉 (Sodium)", val: sum.na, max: dri.na?.max || 2300, unit: "mg", isLimit: true, type: dri.na?.type },
     { name: "鉀 (Potassium)", val: sum.k, target: dri.k?.val, unit: "mg", type: dri.k?.type },
