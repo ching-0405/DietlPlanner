@@ -1821,7 +1821,6 @@ function getRecipeCategoryOptionValue(category, options) {
   }
   return category || "自訂食材";
 }
-
 function detectFoodCategory(foodName) {
   if (!foodName) return "自訂食材";
   const n = foodName.trim().toLowerCase();
