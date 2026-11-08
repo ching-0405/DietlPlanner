@@ -1804,6 +1804,17 @@ function addCompositionToMenu(name, category) {
 // 8. 列印衛教處方單張功能 (Print Report)
 // ==========================================
 function printPrescriptionReport() {
+  const escapeHtml = (value) => String(value ?? "—")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+  const formatNumber = (value, digits = 1) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toFixed(digits) : "0.0";
+  };
+
   const name = document.getElementById("inName").value || "個案";
   const chartNo = document.getElementById("inChartNo").value || "—";
   const gender = document.getElementById("inGender").value;
@@ -1813,21 +1824,82 @@ function printPrescriptionReport() {
   const bmi = document.getElementById("valBmi").innerText;
   const ibw = document.getElementById("valIbw").innerText;
   const targetKcal = document.getElementById("inTargetKcal").value;
-  const carbGrams = document.getElementById("lblTargetCarbGrams").innerText;
-  const fatGrams = document.getElementById("lblTargetFatGrams").innerText;
-  const protGrams = document.getElementById("lblTargetProteinGrams").innerText;
   const egfr = document.getElementById("valEgfr").innerText;
 
-  // 取得各餐菜單
-  const mealGroups = {};
-  menuRecipes.forEach(r => {
-    if (!mealGroups[r.meal]) mealGroups[r.meal] = [];
-    mealGroups[r.meal].push(`${r.dish ? r.dish + '-' : ''}${r.food} (${r.ex}份)`);
+  const totalKcal = Number(targetKcal) || 0;
+  const macroDefinitions = [
+    { name: "醣類 (碳水化合物)", ratio: Number(document.getElementById("inRatioC").value) || 0, kcalPerGram: 4, color: "#e11d48" },
+    { name: "脂質 (Lipids)", ratio: Number(document.getElementById("inRatioF").value) || 0, kcalPerGram: 9, color: "#d97706" },
+    { name: "蛋白質 (Protein)", ratio: Number(document.getElementById("inRatioP").value) || 0, kcalPerGram: 4, color: "#16a34a" }
+  ];
+  const macroRowsHtml = macroDefinitions.map(macro => {
+    const kcal = totalKcal * macro.ratio / 100;
+    const grams = kcal / macro.kcalPerGram;
+    return `
+      <tr>
+        <td>${escapeHtml(macro.name)}</td>
+        <td style="text-align:right;">${formatNumber(kcal, 0)} kcal</td>
+        <td style="text-align:right;">${formatNumber(macro.ratio)}%</td>
+        <td style="text-align:right;color:${macro.color};font-weight:bold;">${formatNumber(grams)} g</td>
+      </tr>`;
   });
 
-  let menuHtml = "";
-  for (let m in mealGroups) {
-    menuHtml += `<tr><td style="font-weight:bold;width:90px;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;">${m}</td><td style="padding:8px;border:1px solid #cbd5e1;">${mealGroups[m].join("、 ")}</td></tr>`;
+  const menuRowsHtml = menuRecipes.map(recipe => `
+    <tr>
+      <td>${escapeHtml(recipe.meal)}</td>
+      <td>${escapeHtml(recipe.dish || "—")}</td>
+      <td>${escapeHtml(recipe.food)}</td>
+      <td style="text-align:right;">${formatNumber(recipe.ex, 1)} 份</td>
+      <td style="text-align:right;">${recipe.rawWeight === "" || recipe.rawWeight == null ? "—" : `${formatNumber(recipe.rawWeight, 1)} g`}</td>
+    </tr>
+  `).join("");
+
+  const compositionSum = {
+    kcal: 0, protein: 0, fat: 0, saturatedFat: 0, carbs: 0, fiber: 0,
+    sugars: 0, water: 0, na: 0, k: 0, ca: 0, mg: 0, fe: 0, zn: 0,
+    p: 0, cholesterol: 0
+  };
+  menuRecipes.forEach(recipe => {
+    const nutrient = calculateRecipeNutrients(
+      recipe.food,
+      recipe.category,
+      recipe.rawWeight,
+      recipe.ex,
+      recipe.sampleName
+    );
+    Object.keys(compositionSum).forEach(key => {
+      compositionSum[key] += Number(nutrient[key]) || 0;
+    });
+  });
+
+  const compositionItems = [
+    ["熱量", `${formatNumber(compositionSum.kcal, 0)} kcal`],
+    ["粗蛋白", `${formatNumber(compositionSum.protein)} g`],
+    ["粗脂肪", `${formatNumber(compositionSum.fat)} g`],
+    ["飽和脂肪", `${formatNumber(compositionSum.saturatedFat)} g`],
+    ["總碳水", `${formatNumber(compositionSum.carbs)} g`],
+    ["膳食纖維", `${formatNumber(compositionSum.fiber)} g`],
+    ["糖質總量", `${formatNumber(compositionSum.sugars)} g`],
+    ["水分", `${formatNumber(compositionSum.water)} g`],
+    ["鈉", `${formatNumber(compositionSum.na)} mg`],
+    ["鉀", `${formatNumber(compositionSum.k)} mg`],
+    ["鈣", `${formatNumber(compositionSum.ca)} mg`],
+    ["鎂", `${formatNumber(compositionSum.mg)} mg`],
+    ["鐵", `${formatNumber(compositionSum.fe)} mg`],
+    ["鋅", `${formatNumber(compositionSum.zn)} mg`],
+    ["磷", `${formatNumber(compositionSum.p)} mg`],
+    ["膽固醇", `${formatNumber(compositionSum.cholesterol)} mg`]
+  ];
+  const compositionRowsHtml = [];
+  for (let index = 0; index < compositionItems.length; index += 2) {
+    const left = compositionItems[index];
+    const right = compositionItems[index + 1];
+    compositionRowsHtml.push(`
+      <tr>
+        <th>${left[0]}</th><td style="text-align:right;">${left[1]}</td>
+        ${right ? `<th>${right[0]}</th><td style="text-align:right;">${right[1]}</td>` : "<th></th><td></td>"}
+      </tr>
+    `);
   }
 
   const printWindow = window.open("", "_blank");
@@ -1841,17 +1913,19 @@ function printPrescriptionReport() {
     <html>
     <head>
       <meta charset="utf-8">
-      <title>臨床營養諮詢衛教處方單 - ${name}</title>
+      <title>臨床營養諮詢衛教處方單 - ${escapeHtml(name)}</title>
       <style>
         body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; padding: 24px; color: #1e293b; line-height: 1.6; }
         .header { text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 16px; }
         .header h1 { margin: 0; color: #0f766e; font-size: 24px; }
         .section-title { font-size: 16px; font-weight: bold; color: #0d9488; margin: 16px 0 8px; border-left: 4px solid #0d9488; padding-left: 8px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-        th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; font-size: 14px; }
+        th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; font-size: 13px; }
         th { background: #f1f5f9; }
         .highlight { font-weight: bold; color: #0f766e; }
         .footer { margin-top: 30px; text-align: right; font-size: 13px; color: #64748b; }
+        .numeric { text-align: right; white-space: nowrap; }
+        @media print { body { padding: 10mm; } .section-title { break-after: avoid; } table { break-inside: avoid; } }
       </style>
     </head>
     <body>
@@ -1863,42 +1937,42 @@ function printPrescriptionReport() {
       <div class="section-title">一、個案基本體位與生理評估</div>
       <table>
         <tr>
-          <th>姓名 / 暱稱</th><td>${name}</td>
-          <th>病歷號</th><td>${chartNo}</td>
-          <th>性別 / 年齡</th><td>${gender} / ${age} 歲</td>
+          <th>姓名 / 暱稱</th><td>${escapeHtml(name)}</td>
+          <th>編號</th><td>${escapeHtml(chartNo)}</td>
+          <th>性別 / 年齡</th><td>${escapeHtml(gender)} / ${escapeHtml(age)} 歲</td>
         </tr>
         <tr>
-          <th>身高</th><td>${height} cm</td>
-          <th>體重</th><td>${weight} kg</td>
-          <th>BMI 指數</th><td class="highlight">${bmi}</td>
+          <th>身高</th><td>${escapeHtml(height)} cm</td>
+          <th>體重</th><td>${escapeHtml(weight)} kg</td>
+          <th>BMI 指數</th><td class="highlight">${escapeHtml(bmi)}</td>
         </tr>
         <tr>
-          <th>理想體重 (IBW)</th><td>${ibw}</td>
-          <th>腎功能 (eGFR)</th><td>${egfr} ml/min</td>
-          <th>目標規劃熱量</th><td class="highlight" style="color:#e11d48;font-size:16px;">${targetKcal} kcal</td>
+          <th>理想體重 (IBW)</th><td>${escapeHtml(ibw)}</td>
+          <th>腎功能 (eGFR)</th><td>${escapeHtml(egfr)} ml/min</td>
+          <th>目標規劃熱量</th><td class="highlight" style="color:#e11d48;font-size:16px;">${escapeHtml(targetKcal)} kcal</td>
         </tr>
       </table>
 
       <div class="section-title">二、三大營養素目標熱量與克數分配</div>
       <table>
-        <tr>
-          <th>醣類 (碳水化合物)</th>
-          <th>脂質 (Lipids)</th>
-          <th>蛋白質 (Protein)</th>
-        </tr>
-        <tr>
-          <td style="color:#e11d48;font-weight:bold;font-size:16px;">${carbGrams}</td>
-          <td style="color:#d97706;font-weight:bold;font-size:16px;">${fatGrams}</td>
-          <td style="color:#16a34a;font-weight:bold;font-size:16px;">${protGrams}</td>
-        </tr>
+        <tr><th>三大營養素</th><th class="numeric">目標熱量</th><th class="numeric">百分比</th><th class="numeric">目標克數</th></tr>
+        ${macroRowsHtml}
+        <tr><th>合計</th><th class="numeric">${formatNumber(totalKcal, 0)} kcal</th><th class="numeric">${formatNumber(macroDefinitions.reduce((sum, macro) => sum + macro.ratio, 0), 1)}%</th><th></th></tr>
       </table>
 
       <div class="section-title">三、客製化飲食菜單規劃</div>
       <table>
-        ${menuHtml || '<tr><td colspan="2" style="text-align:center;color:#94a3b8;">尚未開立菜單食材</td></tr>'}
+        <tr><th>餐次</th><th>菜名</th><th>食材名稱</th><th class="numeric">份數</th><th class="numeric">克數</th></tr>
+        ${menuRowsHtml || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">尚未開立菜單食材</td></tr>'}
       </table>
 
-      <div class="section-title">四、營養師專業指導與衛教叮嚀</div>
+      <div class="section-title">四、食品營養成分資料庫：食材加總營養素</div>
+      <p style="font-size:12px;color:#64748b;margin:0 0 8px;">依菜單各食材開立克數，套用衛生福利部食品營養成分資料庫 (2025版) 換算加總。</p>
+      <table>
+        ${compositionRowsHtml.join("")}
+      </table>
+
+      <div class="section-title">五、營養師專業指導與衛教叮嚀</div>
       <div style="border:1px solid #cbd5e1;padding:12px;border-radius:6px;background:#f8fafc;font-size:14px;">
         1. 每日維持規律三餐與點心，補充足量水分（建議每日至少 2000 ml）。<br>
         2. 烹調宜清淡，以蒸、煮、滷、涼拌為原則，避免油炸及高鈉加工食品。<br>
