@@ -1302,6 +1302,31 @@ body.mobile-mode .form-table td {
   padding: 6px 4px;
 }
 
+body.mobile-mode .form-table {
+  table-layout: fixed;
+}
+
+body.mobile-mode .form-table .cell-bmi-badge {
+  width: 105px;
+  white-space: nowrap;
+}
+
+body.mobile-mode .form-table .cell-bmi-badge .badge {
+  padding: 3px 5px;
+  font-size: 11px;
+}
+
+body.mobile-mode #valBmiRange {
+  font-size: 16px;
+  padding-right: 8px;
+}
+
+body.mobile-mode #valBmiRange + td.unit {
+  min-width: 68px;
+  padding-left: 8px;
+  font-size: 11px;
+}
+
 body.mobile-mode .navbar {
   flex-direction: row;
   align-items: center;
