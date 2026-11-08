@@ -1373,13 +1373,15 @@ function updateRecipeEx(index, val) {
     const matchedEx = findFoodExchangeMatch(menuRecipes[index].food);
     if (matchedEx) {
       menuRecipes[index].rawWeight = Number((matchedEx.rawWeight * num).toFixed(1));
+    } else {
+      menuRecipes[index].rawWeight = "";
     }
     updateMenuSummaryCards();
     updateAllCompositionNutrientSummary();
     const row = document.querySelector(`#menuRecipeTableBody tr[data-recipe-index="${index}"]`);
     if (row) {
       const weightInput = row.querySelector('td:nth-child(6) input');
-      if (weightInput && matchedEx) weightInput.value = menuRecipes[index].rawWeight;
+      if (weightInput) weightInput.value = menuRecipes[index].rawWeight;
     }
     if (row && menuRecipes[index]._calc) {
       const kcalCell = row.querySelector(".rec-kcal");
@@ -1419,6 +1421,7 @@ function applyFoodExchangeMatch(recipe) {
 
   if (!matchedEx) {
     recipe.category = "自訂食材";
+    recipe.rawWeight = "";
     return;
   }
 
@@ -1528,7 +1531,7 @@ function addCustomRecipeItem() {
     food: "新食材",
     category: "自訂食材",
     ex: 1,
-    rawWeight: 100,
+    rawWeight: "",
     color: "白色"
   };
 
@@ -1789,7 +1792,7 @@ function addCompositionToMenu(name, category) {
     food: name,
     category: category,
     ex: 1,
-    rawWeight: 100,
+    rawWeight: "",
     color: "白色"
   });
 
@@ -2039,7 +2042,7 @@ function insertRecipeItemAfter(index) {
     food: "新食材",
     category: "自訂食材",
     ex: 1,
-    rawWeight: 100,
+    rawWeight: "",
     color: "白色",
     sampleName: null
   };
