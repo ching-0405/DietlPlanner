@@ -128,6 +128,10 @@ body {
   transition: all 0.2s;
 }
 
+.nav-label-mobile {
+  display: none;
+}
+
 .nav-tab:hover {
   background: #f0fdfa;
   border-color: #0d9488;
@@ -1474,6 +1478,14 @@ body.mobile-mode .nav-tab {
   padding: 4px 2px;
   line-height: 1.2;
   box-shadow: none;
+}
+
+body.mobile-mode .nav-label-desktop {
+  display: none;
+}
+
+body.mobile-mode .nav-label-mobile {
+  display: inline;
 }
 
 body.mobile-mode .nav-tab.active {
