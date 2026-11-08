@@ -908,20 +908,68 @@ function updateMealChipsBar() {
 
   const activeMeals = getActiveMealDefinitions();
 
-  container.innerHTML = activeMeals.map(m => {
-    const details = exchangesData
-      .filter(it => it[m.key] > 0)
-      .map(it => `${it.category} ${it[m.key]}份`)
-      .join("、");
-    const summary = details ? `：${details}` : "：未設定";
+  const categoryGroups = [
+    { key: "乳品類", label: "乳品類", matches: category => category.includes("奶") || category.includes("乳") },
+    { key: "全穀雜糧", label: "全穀雜糧", matches: category => category.includes("穀") || category.includes("米食") || category.includes("麵食") },
+    { key: "豆魚蛋肉", label: "豆魚蛋肉", matches: category => category.includes("豆魚蛋肉") },
+    { key: "蔬菜類", label: "蔬菜類", matches: category => category === "蔬菜類" },
+    { key: "水果類", label: "水果類", matches: category => category === "水果類" },
+    { key: "油脂與堅果種子", label: "油脂與堅果種子", matches: category => category.includes("油脂") || category.includes("堅果") }
+  ];
+
+  const formatPortion = value => {
+    const number = Number(value) || 0;
+    return Number.isInteger(number)
+      ? String(number)
+      : number.toFixed(1).replace(/\.0$/, "");
+  };
+
+  const rows = categoryGroups.map(group => {
+    const exchangeItems = exchangesData.filter(item => group.matches(item.category));
+    const designPortion = exchangeItems.reduce((sum, item) => sum + (Number(item.ex) || 0), 0);
+    if (designPortion <= 0) return "";
+
+    const mealCells = activeMeals.map(meal => {
+      const required = exchangeItems.reduce((sum, item) => sum + (Number(item[meal.key]) || 0), 0);
+      const opened = menuRecipes
+        .filter(recipe => recipe.meal === meal.name && recipe.category === group.key)
+        .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
+      const isComplete = required <= 0 || opened + 0.001 >= required;
+      const cellClass = isComplete ? "meal-portion-complete" : "meal-portion-pending";
+
+      return `
+        <td class="${cellClass}" onclick="filterByMeal('${meal.name}')" title="${isComplete ? "已完成開立" : `尚缺 ${formatPortion(Math.max(required - opened, 0))} 份`}">
+          ${formatPortion(required)}
+        </td>
+      `;
+    }).join("");
 
     return `
-      <div class="meal-chip" onclick="filterByMeal('${m.name}')">
-        <span class="meal-badge ${m.cls}">${m.name}</span>
-        <span>${summary}</span>
-      </div>
+      <tr>
+        <th scope="row">${group.label}</th>
+        <td>${formatPortion(designPortion)}</td>
+        ${mealCells}
+      </tr>
     `;
   }).join("");
+
+  container.innerHTML = `
+    <div class="meal-guidance-wrap">
+      <table class="meal-guidance-table">
+        <thead>
+          <tr>
+            <th>食物大類</th>
+            <th>設計份數</th>
+            ${activeMeals.map(meal => `<th>${meal.name}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows || `<tr><td colspan="${activeMeals.length + 2}" class="meal-guidance-empty">尚未設定食物代換份數</td></tr>`}
+        </tbody>
+      </table>
+      <div class="meal-guidance-note">灰色：該餐次已符合食物大類份數；黑色：尚未開立完成。點擊餐次欄位可篩選下方菜單。</div>
+    </div>
+  `;
 
   updateMenuMealFilters();
 }
@@ -1068,6 +1116,7 @@ function renderMenuRecipes() {
 
   // 同步加總食品營養成分資料庫中所有的營養素（依菜單開立的所有食材克數進行加總）
   updateAllCompositionNutrientSummary();
+  updateMealChipsBar();
 }
 
 /**

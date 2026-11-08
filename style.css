@@ -1527,10 +1527,75 @@ body.mobile-mode .exchange-table {
 }
 
 .meal-chips-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   margin-top: 12px;
+}
+
+.meal-guidance-wrap {
+  overflow-x: auto;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+.meal-guidance-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.meal-guidance-table th,
+.meal-guidance-table td {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.meal-guidance-table thead th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.meal-guidance-table tbody th {
+  background: #f8fafc;
+  color: #0f172a;
+  text-align: left;
+  font-weight: 700;
+}
+
+.meal-guidance-table td:nth-child(2) {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.meal-guidance-table td.meal-portion-pending {
+  color: #111827;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.meal-guidance-table td.meal-portion-complete {
+  color: #94a3b8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.meal-guidance-table td.meal-portion-pending:hover,
+.meal-guidance-table td.meal-portion-complete:hover {
+  background: #f0fdfa;
+}
+
+.meal-guidance-empty,
+.meal-guidance-note {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.meal-guidance-note {
+  padding: 6px 10px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
 .meal-chip {
