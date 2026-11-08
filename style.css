@@ -1598,13 +1598,18 @@ body.mobile-mode .meal-guidance-table td:nth-child(2) {
   font-size: 12px;
 }
 
-.meal-guidance-pending-label {
+.meal-pending-toolbar-note {
   color: #b91c1c;
-  font-size: 11px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.35;
-  margin-bottom: 2px;
-  white-space: normal;
+  padding: 4px 8px;
+}
+
+.meal-pending-toolbar-note[hidden] {
+  display: none !important;
 }
 
 .meal-guidance-note {

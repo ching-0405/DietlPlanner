@@ -854,7 +854,10 @@ function calcExchangeTotals() {
 // 4. 第三頁：菜單開立與食材辨識
 // ==========================================
 function initMenu() {
-  document.getElementById("cboMealFilter").addEventListener("change", renderMenuRecipes);
+  document.getElementById("cboMealFilter").addEventListener("change", () => {
+    renderMenuRecipes();
+    updateMealChipsBar();
+  });
   document.getElementById("btnOpenExchangeQuery").addEventListener("click", () => {
     openModal("modalExchangeQuery");
   });
@@ -970,18 +973,7 @@ function updateMealChipsBar() {
           <tr>
             <th>食物大類</th>
             <th>設計份數</th>
-            ${activeMeals.map(meal => {
-              const pending = pendingByMeal.get(meal.key)
-                .filter(item => item.portion > 0.001)
-                .map(item => `${item.label}${formatPortion(item.portion)}份`)
-                .join("、");
-              return `
-                <th>
-                  ${pending ? `<div class="meal-guidance-pending-label">尚未開立：${pending}</div>` : ""}
-                  <div>${meal.name}</div>
-                </th>
-              `;
-            }).join("")}
+            ${activeMeals.map(meal => `<th>${meal.name}</th>`).join("")}
           </tr>
         </thead>
         <tbody>
@@ -993,6 +985,20 @@ function updateMealChipsBar() {
   `;
 
   updateMenuMealFilters();
+
+  const pendingSummaryEl = document.getElementById("mealPendingSummary");
+  if (pendingSummaryEl) {
+    const selectedMeal = document.getElementById("cboMealFilter")?.value;
+    const selectedDefinition = activeMeals.find(meal => meal.name === selectedMeal);
+    const pending = selectedDefinition
+      ? pendingByMeal.get(selectedDefinition.key)
+        .filter(item => item.portion > 0.001)
+        .map(item => `${item.label}${formatPortion(item.portion)}份`)
+        .join("、")
+      : "";
+    pendingSummaryEl.textContent = pending ? `尚未開立：${pending}` : "";
+    pendingSummaryEl.hidden = !pending;
+  }
 }
 
 function getMenuFoodCategoryKey(category) {
@@ -1629,6 +1635,8 @@ function updateMenuSummaryCards() {
   const elWeight = document.getElementById("recipeSumWeight");
   if (elEx) elEx.innerText = totalEx.toFixed(1);
   if (elWeight) elWeight.innerText = `${Math.round(totalWeight)} g`;
+
+  updateMealChipsBar();
 }
 
 function updateRecipeMeal(index, val) {
