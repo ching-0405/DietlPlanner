@@ -641,6 +641,8 @@ function renderExchangeTable() {
   renderMobileMacroSpecsCard();
   updateSubtotalColspans();
   calcExchangeTotals();
+  updateMenuMealOptions();
+  updateMealChipsBar();
 }
 
 
@@ -840,8 +842,35 @@ function initMenu() {
     openModal("modalExchangeQuery");
   });
   document.getElementById("btnAddCustomItem").addEventListener("click", addCustomRecipeItem);
+  updateMenuMealOptions();
   renderMenuRecipes();
   updateMealChipsBar();
+}
+
+function getActiveMenuMealNames() {
+  const mealNames = {
+    b: "早餐",
+    ms: "早點",
+    l: "午餐",
+    as: "午點",
+    d: "晚餐",
+    ns: "晚點"
+  };
+  return activeMealKeys.map(key => mealNames[key]).filter(Boolean);
+}
+
+function updateMenuMealOptions() {
+  const select = document.getElementById("cboMealFilter");
+  if (!select) return;
+
+  const activeMealNames = getActiveMenuMealNames();
+  Array.from(select.options).forEach(option => {
+    const isAll = option.value === "全部";
+    option.hidden = !isAll && !activeMealNames.includes(option.value);
+  });
+  if (select.value !== "全部" && !activeMealNames.includes(select.value)) {
+    select.value = "全部";
+  }
 }
 
 function updateMealChipsBar() {
@@ -855,7 +884,7 @@ function updateMealChipsBar() {
     { key: "as", name: "午點", cls: "as" },
     { key: "d", name: "晚餐", cls: "d" },
     { key: "ns", name: "晚點", cls: "ns" }
-  ];
+  ].filter(meal => activeMealKeys.includes(meal.key));
 
   container.innerHTML = meals.map(m => {
     const details = exchangesData
@@ -879,14 +908,15 @@ function filterByMeal(mealName) {
 }
 
 function renderMenuRecipes() {
+  updateMenuMealOptions();
   const filter = document.getElementById("cboMealFilter").value;
   const tbody = document.getElementById("menuRecipeTableBody");
-  
+  const activeMealNames = getActiveMenuMealNames();
   const filtered = filter === "全部" 
-    ? menuRecipes 
-    : menuRecipes.filter(r => r.meal === filter);
+    ? menuRecipes.filter(r => activeMealNames.includes(r.meal))
+    : menuRecipes.filter(r => r.meal === filter && activeMealNames.includes(r.meal));
 
-  const mealOptions = ["早餐", "早點", "午餐", "午點", "晚餐", "晚點"];
+  const mealOptions = activeMealNames;
 
   let totalEx = 0;
   let totalWeight = 0;
