@@ -982,68 +982,68 @@ body {
 }
 
 /* 代換表格設計 (整體字體放大 & 舒適間距) */
-.exchange-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 12px;
-}
-
-.exchange-table .col-category { width: 18%; }
-.exchange-table .col-macro { width: 4%; }
-.exchange-table .col-design-ex { width: 8%; }
-.exchange-table .col-meal-ex { width: 6%; }
-.exchange-table .col-total-macro { width: 5.5%; }
-.exchange-table .col-total-kcal { width: 6%; }
-
 /* ==========================================
-   食物代換表 (Exchange Table) - 放大字體與不折行樣式
+   食物代換表 (Exchange Table) - 穩固自適應寬度與清晰大字體
    ========================================== */
 .exchange-table {
   width: 100%;
+  min-width: 980px; /* 關鍵：確保所有欄位文字絕不擠壓重疊 */
+  table-layout: auto !important; /* 允許依內容適配，絕不硬性切斷文字 */
   border-collapse: collapse;
   font-size: 14px;
 }
 
+/* 欄位寬度智慧分配 */
+.exchange-table .col-category { min-width: 145px; width: 16%; }
+.exchange-table .col-macro { min-width: 62px; width: 5.5%; }
+.exchange-table .col-design-ex { min-width: 70px; width: 7%; }
+.exchange-table .col-meal-ex { min-width: 52px; width: 5.5%; }
+.exchange-table .col-total-macro { min-width: 82px; width: 7.5%; }
+.exchange-table .col-total-kcal { min-width: 85px; width: 8%; }
+
 .exchange-table th,
 .exchange-table td {
-  padding: 7px 5px;
+  padding: 6px 4px;
   border: 1px solid #cbd5e1;
   text-align: center;
+  box-sizing: border-box;
 }
 
-/* 表頭文字放大且絕不分行 */
+/* 表頭文字清晰大方 */
 .exchange-table thead th {
   background: #f1f5f9;
   color: #1e293b;
   font-weight: 700;
   font-size: 13px;
-  white-space: nowrap !important;
   vertical-align: middle;
 }
 
 .exchange-table thead .header-main th {
   font-size: 14px;
   padding: 8px 6px;
+  white-space: nowrap;
 }
 
-/* 確保「總蛋白質 (g)」等總量表頭與子表頭不折行 */
+/* 核心需求：總蛋白質 (g) 及總量表頭絕對不折行、不重疊 */
 .col-total-p,
 .col-total-f,
 .col-total-c,
 .col-total-kcal {
   white-space: nowrap !important;
-  min-width: 82px;
-  padding: 6px 8px !important;
+  min-width: 82px !important;
+  padding: 6px 6px !important;
+  font-size: 13px !important;
 }
 
+/* 每份三大營養素子表頭 */
 .exchange-table .col-macro-cell {
   white-space: nowrap !important;
-  min-width: 48px;
-  font-size: 14px;
+  min-width: 60px !important;
+  font-size: 12px !important;
+  padding: 5px 2px !important;
 }
 
-/* 食物大類字體放大 */
+/* 食物大類字體放大且整齊 */
 .exchange-table td.cat-cell {
   text-align: left;
   font-weight: 700;
@@ -1051,6 +1051,7 @@ body {
   color: #0f172a;
   white-space: nowrap;
   padding-left: 10px;
+  min-width: 140px;
 }
 
 .exchange-table td.unit-cell {
@@ -1059,7 +1060,7 @@ body {
   color: #475569;
 }
 
-/* 輸入框字體放大與高度調適 */
+/* 輸入框字體放大與舒適排版 */
 .exchange-table input.cell-input {
   width: 100%;
   max-width: 100%;
@@ -1071,17 +1072,18 @@ body {
   font-size: 15px;
   height: 32px;
   color: #0f172a;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
   .exchange-table .meal-ex-input {
-    width: 54px;
+    width: 50px;
     height: 32px;
     font-size: 15px;
   }
 
   .exchange-table .design-ex-input {
-    width: 60px;
+    width: 58px;
     height: 32px;
     font-size: 15px;
   }
@@ -1094,6 +1096,7 @@ body {
 .exchange-table tbody td.val-blue {
   font-size: 15px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* 底部加總列 (三大營養素加總克數 / 百分比) 字體放大清晰 */
@@ -1104,7 +1107,7 @@ body {
 .subtotal-row {
   background: #f8fafc;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 15px !important;
 }
 
 .subtotal-row.grams-row {
@@ -1112,7 +1115,7 @@ body {
 }
 
 .subtotal-row.grams-row td {
-  font-size: 15px;
+  font-size: 15px !important;
   padding: 8px 6px;
   white-space: nowrap;
 }
@@ -1122,7 +1125,7 @@ body {
 }
 
 .subtotal-row.percent-row td {
-  font-size: 15px;
+  font-size: 15px !important;
   padding: 8px 6px;
   white-space: nowrap;
 }
