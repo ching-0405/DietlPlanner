@@ -2249,6 +2249,11 @@ function getPrescriptionReportHtml() {
 
   let menuDetailsHtml = "";
   let menuRowsHtml = "";
+  const formatMenuPortion = (value) => {
+    const number = Number(value) || 0;
+    return Number.isInteger(number) ? String(number) : number.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+  };
+  const formatMenuWeight = (value) => String(Math.ceil(Number(value) || 0));
   activeMeals.forEach(m => {
     const items = mealGroups[m.name] || [];
     if (items.length > 0) {
@@ -2258,8 +2263,8 @@ function getPrescriptionReportHtml() {
             ${index === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${m.name}</td>` : ""}
             <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.dish || "—"}</td>
             <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.food || ""}</td>
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${Number(it.ex || 0).toFixed(1)} 份</td>
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${Number(it.rawWeight || 0).toFixed(1)} g</td>
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuPortion(it.ex)} 份</td>
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuWeight(it.rawWeight)} g</td>
           </tr>
         `;
       });
