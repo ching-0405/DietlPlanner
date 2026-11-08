@@ -1668,6 +1668,71 @@ body.mobile-mode .exchange-table {
   white-space: nowrap;
 }
 
+/* 手機版菜單開立表：保留可左右滑動，但讓編輯欄位有足夠寬度 */
+body.mobile-mode #menuRecipeTable {
+  min-width: 860px;
+  table-layout: fixed;
+}
+
+body.mobile-mode #menuRecipeTable th,
+body.mobile-mode #menuRecipeTable td {
+  padding: 8px 6px;
+  vertical-align: middle;
+}
+
+body.mobile-mode #menuRecipeTable th:nth-child(1),
+body.mobile-mode #menuRecipeTable td:nth-child(1) {
+  width: 125px !important;
+}
+
+body.mobile-mode #menuRecipeTable th:nth-child(2),
+body.mobile-mode #menuRecipeTable td:nth-child(2) {
+  width: 145px !important;
+}
+
+body.mobile-mode #menuRecipeTable th:nth-child(3),
+body.mobile-mode #menuRecipeTable td:nth-child(3) {
+  width: 165px !important;
+}
+
+body.mobile-mode #menuRecipeTable th:nth-child(5),
+body.mobile-mode #menuRecipeTable td:nth-child(5) {
+  width: 90px !important;
+}
+
+body.mobile-mode #menuRecipeTable td:nth-child(1) select {
+  width: 80px !important;
+  min-width: 80px !important;
+  height: 36px;
+  padding: 4px 6px !important;
+  font-size: 14px !important;
+}
+
+body.mobile-mode #menuRecipeTable td:nth-child(1) .btn {
+  width: 34px;
+  min-width: 34px;
+  height: 36px;
+  padding: 2px 4px !important;
+  font-size: 16px !important;
+}
+
+body.mobile-mode #menuRecipeTable td:nth-child(2) input,
+body.mobile-mode #menuRecipeTable td:nth-child(3) input {
+  width: 100% !important;
+  min-width: 0;
+  height: 36px;
+  padding: 4px 8px !important;
+  font-size: 14px !important;
+}
+
+body.mobile-mode #menuRecipeTable td:nth-child(5) input {
+  width: 72px !important;
+  min-width: 72px;
+  height: 36px;
+  padding: 4px !important;
+  font-size: 14px !important;
+}
+
 /* 顏色標籤膠囊 */
 .color-tag {
   display: inline-block;
