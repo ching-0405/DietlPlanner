@@ -936,8 +936,9 @@ function updateMealChipsBar() {
   };
 
   const issuesByMeal = new Map(
-    activeMeals.map(meal => [meal.key, { pending: [], over: [] }])
+  activeMeals.map(meal => [meal.key, { pending: [], over: [], mismatch: [] }])
   );
+  const designedProteinCategories = getDesignedProteinCategories();
   const rows = categoryGroups.map(group => {
     const exchangeItems = exchangesData.filter(item => group.matches(item.category));
     const designPortion = exchangeItems.reduce((sum, item) => sum + (Number(item.ex) || 0), 0);
@@ -948,6 +949,21 @@ function updateMealChipsBar() {
       const opened = menuRecipes
         .filter(recipe => recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category) === group.key)
         .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
+      menuRecipes
+        .filter(recipe =>
+          recipe.meal === meal.name &&
+          PROTEIN_EXCHANGE_CATEGORIES.includes(recipe.category) &&
+          !designedProteinCategories.includes(recipe.category)
+        )
+        .forEach(recipe => {
+          const existing = issuesByMeal.get(meal.key).mismatch.find(item => item.recipe === recipe);
+          if (!existing) {
+            issuesByMeal.get(meal.key).mismatch.push({
+              recipe,
+              designed: designedProteinCategories.map(category => getFoodCategoryLabel(category)).join("、")
+            });
+          }
+        });
       const isOver = opened > required + 0.001;
       const isComplete = !isOver && (required <= 0 || opened + 0.001 >= required);
       const cellClass = isOver
@@ -1020,11 +1036,18 @@ function updateMealChipsBar() {
         .map(item => `${item.label}${formatPortion(item.portion)}份`)
         .join("、")
       : "";
+    const mismatch = issues
+      ? issues.mismatch
+        .map(item => `「${item.recipe.food || "未命名食材"}」為${getFoodCategoryLabel(item.recipe.category)}，設計為${item.designed}`)
+        .join("；")
+      : "";
     const messages = [];
     if (pending) messages.push(`尚未開立：${pending}`);
     if (over) messages.push(`超過設計：${over}`);
+    if (mismatch) messages.push(`脂肪類型不符：${mismatch}`);
     pendingSummaryEl.textContent = messages.join("；");
     pendingSummaryEl.classList.toggle("meal-over-toolbar-note", Boolean(over));
+    pendingSummaryEl.classList.toggle("meal-mismatch-toolbar-note", Boolean(mismatch));
     pendingSummaryEl.hidden = messages.length === 0;
   }
 }
@@ -1071,6 +1094,7 @@ function renderMenuRecipes() {
     const startsNewMealGroup = i > 0 && filtered[i - 1].meal !== r.meal;
     const normalizedRecipeCategory = normalizeFoodCategory(r.category, r.food);
     const isNonPortionSeasoning = normalizedRecipeCategory === "調味" || normalizedRecipeCategory === "調味蔬菜";
+    const proteinCategoryMismatch = getProteinCategoryMismatch(r.category);
     if (isNonPortionSeasoning) {
       r.category = normalizedRecipeCategory;
       r.ex = 0;
@@ -1135,11 +1159,12 @@ function renderMenuRecipes() {
             value="${r.rawWeight}" oninput="updateRecipeRawWeight(${realIndex}, this.value)">
         </td>
         <td class="col-color-cell" style="text-align: center;">${colorTagHtml}</td>
-        <td class="col-cat-cell" style="min-width: 110px; width: 115px;">
+        <td class="col-cat-cell${proteinCategoryMismatch ? " protein-category-mismatch" : ""}" style="min-width: 110px; width: 115px;">
           <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
-            onchange="updateRecipeCategory(${realIndex}, this.value)" title="可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）">
+            onchange="updateRecipeCategory(${realIndex}, this.value)" title="${proteinCategoryMismatch ? `脂肪類型不符：目前設計為${proteinCategoryMismatch}` : "可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）"}">
             ${categoryOptions.map(option => `<option value="${option.value}" ${getRecipeCategoryOptionValue(r.category, categoryOptions) === option.value ? "selected" : ""}>${option.label}</option>`).join("")}
           </select>
+          ${proteinCategoryMismatch ? `<div class="protein-category-warning">⚠ 類型不符</div>` : ""}
         </td>
         <td class="col-operation-cell" style="text-align: center;"><button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteRecipeItem(${realIndex})">✖ 刪除</button></td>
       </tr>
@@ -1894,6 +1919,13 @@ function getDesignedProteinCategories() {
     .filter(item => PROTEIN_EXCHANGE_CATEGORIES.includes(item.category) && Number(item.ex) > 0)
     .map(item => item.category);
   return designed.length > 0 ? designed : PROTEIN_EXCHANGE_CATEGORIES;
+}
+
+function getProteinCategoryMismatch(category) {
+  if (!PROTEIN_EXCHANGE_CATEGORIES.includes(category)) return "";
+  const designed = getDesignedProteinCategories();
+  if (designed.includes(category)) return "";
+  return designed.map(item => getFoodCategoryLabel(item)).join("、");
 }
 
 function getDesignedProteinTypes() {

@@ -1512,18 +1512,49 @@ body.mobile-mode .exchange-table {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 12px;
+}
+
+.toolbar-left {
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .toolbar-right {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.toolbar-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .toolbar-right select {
   width: 140px;
+}
+
+@media (max-width: 768px) {
+  .menu-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .toolbar-right {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .toolbar-controls {
+    justify-content: flex-start;
+  }
 }
 
 .meal-chips-bar {
@@ -1605,8 +1636,8 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
 }
 
 .meal-guidance-table td.meal-portion-over {
-  color: #c2410c;
-  background: #fff7ed;
+  color: #6d28d9;
+  background: #f5f3ff;
   font-weight: 700;
   cursor: pointer;
 }
@@ -1644,9 +1675,32 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
 }
 
 .meal-pending-toolbar-note.meal-over-toolbar-note {
-  color: #c2410c;
-  background: #fff7ed;
-  border-color: #fed7aa;
+  color: #6d28d9;
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+}
+
+.meal-pending-toolbar-note.meal-mismatch-toolbar-note {
+  color: #be123c;
+  background: #fff1f2;
+  border-color: #fda4af;
+}
+
+.protein-category-mismatch {
+  background: #fff1f2 !important;
+}
+
+.protein-category-mismatch select {
+  color: #be123c !important;
+  border-color: #fb7185 !important;
+  background-color: #fff1f2 !important;
+}
+
+.protein-category-warning {
+  margin-top: 3px;
+  color: #be123c;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .meal-guidance-note {
