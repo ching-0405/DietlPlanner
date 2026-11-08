@@ -772,14 +772,15 @@ function onDesignExChanged(idx, val) {
 
 function validateMealAllocation(idx) {
   const item = exchangesData[idx];
-  const mealTotal = activeMealKeys.reduce((total, key) => total + item[key], 0);
-  const isValid = item.ex <= 0 || Math.abs(mealTotal - item.ex) < 0.001;
+  const designTotal = Number(item.ex) || 0;
+  const mealTotal = activeMealKeys.reduce((total, key) => total + (Number(item[key]) || 0), 0);
+  const isValid = designTotal <= 0 || Math.abs(mealTotal - designTotal) < 0.001;
   const row = document.querySelectorAll("#exchangeTableBody tr")[idx];
   const status = document.getElementById(`row_allocation_status_${idx}`);
   if (row) row.classList.toggle("allocation-invalid", !isValid);
   if (status) {
     status.hidden = isValid;
-    status.textContent = `餐次合計需等於設計份數 ${item.ex}`;
+    status.textContent = isValid ? "" : `餐次合計需等於設計份數 ${designTotal}`;
     status.title = "早、早點、午、午點、晚、晚點的合計必須等於設計份數";
   }
   return isValid;
