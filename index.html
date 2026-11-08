@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261108-fix-overlap-v7">
+  <link rel="stylesheet" href="style.css?v=20261108-mobile-restore-v9">
 </head>
 <body>
 
@@ -23,11 +23,26 @@
       </div>
       <!-- 導航分頁 (手機版在下方，電腦版於左側面板) -->
       <div class="nav-tabs" id="mainNavTabs">
-        <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
-        <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
-        <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
-        <button class="nav-tab" data-tab="tab-composition">📗 4. 食品營養成分資料庫</button>
-        <button class="nav-tab" data-tab="tab-formulas">🍼 5. 商業配方庫</button>
+        <button class="nav-tab active" data-tab="tab-assessment">
+          <span class="tab-full-title">📋 1. 個案評估與熱量設定</span>
+          <span class="tab-mobile-title">📋 個案評估</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-exchange">
+          <span class="tab-full-title">⚖️ 2. 六大類食物代換設計</span>
+          <span class="tab-mobile-title">⚖️ 食物代換</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-menu">
+          <span class="tab-full-title">🍲 3. 菜單開立與食材辨識</span>
+          <span class="tab-mobile-title">🍲 菜單開立</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-composition">
+          <span class="tab-full-title">📗 4. 食品營養成分資料庫</span>
+          <span class="tab-mobile-title">📗 營養成分</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-formulas">
+          <span class="tab-full-title">🍼 5. 商業配方庫</span>
+          <span class="tab-mobile-title">🍼 商業配方</span>
+        </button>
       </div>
     </div>
   </header>
@@ -1330,6 +1345,6 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
-<script src="app.js?v=20261108-prescription-v8"></script>
+<script src="app.js?v=20261108-mobile-restore-v9"></script>
 </body>
 </html>
