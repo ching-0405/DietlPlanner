@@ -351,14 +351,15 @@ function renderQuickCalcButtons(ibw, cbw) {
   const ibwContainer = document.getElementById("ibwQuickBtns");
   const cbwContainer = document.getElementById("cbwQuickBtns");
   const factors = [25, 28, 30, 35, 40, 45];
+  const roundToNearestHundred = value => Math.round(value / 100) * 100;
 
   ibwContainer.innerHTML = [25, 28, 30, 35].map(k => {
-    const kcal = Math.round(ibw * k);
+    const kcal = roundToNearestHundred(ibw * k);
     return `<button class="btn-quick-ibw" onclick="applyQuickKcal(${kcal})">IBW x ${k} = ${kcal} kcal</button>`;
   }).join("");
 
   cbwContainer.innerHTML = factors.map(k => {
-    const kcal = Math.round(cbw * k);
+    const kcal = roundToNearestHundred(cbw * k);
     return `<button class="btn-quick-cbw" onclick="applyQuickKcal(${kcal})">CBW x ${k} = ${kcal} kcal</button>`;
   }).join("");
 }
