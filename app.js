@@ -909,7 +909,7 @@ function updateMealChipsBar() {
   const activeMeals = getActiveMealDefinitions();
 
   const categoryGroups = [
-    { key: "乳品類", label: "乳品類", matches: category => category.includes("奶") || category.includes("乳") },
+    { key: "乳品類", label: getFoodCategoryLabel("乳品類"), matches: category => category.includes("奶") || category.includes("乳") },
     { key: "全穀雜糧", label: "全穀雜糧", matches: category => category.includes("穀") || category.includes("米食") || category.includes("麵食") },
     { key: "豆魚蛋肉", label: "豆魚蛋肉", matches: category => category.includes("豆魚蛋肉") },
     { key: "蔬菜類", label: "蔬菜類", matches: category => category === "蔬菜類" },
@@ -1063,7 +1063,7 @@ function renderMenuRecipes() {
         <td class="col-cat-cell" style="min-width: 110px; width: 115px;">
           <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
             onchange="updateRecipeCategory(${realIndex}, this.value)" title="可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）">
-            ${STANDARD_FOOD_CATEGORIES.map(cat => `<option value="${cat}" ${(r.category === cat || (!r.category && cat === "自訂食材")) ? "selected" : ""}>${cat}</option>`).join("")}
+            ${STANDARD_FOOD_CATEGORIES.map(cat => `<option value="${cat}" ${(r.category === cat || (!r.category && cat === "自訂食材")) ? "selected" : ""}>${getFoodCategoryLabel(cat)}</option>`).join("")}
           </select>
         </td>
         <td class="col-ex-cell val-red" style="min-width: 75px; width: 80px;">
@@ -1773,6 +1773,14 @@ const STANDARD_FOOD_CATEGORIES = [
   "油脂與堅果種子",
   "自訂食材"
 ];
+
+const FOOD_CATEGORY_LABELS = {
+  "乳品類": "乳品類 (全脂、低脂、脫脂)"
+};
+
+function getFoodCategoryLabel(category) {
+  return FOOD_CATEGORY_LABELS[category] || category;
+}
 
 function detectFoodCategory(foodName) {
   if (!foodName) return "自訂食材";

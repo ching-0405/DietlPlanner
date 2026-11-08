@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261108-2157">
+  <link rel="stylesheet" href="style.css?v=20261108-2203">
 </head>
 <body>
 
@@ -643,7 +643,12 @@
     <!-- PAGE 3: 菜單開立與食材辨識 -->
     <section id="tab-menu" class="tab-content">
       
-      <!-- 頂部餐次篩選工具列 -->
+      <!-- 餐次設計份數卡片（點擊可快速切換篩選） -->
+      <div class="meal-chips-bar" id="mealChipsBar">
+        <!-- 動態由第2頁份數聯動更新 -->
+      </div>
+
+      <!-- 頂部餐次篩選工具列（位於菜單表格正上方；列印衛教單不受影響） -->
       <div class="menu-toolbar">
         <div class="toolbar-left">
           <span class="icon">📝</span>
@@ -662,11 +667,6 @@
             <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
           </div>
         </div>
-      </div>
-
-      <!-- 餐次設計份數卡片（點擊可快速切換篩選） -->
-      <div class="meal-chips-bar" id="mealChipsBar">
-        <!-- 動態由第2頁份數聯動更新 -->
       </div>
 
       <!-- 菜單列表 -->
@@ -1312,6 +1312,6 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
-<script src="app.js?v=20261108-2157"></script>
+<script src="app.js?v=20261108-2203"></script>
 </body>
 </html>
