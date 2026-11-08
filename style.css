@@ -1562,6 +1562,29 @@ body.mobile-mode .meal-guidance-table td:nth-child(2) {
   display: none !important;
 }
 
+body.mobile-mode .meal-guidance-table {
+  min-width: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+body.mobile-mode .meal-guidance-table th,
+body.mobile-mode .meal-guidance-table td {
+  padding: 8px 5px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+body.mobile-mode .meal-guidance-table th:first-child,
+body.mobile-mode .meal-guidance-table td:first-child {
+  width: 42%;
+}
+
+body.mobile-mode .meal-guidance-table th:nth-child(n + 3),
+body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
+  width: auto;
+}
+
 .meal-guidance-table tbody th {
   background: #f8fafc;
   color: #0f172a;
