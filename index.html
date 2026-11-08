@@ -389,19 +389,6 @@
             </tbody>
           </table>
         </div>
-        <!-- 食物代換表下方：引導設計菜單按鈕 -->
-        <div class="guided-btn-toolbar" style="padding: 14px 20px; background: #f0fdfa; border-top: 2px solid #ccfbf1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 20px;">💡</span>
-            <div>
-              <strong style="color: #0f766e; font-size: 14px;">智慧配餐引導助理</strong>
-              <div style="font-size: 12px; color: #64748b;">依序引導開立【乳製品 ➔ 蔬菜 ➔ 水果 ➔ 豆魚蛋肉類、油脂類及堅果種子】，快速完成全日營養菜單！</div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-teal btn-guided-start" id="btnStartGuidedWizard" onclick="startGuidedMenuWizard()" style="font-size: 15px; font-weight: 700; padding: 10px 22px; border-radius: 8px; box-shadow: 0 3px 8px rgba(13,148,136,0.3); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-            ✨ 請引導我設計菜單
-          </button>
-        </div>
       </div>
 
     </section>
@@ -502,6 +489,20 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+      <!-- 三大營養素計算下方：引導設計菜單按鈕 -->
+      <div class="guided-btn-toolbar" style="padding: 14px 20px; background: #f0fdfa; border-top: 2px solid #ccfbf1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">💡</span>
+          <div>
+            <strong style="color: #0f766e; font-size: 14px;">智慧配餐引導助理</strong>
+            <div style="font-size: 12px; color: #64748b;">依序引導開立【乳製品 ➔ 蔬菜 ➔ 水果 ➔ 豆魚蛋肉類、油脂類及堅果種子】，快速完成全日營養菜單！</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-teal btn-guided-start" id="btnStartGuidedWizard" onclick="startGuidedMenuWizard()" style="font-size: 15px; font-weight: 700; padding: 10px 22px; border-radius: 8px; box-shadow: 0 3px 8px rgba(13,148,136,0.3); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+          ✨ 請引導我設計菜單
+        </button>
       </div>
 
       <!-- 手機版專屬：每份三大營養素規格表 (依使用者需求放置於熱量計算下方) -->
@@ -629,7 +630,8 @@
               <li><strong>全穀雜糧為主食</strong>：每天 1.5 ~ 4 碗，建議未精製全穀雜糧佔 1/3 以上（如糙米、燕麥、地瓜、紫米）。</li>
               <li><strong>豆魚蛋肉適量吃</strong>：每天 3 ~ 8 份，選擇順序為「先豆、再魚、後蛋肉」，少吃加工肉品。</li>
               <li><strong>蔬果彩虹原則</strong>：蔬菜類每天 3 ~ 8 份，多選深綠色與當季蔬菜；水果類每天 2 ~ 6 份，在地當季新鮮攝取。</li>
-              <li><strong>乳品每天 1.5 ~ 2 杯</strong>：提供優質鈣質與蛋白質；<strong>油脂 3 ~ 7 茶匙及堅果種子類 1 份</strong>，補充不飽和脂肪酸與維生素 E。</li>
+              <li><strong>乳品每天 1.5 ~ 2 杯</strong>：提供優質鈣質與蛋白質。</li>
+              <li><strong>油脂 3 ~ 7 茶匙及堅果種子類 1 份</strong>：補充不飽和脂肪酸與維生素 E。</li>
               <li><strong>多喝水多運動</strong>：維持良好新陳代謝與健康體位。</li>
             </ul>
           </div>
