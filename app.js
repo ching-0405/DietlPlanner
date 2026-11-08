@@ -354,13 +354,15 @@ function renderQuickCalcButtons(ibw, cbw) {
   const roundToNearestHundred = value => Math.round(value / 100) * 100;
 
   ibwContainer.innerHTML = [25, 28, 30, 35].map(k => {
-    const kcal = roundToNearestHundred(ibw * k);
-    return `<button class="btn-quick-ibw" onclick="applyQuickKcal(${kcal})">IBW x ${k} = ${kcal} kcal</button>`;
+    const calculatedKcal = Math.round(ibw * k);
+    const appliedKcal = roundToNearestHundred(calculatedKcal);
+    return `<button class="btn-quick-ibw" onclick="applyQuickKcal(${appliedKcal})">IBW x ${k} = ${calculatedKcal} (${appliedKcal}) kcal</button>`;
   }).join("");
 
   cbwContainer.innerHTML = factors.map(k => {
-    const kcal = roundToNearestHundred(cbw * k);
-    return `<button class="btn-quick-cbw" onclick="applyQuickKcal(${kcal})">CBW x ${k} = ${kcal} kcal</button>`;
+    const calculatedKcal = Math.round(cbw * k);
+    const appliedKcal = roundToNearestHundred(calculatedKcal);
+    return `<button class="btn-quick-cbw" onclick="applyQuickKcal(${appliedKcal})">CBW x ${k} = ${calculatedKcal} (${appliedKcal}) kcal</button>`;
   }).join("");
 }
 
