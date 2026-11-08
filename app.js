@@ -938,7 +938,6 @@ function updateMealChipsBar() {
   const issuesByMeal = new Map(
   activeMeals.map(meal => [meal.key, { pending: [], over: [], mismatch: [] }])
   );
-  const designedProteinCategories = getDesignedProteinCategories();
   const rows = categoryGroups.map(group => {
     const exchangeItems = exchangesData.filter(item => group.matches(item.category));
     const designPortion = exchangeItems.reduce((sum, item) => sum + (Number(item.ex) || 0), 0);
@@ -947,20 +946,19 @@ function updateMealChipsBar() {
     const mealCells = activeMeals.map(meal => {
       const required = exchangeItems.reduce((sum, item) => sum + (Number(item[meal.key]) || 0), 0);
       const opened = menuRecipes
-        .filter(recipe => recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category) === group.key)
+        .filter(recipe => recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category, recipe.food) === group.key)
         .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
       menuRecipes
         .filter(recipe =>
           recipe.meal === meal.name &&
-          PROTEIN_EXCHANGE_CATEGORIES.includes(recipe.category) &&
-          !designedProteinCategories.includes(recipe.category)
+          getProteinCategoryMismatch(recipe.category, recipe.food)
         )
         .forEach(recipe => {
           const existing = issuesByMeal.get(meal.key).mismatch.find(item => item.recipe === recipe);
           if (!existing) {
             issuesByMeal.get(meal.key).mismatch.push({
               recipe,
-              designed: designedProteinCategories.map(category => getFoodCategoryLabel(category)).join("、")
+              detail: getProteinCategoryMismatch(recipe.category, recipe.food)
             });
           }
         });
@@ -1038,7 +1036,7 @@ function updateMealChipsBar() {
       : "";
     const mismatch = issues
       ? issues.mismatch
-        .map(item => `「${item.recipe.food || "未命名食材"}」為${getFoodCategoryLabel(item.recipe.category)}，設計為${item.designed}`)
+        .map(item => `「${item.recipe.food || "未命名食材"}」${item.detail}`)
         .join("；")
       : "";
     const messages = [];
@@ -1051,12 +1049,14 @@ function updateMealChipsBar() {
   }
 }
 
-function getMenuFoodCategoryKey(category) {
+function getMenuFoodCategoryKey(category, foodName = "") {
   if (PROTEIN_EXCHANGE_CATEGORIES.includes(category)) return category;
   const normalized = normalizeFoodCategory(category);
   if (normalized === "乳品類") return "乳品類";
   if (normalized === "全穀雜糧") return "全穀雜糧";
-  if (normalized === "豆魚蛋肉") return getDesignedProteinCategories()[0] || "豆魚蛋肉";
+  if (normalized === "豆魚蛋肉") {
+    return getProteinExchangeCategory(foodName, category) || getDesignedProteinCategories()[0] || "豆魚蛋肉";
+  }
   if (normalized === "蔬菜類") return "蔬菜類";
   if (normalized === "水果類") return "水果類";
   if (normalized === "油脂與堅果種子") return "油脂與堅果種子";
@@ -1093,7 +1093,7 @@ function renderMenuRecipes() {
     const startsNewMealGroup = i > 0 && filtered[i - 1].meal !== r.meal;
     const normalizedRecipeCategory = normalizeFoodCategory(r.category, r.food);
     const isNonPortionSeasoning = normalizedRecipeCategory === "調味" || normalizedRecipeCategory === "調味蔬菜";
-    const proteinCategoryMismatch = getProteinCategoryMismatch(r.category);
+    const proteinCategoryMismatch = getProteinCategoryMismatch(r.category, r.food);
     if (isNonPortionSeasoning) {
       r.category = normalizedRecipeCategory;
       r.ex = 0;
@@ -1160,7 +1160,7 @@ function renderMenuRecipes() {
         <td class="col-color-cell" style="text-align: center;">${colorTagHtml}</td>
         <td class="col-cat-cell${proteinCategoryMismatch ? " protein-category-mismatch" : ""}" style="min-width: 110px; width: 115px;">
           <select class="form-select" style="width: 100%; min-width: 95px; padding: 4px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #99f6e4; background-color: #f0fdfa;" 
-            onchange="updateRecipeCategory(${realIndex}, this.value)" title="${proteinCategoryMismatch ? `脂肪類型不符：目前設計為${proteinCategoryMismatch}` : "可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）"}">
+            onchange="updateRecipeCategory(${realIndex}, this.value)" title="${proteinCategoryMismatch ? `脂肪類型不符：${proteinCategoryMismatch}` : "可自由修改食物類別（若代換表無此食物會由 AI 自動辨識）"}">
             ${categoryOptions.map(option => `<option value="${option.value}" ${getRecipeCategoryOptionValue(r.category, categoryOptions) === option.value ? "selected" : ""}>${option.label}</option>`).join("")}
           </select>
           ${proteinCategoryMismatch ? `<div class="protein-category-warning">⚠ 類型不符</div>` : ""}
@@ -1719,7 +1719,7 @@ function updateFoodName(index, val) {
       menuRecipes[index].ex = 0;
       menuRecipes[index].rawWeight = "";
     } else if (matchedEx && matchedEx.category) {
-      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
+      menuRecipes[index].category = getProteinExchangeCategory(val, matchedEx.category) || normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
         const exVal = Number(menuRecipes[index].ex) || 1;
         menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
@@ -1772,7 +1772,7 @@ function updateFoodNameAndRender(index, val) {
       menuRecipes[index].ex = 0;
       menuRecipes[index].rawWeight = "";
     } else if (matchedEx && matchedEx.category) {
-      menuRecipes[index].category = normalizeFoodCategory(matchedEx.category, val);
+      menuRecipes[index].category = getProteinExchangeCategory(val, matchedEx.category) || normalizeFoodCategory(matchedEx.category, val);
       if (matchedEx.rawWeight > 0) {
         const exVal = Number(menuRecipes[index].ex) || 1;
         menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
@@ -1920,11 +1920,34 @@ function getDesignedProteinCategories() {
   return designed.length > 0 ? designed : PROTEIN_EXCHANGE_CATEGORIES;
 }
 
-function getProteinCategoryMismatch(category) {
-  if (!PROTEIN_EXCHANGE_CATEGORIES.includes(category)) return "";
+function getProteinExchangeCategory(foodName, category = "") {
+  if (PROTEIN_EXCHANGE_CATEGORIES.includes(category)) return category;
+  const matchedEx = findOfficialFoodExchangeItem(foodName, category);
+  if (!matchedEx || !String(matchedEx.category || "").includes("豆魚蛋肉")) return "";
+
+  const subCategory = `${matchedEx.subCategory || ""} ${matchedEx.notes || ""}`;
+  if (subCategory.includes("低脂")) return "豆魚蛋肉類(低脂)";
+  if (subCategory.includes("中脂")) return "豆魚蛋肉類(中脂)";
+  if (subCategory.includes("高脂")) return "豆魚蛋肉類(高脂)";
+  return "";
+}
+
+function getProteinCategoryMismatch(category, foodName = "") {
+  const inferredCategory = getProteinExchangeCategory(foodName, category);
+  if (!inferredCategory) return "";
   const designed = getDesignedProteinCategories();
-  if (designed.includes(category)) return "";
-  return designed.map(item => getFoodCategoryLabel(item)).join("、");
+  const selectedCategory = PROTEIN_EXCHANGE_CATEGORIES.includes(category)
+    ? category
+    : inferredCategory;
+  const designedLabel = designed.map(item => getFoodCategoryLabel(item)).join("、");
+
+  if (PROTEIN_EXCHANGE_CATEGORIES.includes(category) && inferredCategory !== category) {
+    return `食材辨識為${getFoodCategoryLabel(inferredCategory)}，目前選擇${getFoodCategoryLabel(category)}`;
+  }
+  if (!designed.includes(selectedCategory)) {
+    return `為${getFoodCategoryLabel(selectedCategory)}，設計為${designedLabel}`;
+  }
+  return "";
 }
 
 function getDesignedProteinTypes() {
@@ -2288,7 +2311,7 @@ function addQueryItemToMenu(foodName, category, rawWeight) {
     meal: meal,
     dish: "",
     food: foodName,
-    category: category,
+    category: getProteinExchangeCategory(foodName, category) || category,
     ex: 1,
     rawWeight: rawWeight,
     color: color
