@@ -1604,6 +1604,13 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
   cursor: pointer;
 }
 
+.meal-guidance-table td.meal-portion-over {
+  color: #c2410c;
+  background: #fff7ed;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .meal-guidance-table td.meal-portion-complete {
   color: #94a3b8;
   font-weight: 600;
@@ -1611,6 +1618,7 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
 }
 
 .meal-guidance-table td.meal-portion-pending:hover,
+.meal-guidance-table td.meal-portion-over:hover,
 .meal-guidance-table td.meal-portion-complete:hover {
   background: #f0fdfa;
 }
@@ -1633,6 +1641,12 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
 
 .meal-pending-toolbar-note[hidden] {
   display: none !important;
+}
+
+.meal-pending-toolbar-note.meal-over-toolbar-note {
+  color: #c2410c;
+  background: #fff7ed;
+  border-color: #fed7aa;
 }
 
 .meal-guidance-note {

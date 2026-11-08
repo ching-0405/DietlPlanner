@@ -917,7 +917,7 @@ function updateMealChipsBar() {
   const categoryGroups = [
     { key: "乳品類", label: getDesignedDairyLabel(), matches: category => category.includes("奶") || category.includes("乳") },
     { key: "全穀雜糧", label: "全穀雜糧", matches: category => category.includes("穀") || category.includes("米食") || category.includes("麵食") },
-    { key: "豆魚蛋肉", label: "豆魚蛋肉", matches: category => category.includes("豆魚蛋肉") },
+    { key: "豆魚蛋肉", label: getDesignedProteinLabel(), matches: category => category.includes("豆魚蛋肉") },
     { key: "蔬菜類", label: "蔬菜類", matches: category => category === "蔬菜類" },
     { key: "水果類", label: "水果類", matches: category => category === "水果類" },
     { key: "油脂與堅果種子", label: "油脂與堅果種子", matches: category => category.includes("油脂") || category.includes("堅果") }
@@ -930,8 +930,8 @@ function updateMealChipsBar() {
       : number.toFixed(1).replace(/\.0$/, "");
   };
 
-  const pendingByMeal = new Map(
-    activeMeals.map(meal => [meal.key, []])
+  const issuesByMeal = new Map(
+    activeMeals.map(meal => [meal.key, { pending: [], over: [] }])
   );
   const rows = categoryGroups.map(group => {
     const exchangeItems = exchangesData.filter(item => group.matches(item.category));
@@ -943,15 +943,29 @@ function updateMealChipsBar() {
       const opened = menuRecipes
         .filter(recipe => recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category) === group.key)
         .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
-      const isComplete = required <= 0 || opened + 0.001 >= required;
-      const cellClass = isComplete ? "meal-portion-complete" : "meal-portion-pending";
-      if (!isComplete) {
-        const pending = Math.max(required - opened, 0);
-        pendingByMeal.get(meal.key).push({ label: group.label, portion: pending });
+      const isOver = opened > required + 0.001;
+      const isComplete = !isOver && (required <= 0 || opened + 0.001 >= required);
+      const cellClass = isOver
+        ? "meal-portion-over"
+        : (isComplete ? "meal-portion-complete" : "meal-portion-pending");
+      if (isOver) {
+        issuesByMeal.get(meal.key).over.push({
+          label: group.label,
+          portion: opened - required
+        });
+      } else if (!isComplete) {
+        issuesByMeal.get(meal.key).pending.push({
+          label: group.label,
+          portion: Math.max(required - opened, 0)
+        });
       }
 
       return `
-        <td class="${cellClass}" onclick="filterByMeal('${meal.name}')" title="${isComplete ? "已完成開立" : `尚缺 ${formatPortion(Math.max(required - opened, 0))} 份`}">
+        <td class="${cellClass}" onclick="filterByMeal('${meal.name}')" title="${
+          isOver
+            ? `超過設計 ${formatPortion(opened - required)} 份`
+            : (isComplete ? "已完成開立" : `尚缺 ${formatPortion(Math.max(required - opened, 0))} 份`)
+        }">
           ${formatPortion(required)}
         </td>
       `;
@@ -990,14 +1004,23 @@ function updateMealChipsBar() {
   if (pendingSummaryEl) {
     const selectedMeal = document.getElementById("cboMealFilter")?.value;
     const selectedDefinition = activeMeals.find(meal => meal.name === selectedMeal);
-    const pending = selectedDefinition
-      ? pendingByMeal.get(selectedDefinition.key)
-        .filter(item => item.portion > 0.001)
+    const issues = selectedDefinition ? issuesByMeal.get(selectedDefinition.key) : null;
+    const pending = issues
+      ? issues.pending
         .map(item => `${item.label}${formatPortion(item.portion)}份`)
         .join("、")
       : "";
-    pendingSummaryEl.textContent = pending ? `尚未開立：${pending}` : "";
-    pendingSummaryEl.hidden = !pending;
+    const over = issues
+      ? issues.over
+        .map(item => `${item.label}${formatPortion(item.portion)}份`)
+        .join("、")
+      : "";
+    const messages = [];
+    if (pending) messages.push(`尚未開立：${pending}`);
+    if (over) messages.push(`超過設計：${over}`);
+    pendingSummaryEl.textContent = messages.join("；");
+    pendingSummaryEl.classList.toggle("meal-over-toolbar-note", Boolean(over));
+    pendingSummaryEl.hidden = messages.length === 0;
   }
 }
 
@@ -1828,10 +1851,14 @@ const FOOD_CATEGORY_LABELS = {
   "低脂奶": "乳品類 (低脂)",
   "脫脂奶": "乳品類 (脫脂)",
   "乳品類": "乳品類",
-  "調味": "調味料"
+  "調味": "調味料",
+  "豆魚蛋肉類(低脂)": "豆魚蛋肉類 (低脂)",
+  "豆魚蛋肉類(中脂)": "豆魚蛋肉類 (中脂)",
+  "豆魚蛋肉類(高脂)": "豆魚蛋肉類 (高脂)"
 };
 
 function getFoodCategoryLabel(category) {
+  if (category === "豆魚蛋肉") return getDesignedProteinLabel();
   return FOOD_CATEGORY_LABELS[category] || category;
 }
 
@@ -1847,6 +1874,26 @@ function getDesignedDairyCategories() {
 function getDesignedDairyLabel() {
   const designed = getDesignedDairyCategories();
   return designed.length === 1 ? getFoodCategoryLabel(designed[0]) : getFoodCategoryLabel("乳品類");
+}
+
+const PROTEIN_EXCHANGE_CATEGORIES = [
+  "豆魚蛋肉類(低脂)",
+  "豆魚蛋肉類(中脂)",
+  "豆魚蛋肉類(高脂)"
+];
+
+function getDesignedProteinTypes() {
+  return exchangesData
+    .filter(item => PROTEIN_EXCHANGE_CATEGORIES.includes(item.category) && Number(item.ex) > 0)
+    .map(item => item.category.match(/\((低脂|中脂|高脂)\)/)?.[1])
+    .filter(Boolean);
+}
+
+function getDesignedProteinLabel() {
+  const designed = [...new Set(getDesignedProteinTypes())];
+  return designed.length > 0
+    ? `豆魚蛋肉類 (${designed.join("、")})`
+    : "豆魚蛋肉類";
 }
 
 function getFoodCategoryOptions() {
