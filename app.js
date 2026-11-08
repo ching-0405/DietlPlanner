@@ -927,6 +927,7 @@ function updateMealChipsBar() {
       : number.toFixed(1).replace(/\.0$/, "");
   };
 
+  const pendingByCategory = new Map();
   const rows = categoryGroups.map(group => {
     const exchangeItems = exchangesData.filter(item => group.matches(item.category));
     const designPortion = exchangeItems.reduce((sum, item) => sum + (Number(item.ex) || 0), 0);
@@ -939,6 +940,13 @@ function updateMealChipsBar() {
         .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
       const isComplete = required <= 0 || opened + 0.001 >= required;
       const cellClass = isComplete ? "meal-portion-complete" : "meal-portion-pending";
+      if (!isComplete) {
+        const pending = Math.max(required - opened, 0);
+        pendingByCategory.set(
+          group.label,
+          (pendingByCategory.get(group.label) || 0) + pending
+        );
+      }
 
       return `
         <td class="${cellClass}" onclick="filterByMeal('${meal.name}')" title="${isComplete ? "已完成開立" : `尚缺 ${formatPortion(Math.max(required - opened, 0))} 份`}">
@@ -956,6 +964,11 @@ function updateMealChipsBar() {
     `;
   }).join("");
 
+  const pendingSummary = Array.from(pendingByCategory.entries())
+    .filter(([, portion]) => portion > 0.001)
+    .map(([category, portion]) => `${category}${formatPortion(portion)}份`)
+    .join("、");
+
   container.innerHTML = `
     <div class="meal-guidance-wrap">
       <table class="meal-guidance-table">
@@ -970,7 +983,8 @@ function updateMealChipsBar() {
           ${rows || `<tr><td colspan="${activeMeals.length + 2}" class="meal-guidance-empty">尚未設定食物代換份數</td></tr>`}
         </tbody>
       </table>
-      <div class="meal-guidance-note">灰色：該餐次已符合食物大類份數；黑色：尚未開立完成。點擊餐次欄位可篩選下方菜單。</div>
+      ${pendingSummary ? `<div class="meal-guidance-pending-note">尚未開立：${pendingSummary}</div>` : ""}
+      <div class="meal-guidance-note">灰色：該餐次已符合食物大類份數；淡紅色：尚未開立完成。點擊餐次欄位可篩選下方菜單。</div>
     </div>
   `;
 
