@@ -981,6 +981,22 @@ body {
   font-size: 12px;
 }
 
+@media (min-width: 769px) {
+  .exchange-table {
+    font-size: 14px;
+  }
+
+  .exchange-table thead th,
+  .exchange-table thead .header-main th {
+    font-size: 14px;
+  }
+
+  .exchange-table td.cat-cell,
+  .exchange-table input.cell-input {
+    font-size: 14px;
+  }
+}
+
 .exchange-table .col-category { width: 18%; }
 .exchange-table .col-macro { width: 4%; }
 .exchange-table .col-design-ex { width: 8%; }
@@ -1127,7 +1143,7 @@ body {
   box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
 }
 
-/* 緊鄰堅果種子下方的加總列 (字體顯眼放大) */
+/* 緊鄰堅果種子下方的加總列 */
 .subtotal-tbody {
   border-top: 3px solid #0d9488;
 }
@@ -1135,7 +1151,7 @@ body {
 .subtotal-row {
   background: #f8fafc;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .subtotal-row.grams-row {
@@ -1143,7 +1159,7 @@ body {
 }
 
 .subtotal-row.grams-row td {
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .subtotal-row.percent-row {
@@ -1151,14 +1167,14 @@ body {
 }
 
 .subtotal-row.percent-row td {
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .subtotal-title {
   text-align: left !important;
   padding-left: 16px !important;
   color: #0f172a;
-  font-size: 19px !important;
+  font-size: 15px !important;
 }
 
 /* 警示橫幅 Alert Banner */
