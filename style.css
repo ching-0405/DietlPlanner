@@ -1576,6 +1576,7 @@ body.mobile-mode .meal-guidance-table td:nth-child(2) {
 
 .meal-guidance-table td.meal-portion-pending {
   color: #dc2626;
+  background: #fef2f2;
   font-weight: 700;
   cursor: pointer;
 }
@@ -1595,6 +1596,15 @@ body.mobile-mode .meal-guidance-table td:nth-child(2) {
 .meal-guidance-note {
   color: #64748b;
   font-size: 12px;
+}
+
+.meal-guidance-pending-note {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 10px;
 }
 
 .meal-guidance-note {
