@@ -1118,6 +1118,11 @@ body:not(.mobile-mode) .exchange-table {
   background: #f0fdf4;
 }
 
+/* 保留欄位寬度，但不在表格下方顯示設計份數與餐次份數加總。 */
+.exchange-table .count-summary-value {
+  visibility: hidden;
+}
+
 .subtotal-row.grams-row td {
   font-size: 15px !important;
   padding: 8px 6px;
