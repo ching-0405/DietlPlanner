@@ -648,7 +648,6 @@
         <div class="toolbar-left">
           <span class="icon">📝</span>
           <strong>菜單開立 &amp; AI 食材顏色智慧辨識</strong>
-          <small class="text-muted">（相同菜名自動合併顯示｜AI 自動辨識食材純色膠囊標籤）</small>
         </div>
         <div class="toolbar-right" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
@@ -661,9 +660,6 @@
             </select>
             <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
             <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
-          </div>
-          <div>
-            <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
           </div>
         </div>
       </div>
@@ -704,39 +700,6 @@
               </tr>
             </tfoot>
           </table>
-        </div>
-      </div>
-
-      <!-- 菜單食材營養素即時總結卡片 -->
-      <div class="card mt-2" style="background: linear-gradient(135deg, #f0fdf4 0%, #e6f6f3 100%); border: 1px solid #99dcd0;">
-        <div class="card-body" style="padding: 12px 18px;">
-          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 22px;">🥗</span>
-              <div>
-                <strong style="color: #0f766e; font-size: 14px;">已由衛福部食品營養成分資料庫 (2025版) 自動比對計算</strong>
-                <div style="font-size: 12px; color: #475569;" id="recipeNutrientRatioDesc">三大營養素熱量佔比：碳水化合物 0% ｜ 蛋白質 0% ｜ 脂肪 0%</div>
-              </div>
-            </div>
-            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">總熱量</div>
-                <strong id="cardRecipeTotalKcal" style="color: #dc2626; font-size: 16px;">0 kcal</strong>
-              </div>
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">蛋白質</div>
-                <strong id="cardRecipeTotalProtein" style="color: #16a34a; font-size: 16px;">0 g</strong>
-              </div>
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">脂肪</div>
-                <strong id="cardRecipeTotalFat" style="color: #d97706; font-size: 16px;">0 g</strong>
-              </div>
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">醣類 (碳水)</div>
-                <strong id="cardRecipeTotalCarbs" style="color: #2563eb; font-size: 16px;">0 g</strong>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1349,6 +1312,6 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
-<script src="app.js?v=1794144136"></script>
+<script src="app.js?v=1794144137"></script>
 </body>
 </html>
