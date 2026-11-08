@@ -1042,12 +1042,11 @@ function updateMealChipsBar() {
         .join("；")
       : "";
     const messages = [];
-    if (pending) messages.push(`尚未開立：${pending}`);
-    if (over) messages.push(`超過設計：${over}`);
-    if (mismatch) messages.push(`脂肪類型不符：${mismatch}`);
-    pendingSummaryEl.textContent = messages.join("；");
-    pendingSummaryEl.classList.toggle("meal-over-toolbar-note", Boolean(over));
-    pendingSummaryEl.classList.toggle("meal-mismatch-toolbar-note", Boolean(mismatch));
+    if (pending) messages.push(`<span class="meal-status-badge meal-status-pending">尚未開立：${pending}</span>`);
+    if (over) messages.push(`<span class="meal-status-badge meal-status-over">超過設計：${over}</span>`);
+    if (mismatch) messages.push(`<span class="meal-status-badge meal-status-mismatch">脂肪類型不符：${mismatch}</span>`);
+    pendingSummaryEl.innerHTML = messages.join("");
+    pendingSummaryEl.className = "meal-pending-toolbar-note";
     pendingSummaryEl.hidden = messages.length === 0;
   }
 }

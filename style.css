@@ -1661,26 +1661,37 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
 }
 
 .meal-pending-toolbar-note {
-  color: #b91c1c;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .meal-pending-toolbar-note[hidden] {
   display: none !important;
 }
 
-.meal-pending-toolbar-note.meal-over-toolbar-note {
+.meal-status-badge {
+  border: 1px solid;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.meal-status-pending {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.meal-status-over {
   color: #6d28d9;
   background: #f5f3ff;
   border-color: #c4b5fd;
 }
 
-.meal-pending-toolbar-note.meal-mismatch-toolbar-note {
+.meal-status-mismatch {
   color: #be123c;
   background: #fff1f2;
   border-color: #fda4af;
