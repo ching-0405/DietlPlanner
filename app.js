@@ -1015,9 +1015,10 @@ function renderMenuRecipes() {
 
   tbody.innerHTML = filtered.map((r, i) => {
     const realIndex = menuRecipes.indexOf(r);
-    const isSeasoningVegetable = normalizeFoodCategory(r.category, r.food) === "調味蔬菜";
-    if (isSeasoningVegetable) {
-      r.category = "調味蔬菜";
+    const normalizedRecipeCategory = normalizeFoodCategory(r.category, r.food);
+    const isNonPortionSeasoning = normalizedRecipeCategory === "調味" || normalizedRecipeCategory === "調味蔬菜";
+    if (isNonPortionSeasoning) {
+      r.category = normalizedRecipeCategory;
       r.ex = 0;
     }
     
@@ -1029,7 +1030,7 @@ function renderMenuRecipes() {
     const nutrient = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
     r._calc = nutrient;
 
-    const rowEx = isSeasoningVegetable ? 0 : (Number(r.ex) || 0);
+    const rowEx = isNonPortionSeasoning ? 0 : (Number(r.ex) || 0);
     const rowWeight = Number(r.rawWeight) || 0;
     totalEx += rowEx;
     totalWeight += rowWeight;
@@ -1076,8 +1077,8 @@ function renderMenuRecipes() {
           </select>
         </td>
         <td class="col-ex-cell val-red" style="min-width: 75px; width: 80px;">
-          ${isSeasoningVegetable
-            ? `<span class="text-muted" title="調味蔬菜不計入食物代換份數">不計份數</span>`
+          ${isNonPortionSeasoning
+            ? `<span class="text-muted" title="調味料與調味蔬菜不計入食物代換份數">不計份數</span>`
             : `<input type="number" class="form-input" style="width: 100%; text-align: center; padding: 4px;" step="any" min="0.1" 
             value="${r.ex}" oninput="updateRecipeEx(${realIndex}, this.value)">`}
         </td>
@@ -1800,7 +1801,8 @@ const FOOD_CATEGORY_LABELS = {
   "全脂奶": "乳品類 (全脂)",
   "低脂奶": "乳品類 (低脂)",
   "脫脂奶": "乳品類 (脫脂)",
-  "乳品類": "乳品類"
+  "乳品類": "乳品類",
+  "調味": "調味料"
 };
 
 function getFoodCategoryLabel(category) {
@@ -1938,20 +1940,23 @@ function detectFoodCategory(foodName) {
 function updateRecipeCategory(index, newCategory) {
   if (menuRecipes[index]) {
     menuRecipes[index].category = newCategory;
-    if (normalizeFoodCategory(newCategory, menuRecipes[index].food) === "調味蔬菜") {
-      menuRecipes[index].category = "調味蔬菜";
+    const normalizedCategory = normalizeFoodCategory(newCategory, menuRecipes[index].food);
+    if (normalizedCategory === "調味" || normalizedCategory === "調味蔬菜") {
+      menuRecipes[index].category = normalizedCategory;
       menuRecipes[index].ex = 0;
       menuRecipes[index].rawWeight = "";
     }
     // 重新評估顏色
     menuRecipes[index].color = detectFoodColor(menuRecipes[index].food, newCategory);
     
+    // 調味料與調味蔬菜只輸入克數，不自動帶入建議生重。
+    const isNonPortionSeasoning = normalizedCategory === "調味" || normalizedCategory === "調味蔬菜";
     // 若該食材在食物代換表有克數，或依新類別自動給予建議基準生重
     const matchedEx = findOfficialFoodExchangeItem(menuRecipes[index].food, newCategory);
-    if (matchedEx && matchedEx.rawWeight > 0) {
+    if (!isNonPortionSeasoning && matchedEx && matchedEx.rawWeight > 0) {
       const exVal = Number(menuRecipes[index].ex) || 1;
       menuRecipes[index].rawWeight = Math.round(matchedEx.rawWeight * exVal * 10) / 10;
-    } else if (!menuRecipes[index].rawWeight || menuRecipes[index].rawWeight <= 0) {
+    } else if (!isNonPortionSeasoning && (!menuRecipes[index].rawWeight || menuRecipes[index].rawWeight <= 0)) {
       const defaultWeights = {
         "豆魚蛋肉": 35,
         "全穀雜糧": 50,
