@@ -652,6 +652,12 @@ body {
   white-space: nowrap;
 }
 
+#valBmi,
+#valIbwPercent,
+#valBmiRange {
+  font-size: 18px;
+}
+
 /* 徽章 Badge */
 .badge {
   display: inline-flex;
