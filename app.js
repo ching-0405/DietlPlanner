@@ -610,7 +610,7 @@ function renderExchangeTable() {
   const tbody = document.getElementById("exchangeTableBody");
   tbody.innerHTML = exchangesData.map((item, idx) => {
     return `
-      <tr>
+      <tr data-recipe-index="${realIndex}">
         <td class="cat-cell">${item.icon} ${item.category}</td>
         <td class="col-macro-cell">${item.p}</td>
         <td class="col-macro-cell">${item.f}</td>
@@ -1361,7 +1361,7 @@ function updateFoodName(index, val) {
 function updateFoodNameAndRender(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].food = val;
-    menuRecipes[index].color = detectFoodColor(val, menuRecipes[index].category);
+    applyFoodExchangeMatch(menuRecipes[index]);
     renderMenuRecipes();
   }
 }
@@ -1370,9 +1370,17 @@ function updateRecipeEx(index, val) {
   const num = parseFloat(val);
   if (menuRecipes[index] && Number.isFinite(num) && num > 0) {
     menuRecipes[index].ex = num;
+    const matchedEx = findFoodExchangeMatch(menuRecipes[index].food);
+    if (matchedEx) {
+      menuRecipes[index].rawWeight = Number((matchedEx.rawWeight * num).toFixed(1));
+    }
     updateMenuSummaryCards();
     updateAllCompositionNutrientSummary();
-    const row = document.querySelectorAll("#recipeTableBody tr")[index];
+    const row = document.querySelector(`#menuRecipeTableBody tr[data-recipe-index="${index}"]`);
+    if (row) {
+      const weightInput = row.querySelector('td:nth-child(6) input');
+      if (weightInput && matchedEx) weightInput.value = menuRecipes[index].rawWeight;
+    }
     if (row && menuRecipes[index]._calc) {
       const kcalCell = row.querySelector(".rec-kcal");
       if (kcalCell) kcalCell.innerText = Math.round(menuRecipes[index]._calc.kcal);
@@ -1385,6 +1393,39 @@ function updateRecipeRawWeight(index, val) {
   if (menuRecipes[index] && Number.isFinite(num) && num > 0) {
     menuRecipes[index].rawWeight = num;
     renderMenuRecipes();
+  }
+}
+
+function findFoodExchangeMatch(foodName) {
+  const name = (foodName || "").trim().toLowerCase();
+  if (!name || typeof FOOD_EXCHANGE_DB === "undefined" || !Array.isArray(FOOD_EXCHANGE_DB)) {
+    return null;
+  }
+
+  return FOOD_EXCHANGE_DB.find(item => {
+    const itemName = (item.foodName || "").trim().toLowerCase();
+    const aliases = itemName.split(/[、,，/]/).map(alias => alias.trim()).filter(Boolean);
+    return itemName === name ||
+      aliases.includes(name) ||
+      name.includes(itemName) ||
+      itemName.includes(name) ||
+      aliases.some(alias => name.includes(alias) || alias.includes(name));
+  }) || null;
+}
+
+function applyFoodExchangeMatch(recipe) {
+  const matchedEx = findFoodExchangeMatch(recipe.food);
+  recipe.color = detectFoodColor(recipe.food, matchedEx ? matchedEx.category : recipe.category);
+
+  if (!matchedEx) {
+    recipe.category = "自訂食材";
+    return;
+  }
+
+  recipe.category = matchedEx.category;
+  const portions = Number(recipe.ex);
+  if (Number.isFinite(portions) && portions > 0 && Number(matchedEx.rawWeight) > 0) {
+    recipe.rawWeight = Number((matchedEx.rawWeight * portions).toFixed(1));
   }
 }
 
