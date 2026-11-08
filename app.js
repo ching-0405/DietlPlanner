@@ -1831,7 +1831,12 @@ function printPrescriptionReport() {
   }
 
   const printWindow = window.open("", "_blank");
-  printWindow.document.write(`
+  if (!printWindow) {
+    alert("無法開啟列印頁面，請允許此網站開啟新視窗後再試一次。");
+    return;
+  }
+
+  const reportHtml = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -1904,12 +1909,28 @@ function printPrescriptionReport() {
         評估日期：${new Date().toLocaleDateString()} ｜ 營養師簽章：____________________
       </div>
       <script>
-        window.onload = function() { window.print(); };
+        window.addEventListener("load", function() {
+          setTimeout(function() {
+            window.focus();
+            window.print();
+          }, 300);
+        });
       </script>
     </body>
     </html>
-  `);
-  printWindow.document.close();
+  `;
+  const reportUrl = URL.createObjectURL(new Blob([reportHtml], {
+    type: "text/html;charset=utf-8"
+  }));
+  printWindow.location.href = reportUrl;
+  setTimeout(() => {
+    try {
+      printWindow.focus();
+      printWindow.print();
+    } catch (error) {
+      console.warn("列印視窗已開啟，等待使用者從瀏覽器列印。", error);
+    }
+  }, 800);
 }
 
 /**
