@@ -932,7 +932,7 @@ function updateMealChipsBar() {
     const mealCells = activeMeals.map(meal => {
       const required = exchangeItems.reduce((sum, item) => sum + (Number(item[meal.key]) || 0), 0);
       const opened = menuRecipes
-        .filter(recipe => recipe.meal === meal.name && recipe.category === group.key)
+        .filter(recipe => recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category) === group.key)
         .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
       const isComplete = required <= 0 || opened + 0.001 >= required;
       const cellClass = isComplete ? "meal-portion-complete" : "meal-portion-pending";
@@ -972,6 +972,17 @@ function updateMealChipsBar() {
   `;
 
   updateMenuMealFilters();
+}
+
+function getMenuFoodCategoryKey(category) {
+  const normalized = normalizeFoodCategory(category);
+  if (normalized === "乳品類") return "乳品類";
+  if (normalized === "全穀雜糧") return "全穀雜糧";
+  if (normalized === "豆魚蛋肉") return "豆魚蛋肉";
+  if (normalized === "蔬菜類") return "蔬菜類";
+  if (normalized === "水果類") return "水果類";
+  if (normalized === "油脂與堅果種子") return "油脂與堅果種子";
+  return normalized;
 }
 
 function filterByMeal(mealName) {
@@ -2268,6 +2279,24 @@ function addCompositionToMenu(name, category) {
 // ==========================================
 // 8. 列印衛教處方單張功能 (相容手機與桌面端)
 // ==========================================
+function groupPrintableMenuItems(items) {
+  const groups = [];
+  let currentGroup = null;
+
+  items.forEach(item => {
+    const explicitDishName = String(item.dish || "").trim();
+    const dishName = explicitDishName || (currentGroup ? currentGroup.name : "");
+
+    if (!currentGroup || (explicitDishName && explicitDishName !== currentGroup.name)) {
+      currentGroup = { name: dishName, items: [] };
+      groups.push(currentGroup);
+    }
+    currentGroup.items.push(item);
+  });
+
+  return groups;
+}
+
 function getPrescriptionReportHtml() {
   // 1. 個案基本體位與生理評估
   const name = document.getElementById("inName")?.value || "個案";
@@ -2337,32 +2366,21 @@ function getPrescriptionReportHtml() {
   activeMeals.forEach(m => {
     const items = mealGroups[m.name] || [];
     if (items.length > 0) {
-      let itemIndex = 0;
-      while (itemIndex < items.length) {
-        const dishName = items[itemIndex].dish || "";
-        let groupEnd = itemIndex + 1;
-        while (
-          groupEnd < items.length &&
-          (!items[groupEnd].dish || items[groupEnd].dish === dishName)
-        ) {
-          groupEnd += 1;
-        }
-        const dishRowspan = groupEnd - itemIndex;
-
-        for (let index = itemIndex; index < groupEnd; index += 1) {
-          const it = items[index];
-        menuRowsHtml += `
+      let rowIndex = 0;
+      groupPrintableMenuItems(items).forEach(group => {
+        group.items.forEach((it, groupIndex) => {
+          menuRowsHtml += `
           <tr>
-            ${index === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${m.name}</td>` : ""}
-            ${index === itemIndex ? `<td rowspan="${dishRowspan}" style="padding:6px 8px;border:1px solid #cbd5e1;vertical-align:middle;">${dishName || "—"}</td>` : ""}
+            ${rowIndex === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${m.name}</td>` : ""}
+            ${groupIndex === 0 ? `<td rowspan="${group.items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;vertical-align:middle;">${group.name || "—"}</td>` : ""}
             <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.food || ""}</td>
             <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuPortion(it.ex)} 份</td>
             <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuWeight(it.rawWeight)} g</td>
           </tr>
         `;
-        }
-        itemIndex = groupEnd;
-      }
+          rowIndex += 1;
+        });
+      });
     }
   });
 
