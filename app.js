@@ -948,42 +948,45 @@ function updateMealChipsBar() {
       const opened = menuRecipes
         .filter(recipe => recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category, recipe.food) === group.key)
         .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
+      const proteinWithoutMealDesign =
+        PROTEIN_EXCHANGE_CATEGORIES.includes(group.key) && required <= 0;
+      const openedForComparison = proteinWithoutMealDesign ? 0 : opened;
       menuRecipes
         .filter(recipe =>
           recipe.meal === meal.name &&
-          getProteinCategoryMismatch(recipe.category, recipe.food)
+          getProteinCategoryMismatch(recipe.category, recipe.food, meal.key)
         )
         .forEach(recipe => {
           const existing = issuesByMeal.get(meal.key).mismatch.find(item => item.recipe === recipe);
           if (!existing) {
             issuesByMeal.get(meal.key).mismatch.push({
               recipe,
-              detail: getProteinCategoryMismatch(recipe.category, recipe.food)
+              detail: getProteinCategoryMismatch(recipe.category, recipe.food, meal.key)
             });
           }
         });
-      const isOver = opened > required + 0.001;
-      const isComplete = !isOver && (required <= 0 || opened + 0.001 >= required);
+      const isOver = openedForComparison > required + 0.001;
+      const isComplete = !isOver && (required <= 0 || openedForComparison + 0.001 >= required);
       const cellClass = isOver
         ? "meal-portion-over"
         : (isComplete ? "meal-portion-complete" : "meal-portion-pending");
       if (isOver) {
         issuesByMeal.get(meal.key).over.push({
           label: group.label,
-          portion: opened - required
+          portion: openedForComparison - required
         });
       } else if (!isComplete) {
         issuesByMeal.get(meal.key).pending.push({
           label: group.label,
-          portion: Math.max(required - opened, 0)
+          portion: Math.max(required - openedForComparison, 0)
         });
       }
 
       return `
         <td class="${cellClass}" onclick="filterByMeal('${meal.name}')" title="${
           isOver
-            ? `超過設計 ${formatPortion(opened - required)} 份`
-            : (isComplete ? "已完成開立" : `尚缺 ${formatPortion(Math.max(required - opened, 0))} 份`)
+            ? `超過設計 ${formatPortion(openedForComparison - required)} 份`
+            : (isComplete ? "已完成開立" : `尚缺 ${formatPortion(Math.max(required - openedForComparison, 0))} 份`)
         }">
           ${formatPortion(required)}
         </td>
@@ -1093,7 +1096,12 @@ function renderMenuRecipes() {
     const startsNewMealGroup = i > 0 && filtered[i - 1].meal !== r.meal;
     const normalizedRecipeCategory = normalizeFoodCategory(r.category, r.food);
     const isNonPortionSeasoning = normalizedRecipeCategory === "調味" || normalizedRecipeCategory === "調味蔬菜";
-    const proteinCategoryMismatch = getProteinCategoryMismatch(r.category, r.food);
+    const mealDefinition = activeMeals.find(meal => meal.name === r.meal);
+    const proteinCategoryMismatch = getProteinCategoryMismatch(
+      r.category,
+      r.food,
+      mealDefinition?.key
+    );
     if (isNonPortionSeasoning) {
       r.category = normalizedRecipeCategory;
       r.ex = 0;
@@ -1913,11 +1921,16 @@ const PROTEIN_EXCHANGE_CATEGORIES = [
   "豆魚蛋肉類(高脂)"
 ];
 
-function getDesignedProteinCategories() {
+function getDesignedProteinCategories(mealKey = "") {
   const designed = exchangesData
-    .filter(item => PROTEIN_EXCHANGE_CATEGORIES.includes(item.category) && Number(item.ex) > 0)
+    .filter(item =>
+      PROTEIN_EXCHANGE_CATEGORIES.includes(item.category) &&
+      (mealKey ? Number(item[mealKey]) > 0 : Number(item.ex) > 0)
+    )
     .map(item => item.category);
-  return designed.length > 0 ? designed : PROTEIN_EXCHANGE_CATEGORIES;
+  return designed.length > 0
+    ? designed
+    : (mealKey ? [] : PROTEIN_EXCHANGE_CATEGORIES);
 }
 
 function getProteinExchangeCategory(foodName, category = "") {
@@ -1932,14 +1945,16 @@ function getProteinExchangeCategory(foodName, category = "") {
   return "";
 }
 
-function getProteinCategoryMismatch(category, foodName = "") {
+function getProteinCategoryMismatch(category, foodName = "", mealKey = "") {
   const inferredCategory = getProteinExchangeCategory(foodName, category);
   if (!inferredCategory) return "";
-  const designed = getDesignedProteinCategories();
+  const designed = getDesignedProteinCategories(mealKey);
   const selectedCategory = PROTEIN_EXCHANGE_CATEGORIES.includes(category)
     ? category
     : inferredCategory;
-  const designedLabel = designed.map(item => getFoodCategoryLabel(item)).join("、");
+  const designedLabel = designed.length > 0
+    ? designed.map(item => getFoodCategoryLabel(item)).join("、")
+    : "未設計";
 
   if (PROTEIN_EXCHANGE_CATEGORIES.includes(category) && inferredCategory !== category) {
     return `食材辨識為${getFoodCategoryLabel(inferredCategory)}，目前選擇${getFoodCategoryLabel(category)}`;

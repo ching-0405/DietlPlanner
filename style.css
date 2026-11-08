@@ -1522,7 +1522,8 @@ body.mobile-mode .exchange-table {
 }
 
 .toolbar-right {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   flex: 1 1 auto;
@@ -1539,6 +1540,7 @@ body.mobile-mode .exchange-table {
   flex-wrap: nowrap;
   white-space: nowrap;
   min-width: 0;
+  grid-column: 2;
 }
 
 .toolbar-right select {
@@ -1557,12 +1559,20 @@ body.mobile-mode .exchange-table {
 
   .toolbar-right {
     width: 100%;
+    display: flex;
     overflow-x: auto;
     justify-content: flex-start;
   }
 
   .toolbar-controls {
+    flex: 0 0 auto;
+    grid-column: auto;
     justify-content: flex-start;
+  }
+
+  .meal-pending-toolbar-note {
+    flex: 0 0 auto;
+    grid-column: auto;
   }
 }
 
@@ -1674,7 +1684,9 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
-  flex: 0 1 auto;
+  grid-column: 1 / -1;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .meal-pending-toolbar-note[hidden] {
