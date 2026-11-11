@@ -2748,6 +2748,12 @@ body.mobile-mode .subtotal-title {
 }
 
 /* 菜單開立：手機版餐次與菜名輸入框自適應寬度，徹底解決方框過小問題 */
+@media (max-width: 900px) {
+  .row-chart-no {
+    display: none !important;
+  }
+}
+
 #menuRecipeTable {
   min-width: 780px !important; /* 確保在任何裝置下有足夠寬度進行水平滾動，避免 8 欄相互擠壓 */
 }
