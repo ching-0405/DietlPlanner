@@ -2747,15 +2747,6 @@ body.mobile-mode .subtotal-title {
   padding-left: 6px !important;
 }
 
-/* 手機版隱藏病歷號及後方編號欄位 */
-body.mobile-mode .row-chart-no,
-@media (max-width: 768px) {
-  .row-chart-no {
-    display: none !important;
-  }
-}
-
-
 /* 菜單開立：手機版餐次與菜名輸入框自適應寬度，徹底解決方框過小問題 */
 #menuRecipeTable {
   min-width: 780px !important; /* 確保在任何裝置下有足夠寬度進行水平滾動，避免 8 欄相互擠壓 */
@@ -2837,16 +2828,6 @@ body.mobile-mode .row-chart-no,
   box-sizing: border-box !important;
   width: 100% !important;
   min-width: 0 !important;
-}
-
-/* 手機版個案評估：病歷號 / 編號完全隱藏 (包含 mobile-mode 與 max-width 768px/900px) */
-body.mobile-mode .row-chart-no,
-@media (max-width: 900px) {
-  .row-chart-no,
-  tr.row-chart-no,
-  #inChartNoRow {
-    display: none !important;
-  }
 }
 
 

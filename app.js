@@ -76,10 +76,6 @@ function applyDeviceModeClass(isMobile) {
   } else {
     document.body.classList.remove("mobile-mode");
   }
-  // 同步切換病歷號列顯示狀態
-  document.querySelectorAll(".row-chart-no").forEach(el => {
-    el.style.display = isMobile ? "none" : "";
-  });
   if (typeof updateSubtotalColspans === "function") {
     updateSubtotalColspans();
   }
@@ -123,7 +119,7 @@ function initTabs() {
 // 2. 第一頁：個案評估與體位計算
 // ==========================================
 function initAssessment() {
-  const inputs = ["inName", "inChartNo", "inGender", "inAge", "inHeight", "inWeight", "inActivity", "inStress", "inCreatinine", "inKneeHeight", "inUlnaLength", "inCalfCirc", "inArmCirc"];
+  const inputs = ["inName", "inGender", "inAge", "inHeight", "inWeight", "inActivity", "inStress", "inCreatinine", "inKneeHeight", "inUlnaLength", "inCalfCirc", "inArmCirc"];
   inputs.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -159,21 +155,19 @@ function initAssessment() {
 
 function syncSidebarClientCard() {
   const name = document.getElementById("inName")?.value || "個案";
-  const chartNo = document.getElementById("inChartNo")?.value || "P001";
   const age = document.getElementById("inAge")?.value || "30";
   const gender = document.getElementById("inGender")?.value || "男";
   const targetKcal = document.getElementById("inTargetKcal")?.value || "2000";
 
   const elName = document.getElementById("sidebarClientName");
   const elKcal = document.getElementById("sidebarTargetKcal");
-  if (elName) elName.innerText = `${name} (${chartNo}, ${age}歲 ${gender})`;
+  if (elName) elName.innerText = `${name} (${age}歲 ${gender})`;
   if (elKcal) elKcal.innerText = `${targetKcal} kcal`;
 }
 
 function resetNewClient() {
   if (confirm("確定要建立新個案嗎？將會清空當前輸入內容。")) {
     document.getElementById("inName").value = "新個案";
-    document.getElementById("inChartNo").value = "P002";
     document.getElementById("inAge").value = "30";
     document.getElementById("inHeight").value = "170";
     document.getElementById("inWeight").value = "65";
@@ -2594,7 +2588,6 @@ function groupPrintableMenuItems(items) {
 function getPrescriptionReportHtml() {
   // 1. 個案基本體位與生理評估
   const name = document.getElementById("inName")?.value || "個案";
-  const chartNo = document.getElementById("inChartNo")?.value || "—";
   const gender = document.getElementById("inGender")?.value || "—";
   const age = document.getElementById("inAge")?.value || "—";
   const height = document.getElementById("inHeight")?.value || "—";
@@ -2766,12 +2759,10 @@ function getPrescriptionReportHtml() {
       <div style="font-size:14px;font-weight:bold;color:#0f766e;margin:12px 0 6px;border-left:4px solid #0d9488;padding-left:8px;">一、個案基本體位與生理評估</div>
       <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px;">
         <tr>
-          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:13%;">姓名 / 暱稱</th>
-          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:20%;font-weight:600;">${name}</td>
-          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:13%;">病歷編號</th>
-          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:20%;">${chartNo}</td>
-          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:14%;">性別 / 年齡</th>
-          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:20%;">${gender} / ${age} 歲</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:16%;">姓名 / 暱稱</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:34%;font-weight:600;">${name}</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;width:16%;">性別 / 年齡</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;width:34%;">${gender} / ${age} 歲</td>
         </tr>
         <tr>
           <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">身高 / 體重</th>
