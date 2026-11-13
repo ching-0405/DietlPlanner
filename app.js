@@ -1,4 +1,4 @@
-// 飲食營養菜單設計系統 - 前端核心邏輯
+﻿// 飲食營養菜單設計系統 - 前端核心邏輯
 
 // 全域狀態
 let isDiabeticMode = false;
@@ -17,17 +17,19 @@ const mealCountMap = {
   5: ["b", "ms", "l", "as", "d"],
   6: ["b", "ms", "l", "as", "d", "ns"]
 };
+let currentMenuDay = 1;
+let totalMenuDays = 1;
 let menuRecipes = [
-  { meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 70, color: "黃色" },
-  { meal: "早餐", dish: "", food: "牛奶", category: "乳品類", ex: 1, rawWeight: 240, color: "白色" },
-  { meal: "早餐", dish: "", food: "燕麥", category: "全穀雜糧", ex: 2, rawWeight: 40, color: "白色" },
-  { meal: "午餐", dish: "胡蘿蔔炒雞胸肉", food: "胡蘿蔔", category: "蔬菜類", ex: 1, rawWeight: 100, color: "橙色" },
-  { meal: "午餐", dish: "", food: "雞胸肉", category: "豆魚蛋肉", ex: 2, rawWeight: 60, color: "白色" },
-  { meal: "午餐", dish: "蒜炒菠菜", food: "菠菜", category: "蔬菜類", ex: 1, rawWeight: 100, color: "綠色" },
-  { meal: "晚餐", dish: "番茄豆腐湯", food: "番茄", category: "蔬菜類", ex: 1, rawWeight: 100, color: "紅色" },
-  { meal: "晚餐", dish: "", food: "豆腐", category: "豆魚蛋肉", ex: 1, rawWeight: 110, color: "白色", sampleName: "傳統豆腐" },
-  { meal: "晚餐", dish: "清炒高麗菜", food: "高麗菜", category: "蔬菜類", ex: 1, rawWeight: 100, color: "粉綠/嫩綠" },
-  { meal: "晚餐", dish: "紫米飯", food: "紫米", category: "全穀雜糧", ex: 3, rawWeight: 60, color: "紫色/黑色" }
+  { day: 1, meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 70, color: "黃色" },
+  { day: 1, meal: "早餐", dish: "", food: "牛奶", category: "乳品類", ex: 1, rawWeight: 240, color: "白色" },
+  { day: 1, meal: "早餐", dish: "", food: "燕麥", category: "全穀雜糧", ex: 2, rawWeight: 40, color: "白色" },
+  { day: 1, meal: "午餐", dish: "胡蘿蔔炒雞胸肉", food: "胡蘿蔔", category: "蔬菜類", ex: 1, rawWeight: 100, color: "橙色" },
+  { day: 1, meal: "午餐", dish: "", food: "雞胸肉", category: "豆魚蛋肉", ex: 2, rawWeight: 60, color: "白色" },
+  { day: 1, meal: "午餐", dish: "蒜炒菠菜", food: "菠菜", category: "蔬菜類", ex: 1, rawWeight: 100, color: "綠色" },
+  { day: 1, meal: "晚餐", dish: "番茄豆腐湯", food: "番茄", category: "蔬菜類", ex: 1, rawWeight: 100, color: "紅色" },
+  { day: 1, meal: "晚餐", dish: "", food: "豆腐", category: "豆魚蛋肉", ex: 1, rawWeight: 110, color: "白色", sampleName: "傳統豆腐" },
+  { day: 1, meal: "晚餐", dish: "清炒高麗菜", food: "高麗菜", category: "蔬菜類", ex: 1, rawWeight: 100, color: "粉綠/嫩綠" },
+  { day: 1, meal: "晚餐", dish: "紫米飯", food: "紫米", category: "全穀雜糧", ex: 3, rawWeight: 60, color: "紫色/黑色" }
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -852,6 +854,62 @@ function calcExchangeTotals() {
 // ==========================================
 // 4. 第三頁：菜單開立與食材辨識
 // ==========================================
+
+// ==========================================
+// 天數管理與連動邏輯
+// ==========================================
+function updateMenuDayOptions() {
+  const daySelect = document.getElementById("cboMenuDay");
+  if (!daySelect) return;
+  const currentVal = parseInt(daySelect.value, 10) || currentMenuDay || 1;
+  let html = "";
+  for (let d = 1; d <= totalMenuDays; d++) {
+    html += `<option value="${d}">第 ${d} 天</option>`;
+  }
+  daySelect.innerHTML = html;
+  if (currentVal <= totalMenuDays) {
+    daySelect.value = String(currentVal);
+    currentMenuDay = currentVal;
+  } else {
+    daySelect.value = "1";
+    currentMenuDay = 1;
+  }
+}
+
+function onMenuDayChanged(dayVal) {
+  currentMenuDay = parseInt(dayVal, 10) || 1;
+  renderMenuRecipes();
+  updateMealChipsBar();
+  updateMenuSummaryCards();
+  updateAllCompositionNutrientSummary();
+}
+
+function openDaySettingModal() {
+  const input = document.getElementById("inTotalMenuDays");
+  if (input) input.value = totalMenuDays;
+  openModal("modalDaySettings");
+}
+
+function quickSetDays(days) {
+  const input = document.getElementById("inTotalMenuDays");
+  if (input) input.value = days;
+}
+
+function applyDaySettings() {
+  const input = document.getElementById("inTotalMenuDays");
+  const days = parseInt(input ? input.value : 1, 10);
+  if (isNaN(days) || days < 1 || days > 30) {
+    alert("請輸入 1 至 30 之間的天數！");
+    return;
+  }
+  totalMenuDays = days;
+  updateMenuDayOptions();
+  closeModal("modalDaySettings");
+  renderMenuRecipes();
+  updateMealChipsBar();
+  updateMenuSummaryCards();
+  updateAllCompositionNutrientSummary();
+}
 function initMenu() {
   document.getElementById("cboMealFilter").addEventListener("change", () => {
     renderMenuRecipes();
@@ -1307,7 +1365,7 @@ function updateAllCompositionNutrientSummary() {
     folate: 0
   };
 
-  const rowsHtml = menuRecipes.map((r, idx) => {
+  const rowsHtml = currentDayRecipes.map((r, idx) => {
     const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
     sum.kcal += (nut.kcal || 0);
     sum.protein += (nut.protein || 0);

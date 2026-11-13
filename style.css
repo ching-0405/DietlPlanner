@@ -2871,3 +2871,62 @@ body.mobile-mode .meal-count-selector,
     min-height: 30px !important;
   }
 }
+
+/* 食物代換查詢 & 樣品查詢搜尋欄強化：自適應任何螢幕大小 */
+.query-search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: stretch;
+  width: 100%;
+}
+
+.query-search-bar .form-input,
+.query-search-bar #inFoodSearch,
+.query-search-bar #inSampleSearch {
+  flex: 1 1 200px;
+  min-width: 150px;
+  width: auto;
+  box-sizing: border-box;
+}
+
+.query-search-bar .form-select {
+  flex: 0 1 140px;
+  min-width: 110px;
+  box-sizing: border-box;
+}
+
+.query-search-bar .btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+body.mobile-mode .query-search-bar,
+@media (max-width: 640px) {
+  .query-search-bar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .query-search-bar .form-input,
+  .query-search-bar #inFoodSearch,
+  .query-search-bar #inSampleSearch {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+  }
+  .query-search-bar .form-select {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+  }
+  .query-search-bar .btn {
+    width: 100% !important;
+    flex: none !important;
+  }
+}

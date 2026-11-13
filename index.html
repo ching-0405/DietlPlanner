@@ -657,7 +657,14 @@
         </div>
         <div class="toolbar-right">
           <div class="toolbar-controls">
-            <label style="font-weight: 600;">預設餐次：</label>
+            <div class="toolbar-day-group" style="display: inline-flex; align-items: center; gap: 6px; background: #f0fdfa; padding: 4px 10px; border-radius: 6px; border: 1px solid #ccfbf1;">
+              <label for="cboMenuDay" style="font-weight: 700; color: #0f766e; font-size: 13px; margin: 0; white-space: nowrap;">📅 天數：</label>
+              <select id="cboMenuDay" class="form-select" style="width: 105px; padding: 3px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #0d9488; background: #fff;" onchange="onMenuDayChanged(this.value)">
+                <option value="1" selected>第 1 天</option>
+              </select>
+              <button type="button" class="btn btn-outline" id="btnManageDays" onclick="openDaySettingModal()" style="padding: 3px 8px; font-size: 12px; white-space: nowrap;" title="設定菜單總天數">⚙️ 天數設定</button>
+            </div>
+            <label style="font-weight: 600; margin-left: 6px;">預設餐次：</label>
             <select id="cboMealFilter" class="form-select">
               <option value="全部">全部餐次 (顯示所有)</option>
               <option value="早餐" selected>早餐</option>
@@ -1109,9 +1116,9 @@
         <button class="modal-close" onclick="closeModal('modalExchangeQuery')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="query-search-bar" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-          <input type="text" id="inFoodSearch" class="form-input flex-1" style="min-width: 140px; flex: 1 1 180px; width: 100%; box-sizing: border-box;" placeholder="輸入食材名稱、次分類或關鍵字搜尋（例：高麗菜、雞胸肉、豆腐）">
-          <select id="cboCategoryFilter" class="form-select" style="min-width: 130px; flex: 1 1 130px; width: auto; box-sizing: border-box;">
+        <div class="query-search-bar">
+          <input type="text" id="inFoodSearch" class="form-input flex-1" placeholder="輸入食材名稱、次分類或關鍵字搜尋（例：高麗菜、雞胸肉、豆腐）">
+          <select id="cboCategoryFilter" class="form-select">
             <option value="全部">全部類別</option>
             <option value="乳品類">乳品類</option>
             <option value="豆魚蛋肉">豆魚蛋肉</option>
@@ -1314,5 +1321,39 @@
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
 <script src="app.js?v=20261111-1910"></script>
+  <!-- 設定菜單天數彈窗 (Modal) -->
+  <div class="modal-overlay" id="modalDaySettings">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header bg-teal" style="background: linear-gradient(135deg, #0f766e, #14b8a6); color: white;">
+        <div class="modal-title">
+          <span style="font-size: 16px; font-weight: 700;">📅 設定菜單規劃天數</span>
+          <small style="font-size: 12px; opacity: 0.9;">自訂菜單開立的規劃天數（1 ~ 30 天）</small>
+        </div>
+        <button class="modal-close" style="color: white;" onclick="closeModal('modalDaySettings')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #334155;">菜單規劃總天數：</label>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="number" id="inTotalMenuDays" class="form-input" min="1" max="30" value="1" style="width: 100px; font-size: 16px; font-weight: 700; text-align: center;">
+            <span style="font-size: 14px; color: #64748b;">天 (可自行設定 1 ~ 30 天)</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(1)">1 天 (單日)</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(3)">3 天菜單</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(5)">5 天 (平日)</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(7)">7 天 (一週)</button>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #64748b; line-height: 1.5;">
+          💡 提示：切換天數時，下方的菜單食材、每餐開立份數比對、全日營養計算將自動連動顯示該天的規劃內容！
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 12px 18px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modalDaySettings')">取消</button>
+        <button type="button" class="btn btn-teal" onclick="applyDaySettings()" style="background: #0f766e; color: white;">儲存並套用</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
