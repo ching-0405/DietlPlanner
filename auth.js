@@ -1,92 +1,14 @@
 // ==========================================
-// 飲食營養菜單設計系統 - 會員帳密驗證、授權期效與獨立儲存模組 (auth.js)
+// 飲食營養菜單設計系統 - Google 試算表即時會員帳密驗證與獨立存檔模組 (auth.js)
 // ==========================================
 
 const AUTH_CONFIG = {
-  SALT: "DietPlanner_Salt_2026_Secure_Auth",
+  // Google Apps Script 雲端試算表 Web App URL
+  API_URL: "https://script.google.com/macros/s/AKfycbyxmeB8NCJFKF4iY2Yu7dIBHUluQF8zMnJASJ_WRZq2DUSRlqcoey4b7UfkuiRW_FYeaA/exec",
   STORAGE_CURRENT_USER: "diet_current_user_session",
   STORAGE_PREFIX: "diet_user_data_",
-  ADMIN_CODE: "admin888" // 管理員快捷萬用通行碼
+  ADMIN_CODE: "admin888" // 管理員快捷萬用通行密碼
 };
-
-// 簡易加密雜湊演算法
-function generateSecureHash(text) {
-  let hash = 0;
-  const str = text + AUTH_CONFIG.SALT;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return Math.abs(hash).toString(16).padStart(8, '0');
-}
-
-// 產生授權密碼 (包含：帳號 + 到期日 + 數位簽章)
-// 格式：DP-{到期日YYYYMMDD}-{簽章8碼}
-function generateAccountLicenseKey(username, expireDateStr) {
-  const cleanDate = expireDateStr.replace(/-/g, "");
-  const signature = generateSecureHash(username.trim().toLowerCase() + cleanDate);
-  return `DP-${cleanDate}-${signature.toUpperCase()}`;
-}
-
-// 驗證授權密碼是否合法且回傳有效到期日
-function verifyAccountLicense(username, password) {
-  if (!username || !password) return { valid: false, error: "請輸入帳號與授權密碼" };
-  
-  const user = username.trim().toLowerCase();
-  const pwd = password.trim();
-
-  // 特殊管理員全權通行碼
-  if (pwd === AUTH_CONFIG.ADMIN_CODE) {
-    const farDate = new Date();
-    farDate.setFullYear(farDate.getFullYear() + 99);
-    return {
-      valid: true,
-      username: user,
-      expireDate: farDate.toISOString().split("T")[0],
-      isAdmin: true,
-      daysLeft: 9999
-    };
-  }
-
-  // 格式檢查：DP-YYYYMMDD-XXXXXXXX
-  const parts = pwd.split("-");
-  if (parts.length !== 3 || parts[0] !== "DP" || parts[1].length !== 8) {
-    return { valid: false, error: "授權密碼格式不正確，請確認輸入由管理員核發之專屬密碼！" };
-  }
-
-  const datePart = parts[1];
-  const expectedSig = generateSecureHash(user + datePart).toUpperCase();
-  if (parts[2].toUpperCase() !== expectedSig) {
-    return { valid: false, error: "此授權密碼與帳號不匹配，請確認帳號名稱是否拼寫正確！" };
-  }
-
-  // 檢查到期日
-  const year = parseInt(datePart.substring(0, 4), 10);
-  const month = parseInt(datePart.substring(4, 6), 10) - 1;
-  const day = parseInt(datePart.substring(6, 8), 10);
-  const expireDate = new Date(year, month, day, 23, 59, 59);
-
-  const now = new Date();
-  const diffTime = expireDate.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays <= 0) {
-    return { 
-      valid: false, 
-      error: `您的帳號授權已於 ${year}/${month+1}/${day} 到期，請聯繫管理員續約！`,
-      isExpired: true,
-      expireDate: `${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    };
-  }
-
-  return {
-    valid: true,
-    username: user,
-    expireDate: `${year}/${String(month+1).padStart(2, '0')}/${String(day).padStart(2, '0')}`,
-    daysLeft: diffDays
-  };
-}
 
 // ==========================================
 // 會員 Session 管理
@@ -99,11 +21,22 @@ function getCurrentAuthUser() {
     const raw = localStorage.getItem(AUTH_CONFIG.STORAGE_CURRENT_USER);
     if (raw) {
       const data = JSON.parse(raw);
-      const check = verifyAccountLicense(data.username, data.password);
-      if (check.valid) {
-        currentAuthSession = { ...data, daysLeft: check.daysLeft, expireDate: check.expireDate };
-        return currentAuthSession;
+      // 重新檢查到期日
+      if (data && data.expireDate) {
+        const parts = data.expireDate.split("/");
+        if (parts.length === 3) {
+          const expDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 23, 59, 59);
+          const now = new Date();
+          const diffDays = Math.ceil((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          if (diffDays <= 0) {
+            localStorage.removeItem(AUTH_CONFIG.STORAGE_CURRENT_USER);
+            return null;
+          }
+          data.daysLeft = diffDays;
+        }
       }
+      currentAuthSession = data;
+      return currentAuthSession;
     }
   } catch (e) {
     console.error("Auth session parse error:", e);
@@ -117,32 +50,59 @@ function initAuthSession() {
     loadUserDataForCurrentUser();
     updateAuthStatusUI();
   } else {
-    // 預先產生示範帳號給新使用者體驗
     showLoginModal();
   }
 }
 
-// 登入
-function loginUser(username, password) {
-  const result = verifyAccountLicense(username, password);
-  if (!result.valid) {
-    return result;
+// 登入驗證（直接連線 Google 試算表即時驗證）
+async function loginUser(username, password) {
+  const user = (username || "").trim().toLowerCase();
+  const pwd = (password || "").trim();
+
+  if (!user || !pwd) {
+    return { valid: false, error: "請輸入帳號與密碼！" };
   }
 
-  currentAuthSession = {
-    username: result.username,
-    password: password.trim(),
-    expireDate: result.expireDate,
-    daysLeft: result.daysLeft,
-    loginTime: new Date().toISOString()
-  };
+  // 管理員萬用通行
+  if (pwd === AUTH_CONFIG.ADMIN_CODE) {
+    const farDate = new Date();
+    farDate.setFullYear(farDate.getFullYear() + 99);
+    const expStr = `${farDate.getFullYear()}/12/31`;
+    currentAuthSession = {
+      username: user,
+      expireDate: expStr,
+      daysLeft: 9999,
+      loginTime: new Date().toISOString()
+    };
+    localStorage.setItem(AUTH_CONFIG.STORAGE_CURRENT_USER, JSON.stringify(currentAuthSession));
+    loadUserDataForCurrentUser();
+    updateAuthStatusUI();
+    return { valid: true, user: currentAuthSession };
+  }
 
-  localStorage.setItem(AUTH_CONFIG.STORAGE_CURRENT_USER, JSON.stringify(currentAuthSession));
-  
-  // 載入該使用者專屬資料
-  loadUserDataForCurrentUser();
-  updateAuthStatusUI();
-  return { valid: true, user: currentAuthSession };
+  try {
+    const queryUrl = `${AUTH_CONFIG.API_URL}?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pwd)}`;
+    const response = await fetch(queryUrl);
+    const result = await response.json();
+
+    if (result && result.success) {
+      currentAuthSession = {
+        username: result.username,
+        expireDate: result.expireDate,
+        daysLeft: result.daysLeft,
+        loginTime: new Date().toISOString()
+      };
+      localStorage.setItem(AUTH_CONFIG.STORAGE_CURRENT_USER, JSON.stringify(currentAuthSession));
+      loadUserDataForCurrentUser();
+      updateAuthStatusUI();
+      return { valid: true, user: currentAuthSession };
+    } else {
+      return { valid: false, error: result.message || "帳號或密碼錯誤！" };
+    }
+  } catch (err) {
+    console.error("API 連線失敗：", err);
+    return { valid: false, error: "無法連線至 Google 試算表驗證伺服器，請檢查網路連線或稍後再試！" };
+  }
 }
 
 // 登出
@@ -155,7 +115,7 @@ function logoutUser() {
 }
 
 // ==========================================
-// 使用者獨立資料儲存 (依帳號隔離)
+// 使用者獨立資料儲存 (依 Google 試算表帳號隔離)
 // ==========================================
 function getUserStorageKey() {
   const user = getCurrentAuthUser();
@@ -286,26 +246,32 @@ function updateAuthStatusUI() {
 
 function showLoginModal() {
   const modal = document.getElementById("modalAuthLogin");
-  if (modal) {
-    modal.classList.add("show");
-    // 預設填入示範帳號 user1 與有效金鑰，方便使用者第一次測試體驗
-    const inUser = document.getElementById("inAuthUsername");
-    const inPass = document.getElementById("inAuthPassword");
-    if (inUser && !inUser.value) inUser.value = "user1";
-    if (inPass && !inPass.value) inPass.value = generateAccountLicenseKey("user1", "2027-11-16");
-  }
+  if (modal) modal.classList.add("show");
 }
 
-function handleLoginSubmit(event) {
+async function handleLoginSubmit(event) {
   if (event) event.preventDefault();
   const inUser = document.getElementById("inAuthUsername");
   const inPass = document.getElementById("inAuthPassword");
   const errBox = document.getElementById("authErrorMessage");
+  const btnSubmit = document.querySelector("#modalAuthLogin .auth-submit-btn");
 
   const username = inUser ? inUser.value.trim() : "";
   const password = inPass ? inPass.value.trim() : "";
 
-  const result = loginUser(username, password);
+  if (errBox) errBox.style.display = "none";
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerText = "連線 Google 試算表驗證中...";
+  }
+
+  const result = await loginUser(username, password);
+
+  if (btnSubmit) {
+    btnSubmit.disabled = false;
+    btnSubmit.innerText = "立即登入系統";
+  }
+
   if (result.valid) {
     if (errBox) errBox.style.display = "none";
   } else {
@@ -313,59 +279,5 @@ function handleLoginSubmit(event) {
       errBox.style.display = "block";
       errBox.innerText = result.error || "登入失敗！";
     }
-  }
-}
-
-// 管理員發卡工具功能
-function openAdminKeyGenModal() {
-  const modal = document.getElementById("modalAdminKeyGen");
-  if (modal) {
-    modal.classList.add("show");
-    setGenDays(365); // 預設 1 年
-    generateKeyAndDisplay();
-  }
-}
-
-function setGenDays(days) {
-  const dateInput = document.getElementById("inGenExpireDate");
-  if (dateInput) {
-    const target = new Date();
-    target.setDate(target.getDate() + days);
-    dateInput.value = target.toISOString().split("T")[0];
-  }
-}
-
-function generateKeyAndDisplay() {
-  const inUser = document.getElementById("inGenUsername");
-  const inDate = document.getElementById("inGenExpireDate");
-  const resultBox = document.getElementById("genResultBox");
-  const outKey = document.getElementById("outGeneratedKey");
-  const outDesc = document.getElementById("outGenDesc");
-
-  const username = inUser ? inUser.value.trim() : "user";
-  const expireDate = inDate ? inDate.value : "2027-11-16";
-
-  if (!username) {
-    alert("請輸入客戶帳號名稱！");
-    return;
-  }
-
-  const licenseKey = generateAccountLicenseKey(username, expireDate);
-  if (outKey) outKey.value = licenseKey;
-  if (outDesc) {
-    outDesc.innerText = `帳號：${username} ｜ 到期日：${expireDate} ｜ 客戶以此密碼登入即可獲得對應使用天數`;
-  }
-  if (resultBox) resultBox.style.display = "block";
-}
-
-function copyGeneratedKey() {
-  const outKey = document.getElementById("outGeneratedKey");
-  if (outKey) {
-    outKey.select();
-    navigator.clipboard.writeText(outKey.value).then(() => {
-      alert(`授權密碼已成功複製到剪貼簿：\n${outKey.value}`);
-    }).catch(() => {
-      alert(`授權密碼：\n${outKey.value}`);
-    });
   }
 }
