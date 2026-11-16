@@ -2107,7 +2107,7 @@
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "黃豆芽",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2116,11 +2116,11 @@
     "protein": 2.5,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)、蛋白質較高"
+    "notes": "低鉀 (<300mg，含鉀約 274mg/100g)、蛋白質較高"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "胡瓜",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2129,7 +2129,7 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 116~170mg/100g)"
   },
   {
     "category": "蔬菜類",
@@ -2142,7 +2142,7 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "低鉀 (<150mg)"
+    "notes": "低鉀 (<300mg，含鉀約 103mg/100g)"
   },
   {
     "category": "蔬菜類",
@@ -2155,11 +2155,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "低鉀 (<150mg)"
+    "notes": "低鉀 (<300mg，生鮮黑木耳含鉀約 56mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "茭白筍",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2168,7 +2168,7 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 219mg/100g)"
   },
   {
     "category": "蔬菜類",
@@ -2181,7 +2181,7 @@
     "protein": 2,
     "fat": 0,
     "carbs": 5,
-    "notes": "低鉀 (<150mg)、蛋白質較高"
+    "notes": "低鉀 (<300mg，含鉀約 128mg/100g)、蛋白質較高"
   },
   {
     "category": "蔬菜類",
@@ -2194,11 +2194,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "低鉀 (<150mg)"
+    "notes": "低鉀 (<300mg，含鉀約 145mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "高麗菜 (甘藍、包心白菜)",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2207,7 +2207,7 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg，含鉀約 183mg/100g)"
+    "notes": "低鉀 (<300mg，含鉀約 170~187mg/100g)"
   },
   {
     "category": "蔬菜類",
@@ -2220,11 +2220,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "低鉀 (<150mg)"
+    "notes": "低鉀 (<300mg，含鉀約 120~165mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "玉米筍",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2233,11 +2233,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 219mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "小黃瓜",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2246,11 +2246,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 222mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "高鉀蔬菜",
+    "subCategory": "中鉀蔬菜",
     "foodName": "苦瓜",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2259,11 +2259,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "高鉀 (>300mg，青皮苦瓜含鉀較高)"
+    "notes": "中鉀 (301~500mg，苦瓜含鉀約 200~370mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "甜椒 (青椒)",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2272,7 +2272,7 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 144~210mg/100g)"
   },
   {
     "category": "蔬菜類",
@@ -2285,11 +2285,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "低鉀 (<150mg)"
+    "notes": "低鉀 (<300mg，含鉀約 117~173mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "胡蘿蔔",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2298,7 +2298,7 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 198~266mg/100g)"
   },
   {
     "category": "蔬菜類",
@@ -2311,11 +2311,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "低鉀 (<150mg)"
+    "notes": "低鉀 (<300mg，含鉀約 125~151mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "綠蘆筍、麻竹筍",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2324,11 +2324,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，綠蘆筍含鉀約 261mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "小白菜、青江菜",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2337,11 +2337,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 110~266mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "高鉀蔬菜",
+    "subCategory": "中鉀蔬菜",
     "foodName": "空心菜",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2350,11 +2350,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "高鉀 (>300mg，含鉀約 380~440mg/100g)"
+    "notes": "中鉀 (301~500mg，蕹菜土植/水耕含鉀約 280~440mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "油菜、油菜花",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2363,11 +2363,11 @@
     "protein": 1.5,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 251mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "高鉀蔬菜",
+    "subCategory": "中鉀蔬菜",
     "foodName": "花椰菜 (白、綠花椰)",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2376,11 +2376,11 @@
     "protein": 1.5,
     "fat": 0,
     "carbs": 5,
-    "notes": "高鉀 (>300mg，含鉀約 338~360mg/100g)"
+    "notes": "中鉀 (301~500mg，花椰菜含鉀約 338~360mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "龍鬚菜",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2389,11 +2389,11 @@
     "protein": 2,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)、蛋白質較高"
+    "notes": "低鉀 (<300mg，含鉀約 245~250mg/100g)、蛋白質較高"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "茄子",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2402,11 +2402,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 267~278mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "黃秋葵",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2415,11 +2415,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 203mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "番茄 (大番茄)",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2428,11 +2428,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，含鉀約 227~233mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "香菇、柳松菇、洋菇、金針菇",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2441,11 +2441,11 @@
     "protein": 2,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)、蛋白質較高"
+    "notes": "低鉀 (<300mg，生鮮香菇/金針菇含鉀約 227~280mg/100g)、蛋白質較高"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "中鉀蔬菜",
+    "subCategory": "低鉀蔬菜",
     "foodName": "牛蒡、竹筍",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2454,11 +2454,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "中鉀 (150~300mg)"
+    "notes": "低鉀 (<300mg，竹筍含鉀約 194~220mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "高鉀蔬菜",
+    "subCategory": "中鉀蔬菜",
     "foodName": "芹菜、西洋芹",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2467,11 +2467,11 @@
     "protein": 1,
     "fat": 0,
     "carbs": 5,
-    "notes": "高鉀 (>300mg，含鉀約 320~400mg/100g)"
+    "notes": "中鉀 (301~500mg，芹菜含鉀約 314~321mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "高鉀蔬菜",
+    "subCategory": "中鉀蔬菜",
     "foodName": "地瓜葉 (番薯葉)",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2480,11 +2480,11 @@
     "protein": 2,
     "fat": 0,
     "carbs": 5,
-    "notes": "高鉀 (>300mg，含鉀約 401mg/100g)、蛋白質較高"
+    "notes": "中鉀 (301~500mg，地瓜葉含鉀約 401mg/100g)、蛋白質較高"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "高鉀蔬菜",
+    "subCategory": "中鉀蔬菜",
     "foodName": "莧菜 (紅莧菜、白莧菜)",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2493,11 +2493,11 @@
     "protein": 2,
     "fat": 0,
     "carbs": 5,
-    "notes": "高鉀 (>300mg，含鉀約 440~507mg/100g)"
+    "notes": "中鉀 (301~500mg，紅莧菜約 441mg、白莧菜約 507mg/100g)"
   },
   {
     "category": "蔬菜類",
-    "subCategory": "高鉀蔬菜",
+    "subCategory": "中鉀蔬菜",
     "foodName": "菠菜",
     "portionDesc": "100 公克",
     "rawWeight": 100,
@@ -2506,7 +2506,7 @@
     "protein": 2,
     "fat": 0,
     "carbs": 5,
-    "notes": "高鉀 (>300mg，含鉀約 430~510mg/100g)、蛋白質較高"
+    "notes": "中鉀 (301~500mg，有機菠菜葉約 430mg、生鮮菠菜約 510mg/100g)、蛋白質較高"
   },
   {
     "category": "水果類",
