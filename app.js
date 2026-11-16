@@ -1,3 +1,9 @@
+function formatNutrientVal(val) {
+  const num = Number(val) || 0;
+  const rounded = Math.round(num * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
 ﻿// 飲食營養菜單設計系統 - 前端核心邏輯
 
 // 全域狀態
@@ -814,25 +820,25 @@ function calcExchangeTotals() {
     const elF = document.getElementById(`row_f_${idx}`);
     const elC = document.getElementById(`row_c_${idx}`);
     const elK = document.getElementById(`row_kcal_${idx}`);
-    if (elP) elP.innerText = Math.round(rowP);
-    if (elF) elF.innerText = Math.round(rowF);
-    if (elC) elC.innerText = Math.round(rowC);
-    if (elK) elK.innerText = Math.round(rowKcal);
+    if (elP) elP.innerText = formatNutrientVal(rowP);
+    if (elF) elF.innerText = formatNutrientVal(rowF);
+    if (elC) elC.innerText = formatNutrientVal(rowC);
+    if (elK) elK.innerText = formatNutrientVal(rowKcal);
   });
 
   // 更新下方加總列
-  document.getElementById("sumTotalEx").innerText = totalEx.toFixed(1);
-  document.getElementById("sumB").innerText = sumB.toFixed(1);
-  document.getElementById("sumMs").innerText = sumMs.toFixed(1);
-  document.getElementById("sumL").innerText = sumL.toFixed(1);
-  document.getElementById("sumAs").innerText = sumAs.toFixed(1);
-  document.getElementById("sumD").innerText = sumD.toFixed(1);
-  document.getElementById("sumNs").innerText = sumNs.toFixed(1);
+  document.getElementById("sumTotalEx").innerText = formatNutrientVal(totalEx);
+  document.getElementById("sumB").innerText = formatNutrientVal(sumB);
+  document.getElementById("sumMs").innerText = formatNutrientVal(sumMs);
+  document.getElementById("sumL").innerText = formatNutrientVal(sumL);
+  document.getElementById("sumAs").innerText = formatNutrientVal(sumAs);
+  document.getElementById("sumD").innerText = formatNutrientVal(sumD);
+  document.getElementById("sumNs").innerText = formatNutrientVal(sumNs);
 
-  document.getElementById("sumProteinGrams").innerText = `${Math.round(totalP)}`;
-  document.getElementById("sumFatGrams").innerText = `${Math.round(totalF)}`;
-  document.getElementById("sumCarbGrams").innerText = `${Math.round(totalC)}`;
-  document.getElementById("sumTotalCalories").innerText = `${Math.round(totalKcal)}`;
+  document.getElementById("sumProteinGrams").innerText = formatNutrientVal(totalP);
+  document.getElementById("sumFatGrams").innerText = formatNutrientVal(totalF);
+  document.getElementById("sumCarbGrams").innerText = formatNutrientVal(totalC);
+  document.getElementById("sumTotalCalories").innerText = formatNutrientVal(totalKcal);
 
   // 4-9-4 修正熱量與百分比
   const macroKcal = (totalC * 4) + (totalP * 4) + (totalF * 9);
