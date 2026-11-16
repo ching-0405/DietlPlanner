@@ -908,8 +908,8 @@ function quickSetDays(days) {
 function applyDaySettings() {
   const input = document.getElementById("inTotalMenuDays");
   const days = parseInt(input ? input.value : 1, 10);
-  if (isNaN(days) || days < 1 || days > 30) {
-    alert("請輸入 1 至 30 之間的天數！");
+  if (isNaN(days) || days < 1) {
+    alert("請輸入至少 1 天以上的有效天數！");
     return;
   }
   totalMenuDays = days;

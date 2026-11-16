@@ -1335,14 +1335,14 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
-<script src="app.js?v=20261116-120954"></script>
+<script src="app.js?v=20261116-122303"></script>
   <!-- 設定菜單天數彈窗 (Modal) -->
   <div class="modal-overlay" id="modalDaySettings">
     <div class="modal-box" style="max-width: 440px;">
       <div class="modal-header bg-teal" style="background: linear-gradient(135deg, #0f766e, #14b8a6); color: white;">
         <div class="modal-title">
           <span style="font-size: 16px; font-weight: 700;">📅 設定菜單規劃天數</span>
-          <small style="font-size: 12px; opacity: 0.9;">自訂菜單開立的規劃天數（1 ~ 30 天）</small>
+          <small style="font-size: 12px; opacity: 0.9;">自訂菜單開立的規劃天數（自由自訂天數）</small>
         </div>
         <button class="modal-close" style="color: white;" onclick="closeModal('modalDaySettings')">&times;</button>
       </div>
@@ -1350,15 +1350,17 @@
         <div style="margin-bottom: 16px;">
           <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #334155;">菜單規劃總天數：</label>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="number" id="inTotalMenuDays" class="form-input" min="1" max="30" value="1" style="width: 100px; font-size: 16px; font-weight: 700; text-align: center;">
-            <span style="font-size: 14px; color: #64748b;">天 (可自行設定 1 ~ 30 天)</span>
+            <input type="number" id="inTotalMenuDays" class="form-input" min="1" max="365" value="1" style="width: 100px; font-size: 16px; font-weight: 700; text-align: center;">
+            <span style="font-size: 14px; color: #64748b;">天 (可自行輸入任意規劃天數)</span>
           </div>
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(1)">1 天 (單日)</button>
-          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(3)">3 天菜單</button>
-          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(5)">5 天 (平日)</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(1)">1 天</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(3)">3 天</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(5)">5 天</button>
           <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(7)">7 天 (一週)</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(14)">14 天 (雙週)</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(30)">30 天 (整月)</button>
         </div>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #64748b; line-height: 1.5;">
           💡 提示：切換天數時，下方的菜單食材、每餐開立份數比對、全日營養計算將自動連動顯示該天的規劃內容！
