@@ -108,6 +108,9 @@ function switchTab(target) {
   document.querySelectorAll(".tab-content").forEach(content => {
     content.classList.toggle("active", content.id === target);
   });
+  if (target === "tab-composition") {
+    updateAllCompositionNutrientSummary();
+  }
 }
 
 function initTabs() {
@@ -1346,8 +1349,9 @@ function renderMenuRecipes() {
  * 依據菜單開立的食材(克數)進行加總，並將菜單食材逐一詳細列於營養成分資料庫介面中
  */
 function updateAllCompositionNutrientSummary() {
+  const dayRecipes = menuRecipes.filter(r => (r.day || 1) === currentMenuDay);
   const sum = {
-    count: menuRecipes.length,
+    count: dayRecipes.length,
     kcal: 0,
     protein: 0,
     fat: 0,
@@ -1377,7 +1381,8 @@ function updateAllCompositionNutrientSummary() {
     folate: 0
   };
 
-  const rowsHtml = currentDayRecipes.map((r, idx) => {
+  const rowsHtml = dayRecipes.map((r) => {
+    const realIdx = menuRecipes.indexOf(r);
     const nut = calculateRecipeNutrients(r.food, r.category, r.rawWeight, r.ex, r.sampleName);
     sum.kcal += (nut.kcal || 0);
     sum.protein += (nut.protein || 0);
@@ -1417,7 +1422,7 @@ function updateAllCompositionNutrientSummary() {
             <span class="badge" style="background: ${r.sampleName ? '#ecfdf5' : '#f1f5f9'}; color: ${r.sampleName ? '#047857' : '#334155'}; border: 1px solid ${r.sampleName ? '#6ee7b7' : '#cbd5e1'}; font-size: 11px; padding: 2px 6px; white-space: nowrap;" title="${r.sampleName ? '使用者指定選用樣品' : '系統自動智慧比對'}">
               ${r.sampleName ? '🎯 ' : '📖 '}${nut.matchedName || '食物代換估算'}
             </span>
-            <button type="button" class="btn btn-outline" style="padding: 1px 7px; font-size: 11px; border-radius: 4px; white-space: nowrap;" onclick="openSampleSelectorModal(${idx})" title="搜尋並選取不同的樣品">🔍 選取</button>
+            <button type="button" class="btn btn-outline" style="padding: 1px 7px; font-size: 11px; border-radius: 4px; white-space: nowrap;" onclick="openSampleSelectorModal(${realIdx})" title="搜尋並選取不同的樣品">🔍 選取</button>
           </div>
         </td>
         <td style="text-align: right; font-weight: 600;">${r.rawWeight}</td>
@@ -2383,10 +2388,6 @@ function initFoodExchangeQuery() {
   const inSearch = document.getElementById("inFoodSearch");
   const cboCat = document.getElementById("cboCategoryFilter");
 
-  if (!inSearch || !cboCat) return;
-
-  inSearch.removeEventListener("input", filterFoodQuery);
-  cboCat.removeEventListener("change", filterFoodQuery);
   inSearch.addEventListener("input", filterFoodQuery);
   cboCat.addEventListener("change", filterFoodQuery);
 
@@ -2394,26 +2395,19 @@ function initFoodExchangeQuery() {
 }
 
 function filterFoodQuery() {
-  const searchInput = document.getElementById("inFoodSearch");
-  const categorySelect = document.getElementById("cboCategoryFilter");
-  const countLabel = document.getElementById("lblQueryCount");
-  const tbody = document.getElementById("queryResultBody");
-  if (typeof FOOD_EXCHANGE_DB === "undefined" || !searchInput || !categorySelect || !countLabel || !tbody) return;
+  if (typeof FOOD_EXCHANGE_DB === "undefined") return;
 
-  const keyword = searchInput.value.trim().toLowerCase();
-  const cat = categorySelect.value;
+  const keyword = document.getElementById("inFoodSearch").value.trim().toLowerCase();
+  const cat = document.getElementById("cboCategoryFilter").value;
 
   const filtered = FOOD_EXCHANGE_DB.filter(item => {
-    const category = String(item.category || "");
-    const subCategory = String(item.subCategory || "");
-    const foodName = String(item.foodName || "");
-    const notes = String(item.notes || "");
-    const matchCat = cat === "全部" || category === cat || subCategory.includes(cat);
-    const matchText = !keyword || foodName.toLowerCase().includes(keyword) || subCategory.toLowerCase().includes(keyword) || notes.toLowerCase().includes(keyword);
+    const matchCat = cat === "全部" || item.category === cat || item.subCategory.includes(cat);
+    const matchText = !keyword || item.foodName.toLowerCase().includes(keyword) || item.subCategory.toLowerCase().includes(keyword) || item.notes.toLowerCase().includes(keyword);
     return matchCat && matchText;
   });
 
-  countLabel.innerText = filtered.length;
+  document.getElementById("lblQueryCount").innerText = filtered.length;
+  const tbody = document.getElementById("queryResultBody");
 
   tbody.innerHTML = filtered.map(item => {
     const cooked = item.cookedWeight ? ` (熟 ${item.cookedWeight}g)` : "";
