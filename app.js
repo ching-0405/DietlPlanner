@@ -2735,8 +2735,8 @@ function getPrescriptionReportHtml() {
             ${rowIndex === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${m.name}</td>` : ""}
             ${groupIndex === 0 ? `<td rowspan="${group.items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;vertical-align:middle;">${group.name || "—"}</td>` : ""}
             <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.food || ""}</td>
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuPortion(it.ex)} 份</td>
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuWeight(it.rawWeight)} g</td>
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuPortion(it.ex)}</td>
+            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuWeight(it.rawWeight)}</td>
           </tr>
         `;
           rowIndex += 1;
@@ -2753,8 +2753,8 @@ function getPrescriptionReportHtml() {
             <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">餐次</th>
             <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">菜名</th>
             <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">食材名稱</th>
-            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">份數</th>
-            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">克數</th>
+            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">份數 (Ex)</th>
+            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">克數 (g)</th>
           </tr>
         </thead>
         <tbody>${menuRowsHtml}</tbody>
