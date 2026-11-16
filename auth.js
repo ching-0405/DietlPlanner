@@ -21,6 +21,11 @@ function getCurrentAuthUser() {
     const raw = localStorage.getItem(AUTH_CONFIG.STORAGE_CURRENT_USER);
     if (raw) {
       const data = JSON.parse(raw);
+      // 管理者終身無到期日限制
+      if (data && data.isAdmin) {
+        currentAuthSession = data;
+        return currentAuthSession;
+      }
       // 重新檢查到期日
       if (data && data.expireDate) {
         const parts = data.expireDate.split("/");
@@ -63,15 +68,14 @@ async function loginUser(username, password) {
     return { valid: false, error: "請輸入帳號與密碼！" };
   }
 
-  // 管理員萬用通行
-  if (pwd === AUTH_CONFIG.ADMIN_CODE) {
-    const farDate = new Date();
-    farDate.setFullYear(farDate.getFullYear() + 99);
-    const expStr = `${farDate.getFullYear()}/12/31`;
+  // 1. 本地管理員專屬通道（黃惟擎 / admin888 永久管理者無到期限制）
+  if (pwd === AUTH_CONFIG.ADMIN_CODE || (user === "黃惟擎" && pwd === "19930405")) {
     currentAuthSession = {
-      username: user,
-      expireDate: expStr,
-      daysLeft: 9999,
+      username: "黃惟擎",
+      role: "系統管理員",
+      isAdmin: true,
+      expireDate: "永久有效 (無到期日)",
+      daysLeft: 99999,
       loginTime: new Date().toISOString()
     };
     localStorage.setItem(AUTH_CONFIG.STORAGE_CURRENT_USER, JSON.stringify(currentAuthSession));
@@ -80,6 +84,7 @@ async function loginUser(username, password) {
     return { valid: true, user: currentAuthSession };
   }
 
+  // 2. 一般使用者或試算表使用者即時查詢
   try {
     const queryUrl = `${AUTH_CONFIG.API_URL}?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pwd)}`;
     const response = await fetch(queryUrl);
@@ -88,6 +93,8 @@ async function loginUser(username, password) {
     if (result && result.success) {
       currentAuthSession = {
         username: result.username,
+        role: result.role || (result.isAdmin ? "系統管理員" : "付費會員"),
+        isAdmin: !!result.isAdmin,
         expireDate: result.expireDate,
         daysLeft: result.daysLeft,
         loginTime: new Date().toISOString()
@@ -115,7 +122,7 @@ function logoutUser() {
 }
 
 // ==========================================
-// 使用者獨立資料儲存 (依 Google 試算表帳號隔離)
+// 使用者獨立資料儲存 (依帳號隔離)
 // ==========================================
 function getUserStorageKey() {
   const user = getCurrentAuthUser();
@@ -234,7 +241,11 @@ function updateAuthStatusUI() {
       const lblExp = document.getElementById("lblAuthExpireDesc");
       if (lblUser) lblUser.innerText = user.username;
       if (lblExp) {
-        lblExp.innerHTML = `會員有效期限：<strong style="color: #059669;">剩餘 ${user.daysLeft} 天</strong>（有效至 ${user.expireDate}）`;
+        if (user.isAdmin) {
+          lblExp.innerHTML = `<span style="background: #047857; color: white; padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 11.5px;">👑 系統管理員</span> 身份：<strong style="color: #059669;">永久有效 (無到期日)</strong>`;
+        } else {
+          lblExp.innerHTML = `會員有效期限：<strong style="color: #059669;">剩餘 ${user.daysLeft} 天</strong>（有效至 ${user.expireDate}）`;
+        }
       }
     }
     if (modal) modal.classList.remove("show");
@@ -262,7 +273,7 @@ async function handleLoginSubmit(event) {
   if (errBox) errBox.style.display = "none";
   if (btnSubmit) {
     btnSubmit.disabled = true;
-    btnSubmit.innerText = "連線 Google 試算表驗證中...";
+    btnSubmit.innerText = "驗證登入中...";
   }
 
   const result = await loginUser(username, password);
