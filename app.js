@@ -1012,9 +1012,7 @@ function updateMealChipsBar() {
 
     const mealCells = activeMeals.map(meal => {
       const required = exchangeItems.reduce((sum, item) => sum + (Number(item[meal.key]) || 0), 0);
-      const opened = menuRecipes
-        .filter(recipe => recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category, recipe.food) === group.key)
-        .reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
+      const opened = menuRecipes.filter(recipe => (recipe.day || 1) === currentMenuDay && recipe.meal === meal.name && getMenuFoodCategoryKey(recipe.category, recipe.food) === group.key).reduce((sum, recipe) => sum + (Number(recipe.ex) || 0), 0);
       const proteinWithoutMealDesign =
         PROTEIN_EXCHANGE_CATEGORIES.includes(group.key) && required <= 0;
       const openedForComparison = proteinWithoutMealDesign ? 0 : opened;
@@ -1176,10 +1174,8 @@ function filterByMeal(mealName) {
 function renderMenuRecipes() {
   const filter = document.getElementById("cboMealFilter").value;
   const tbody = document.getElementById("menuRecipeTableBody");
-  
-  const filtered = filter === "全部" 
-    ? menuRecipes 
-    : menuRecipes.filter(r => r.meal === filter);
+  const dayRecipes = menuRecipes.filter(r => (r.day || 1) === currentMenuDay);
+  const filtered = filter === "全部" ? dayRecipes : dayRecipes.filter(r => r.meal === filter);
 
   const activeMeals = getActiveMealDefinitions();
   const mealOptions = activeMeals.map(m => m.name);
@@ -1757,9 +1753,8 @@ function calculateRecipeNutrients(foodName, category, rawWeight, ex, customSampl
  */
 function updateMenuSummaryCards() {
   const filter = document.getElementById("cboMealFilter").value;
-  const filtered = filter === "全部" 
-    ? menuRecipes 
-    : menuRecipes.filter(r => r.meal === filter);
+  const dayRecipes = menuRecipes.filter(r => (r.day || 1) === currentMenuDay);
+  const filtered = filter === "全部" ? dayRecipes : dayRecipes.filter(r => r.meal === filter);
 
   let totalEx = 0;
   let totalWeight = 0;
@@ -2361,6 +2356,7 @@ function addCustomRecipeItem() {
 
   // 新增一列可自由輸入菜名與食材名稱的空白列
   const newItem = {
+    day: currentMenuDay,
     meal: meal,
     dish: "",
     food: "",
@@ -2442,6 +2438,7 @@ function addQueryItemToMenu(foodName, category, rawWeight) {
   else if (foodName.includes("高麗菜") || foodName.includes("青江")) color = "粉綠/嫩綠";
 
   menuRecipes.push({
+    day: currentMenuDay,
     meal: meal,
     dish: "",
     food: foodName,
@@ -2622,6 +2619,7 @@ function addCompositionToMenu(name, category) {
   if (meal === "全部") meal = "午餐";
 
   menuRecipes.push({
+    day: currentMenuDay,
     meal: meal,
     dish: "",
     food: name,
@@ -3254,6 +3252,7 @@ function insertRecipeItemAfter(index) {
   const dish = current ? current.dish : "";
 
   const newItem = {
+    day: current?.day || currentMenuDay,
     meal: meal,
     dish: dish,
     food: "",
