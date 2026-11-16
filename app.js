@@ -18,7 +18,7 @@ const mealCountMap = {
   6: ["b", "ms", "l", "as", "d", "ns"]
 };
 let currentMenuDay = 1;
-let totalMenuDays = 1;
+let totalMenuDays = 7;
 let menuRecipes = [
   { day: 1, meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 70, color: "黃色" },
   { day: 1, meal: "早餐", dish: "", food: "牛奶", category: "乳品類", ex: 1, rawWeight: 240, color: "白色" },
@@ -867,17 +867,26 @@ function updateMenuDayOptions() {
     html += `<option value="${d}">第 ${d} 天</option>`;
   }
   daySelect.innerHTML = html;
-  if (currentVal <= totalMenuDays) {
+  if (currentVal >= 1 && currentVal <= totalMenuDays) {
     daySelect.value = String(currentVal);
     currentMenuDay = currentVal;
   } else {
     daySelect.value = "1";
     currentMenuDay = 1;
   }
+  updateDayStatusBadge();
+}
+
+function updateDayStatusBadge() {
+  const curEl = document.getElementById("lblCurrentDayText");
+  const totEl = document.getElementById("lblTotalDaysText");
+  if (curEl) curEl.innerText = `第 ${currentMenuDay} 天`;
+  if (totEl) totEl.innerText = `${totalMenuDays}`;
 }
 
 function onMenuDayChanged(dayVal) {
   currentMenuDay = parseInt(dayVal, 10) || 1;
+  updateDayStatusBadge();
   renderMenuRecipes();
   updateMealChipsBar();
   updateMenuSummaryCards();
@@ -893,6 +902,7 @@ function openDaySettingModal() {
 function quickSetDays(days) {
   const input = document.getElementById("inTotalMenuDays");
   if (input) input.value = days;
+  applyDaySettings();
 }
 
 function applyDaySettings() {

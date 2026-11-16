@@ -642,6 +642,28 @@
 
     <!-- PAGE 3: 菜單開立與食材辨識 -->
     <section id="tab-menu" class="tab-content">
+
+      <!-- 菜單規劃天數切換列（位於食物大類表格正上方） -->
+      <div class="menu-day-header-bar" style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%); border: 1.5px solid #0d9488; border-radius: 8px; padding: 10px 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(13, 148, 136, 0.08); flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span style="font-size: 20px;">📅</span>
+          <div>
+            <span style="font-weight: 700; color: #0f766e; font-size: 15px;">菜單規劃天數：</span>
+            <span style="font-size: 12px; color: #64748b;">可依不同天數分別開立菜單與獨立計算份數</span>
+          </div>
+          <div style="display: inline-flex; align-items: center; gap: 8px; margin-left: 6px;">
+            <select id="cboMenuDay" class="form-select" style="min-width: 120px; font-weight: 700; color: #0f766e; border: 2px solid #0d9488; background: #ffffff; padding: 4px 10px; font-size: 14px; border-radius: 6px; cursor: pointer;" onchange="onMenuDayChanged(this.value)">
+              <option value="1" selected>第 1 天</option>
+            </select>
+            <button type="button" class="btn btn-primary" id="btnManageDays" onclick="openDaySettingModal()" style="background: #0f766e; border-color: #0f766e; color: #ffffff; padding: 5px 12px; font-size: 13px; font-weight: 600; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" title="新增或自訂天數">
+              <span>⚙️ 設定天數 (新增/修改)</span>
+            </button>
+          </div>
+        </div>
+        <div id="dayStatusBadge" style="background: #ffffff; padding: 4px 12px; border-radius: 20px; border: 1px solid #99f6e4; font-size: 13px; color: #0f766e; font-weight: 600;">
+          當前規劃：<span id="lblCurrentDayText" style="color: #0d9488;">第 1 天</span> / 共 <span id="lblTotalDaysText">1</span> 天
+        </div>
+      </div>
       
       <!-- 餐次設計份數卡片（點擊可快速切換篩選） -->
       <div class="meal-chips-bar" id="mealChipsBar">
@@ -657,14 +679,7 @@
         </div>
         <div class="toolbar-right">
           <div class="toolbar-controls">
-            <div class="toolbar-day-group" style="display: inline-flex; align-items: center; gap: 6px; background: #f0fdfa; padding: 4px 10px; border-radius: 6px; border: 1px solid #ccfbf1;">
-              <label for="cboMenuDay" style="font-weight: 700; color: #0f766e; font-size: 13px; margin: 0; white-space: nowrap;">📅 天數：</label>
-              <select id="cboMenuDay" class="form-select" style="width: 105px; padding: 3px 6px; font-size: 13px; font-weight: 600; color: #0f766e; border-color: #0d9488; background: #fff;" onchange="onMenuDayChanged(this.value)">
-                <option value="1" selected>第 1 天</option>
-              </select>
-              <button type="button" class="btn btn-outline" id="btnManageDays" onclick="openDaySettingModal()" style="padding: 3px 8px; font-size: 12px; white-space: nowrap;" title="設定菜單總天數">⚙️ 天數設定</button>
-            </div>
-            <label style="font-weight: 600; margin-left: 6px;">預設餐次：</label>
+<label style="font-weight: 600;">預設餐次：</label>
             <select id="cboMealFilter" class="form-select">
               <option value="全部">全部餐次 (顯示所有)</option>
               <option value="早餐" selected>早餐</option>
