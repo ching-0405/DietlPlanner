@@ -39,6 +39,7 @@ let menuRecipes = [
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (typeof initAuthSession === "function") initAuthSession();
   initDeviceMode();
   initTabs();
   initAssessment();
@@ -198,7 +199,16 @@ function resetNewClient() {
 
 function saveClientData() {
   const name = document.getElementById("inName")?.value || "個案";
-  alert(`個案【${name}】的評估與菜單資料已成功儲存！`);
+  if (typeof saveUserDataForCurrentUser === "function") {
+    const success = saveUserDataForCurrentUser();
+    const user = typeof getCurrentAuthUser === "function" ? getCurrentAuthUser() : null;
+    const uname = user ? user.username : "當前帳號";
+    if (success) {
+      alert(`已成功將個案【${name}】的評估與菜單資料儲存至帳號【${uname}】！`);
+      return;
+    }
+  }
+  alert(`個案【${name}】的評估與菜單資料已儲存！`);
 }
 
 function calcAssessment() {

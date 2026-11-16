@@ -47,6 +47,23 @@
     </div>
   </header>
 
+  <!-- 會員登入與有效期限狀態列 (支援依帳號獨立存檔) -->
+  <div id="authStatusBar" class="auth-status-bar" style="display: none;">
+    <div class="auth-status-left">
+      <div class="auth-info-badge">
+        <span class="auth-user-icon">👤</span>
+        <span id="lblAuthUsername" class="auth-username">未登入</span>
+      </div>
+      <div id="lblAuthExpireDesc" class="auth-expire-badge">
+        <span>會員有效期限：<strong style="color: #059669;">剩餘 365 天</strong>（有效至 2027/11/16）</span>
+      </div>
+    </div>
+    <div class="auth-status-right">
+      <button type="button" class="btn btn-outline" style="padding: 3px 10px; font-size: 12px;" onclick="openAdminKeyGenModal()" title="管理員發卡與授權碼產生器">🔑 發卡工具</button>
+      <button type="button" class="btn btn-outline" style="padding: 3px 10px; font-size: 12px; color: #dc2626; border-color: #fca5a5;" onclick="logoutUser()" title="切換帳號或登出">登出</button>
+    </div>
+  </div>
+
   <!-- 電腦版整體佈局：左側系統選單 + 右側工作區 -->
   <div class="app-layout">
     <!-- 電腦版專屬左側深藍導航面板 (比照系統桌面版) -->
@@ -1341,6 +1358,7 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
+<script src="auth.js?v=20261116-v1"></script>
 <script src="app.js?v=20261116-151137"></script>
   <!-- 設定菜單天數彈窗 (Modal) -->
   <div class="modal-overlay" id="modalDaySettings">
@@ -1378,5 +1396,76 @@
       </div>
     </div>
   </div>
+
+  <!-- 會員登入與授權啟用彈窗 -->
+  <div class="modal-overlay" id="modalAuthLogin" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);">
+    <div class="modal-box modal-auth-box">
+      <div class="auth-header">
+        <h3>🔐 會員系統登入</h3>
+        <p>請輸入您的專屬會員帳號與授權密碼</p>
+      </div>
+      <div class="auth-form-body">
+        <div id="authErrorMessage" class="auth-error-msg"></div>
+        <form onsubmit="handleLoginSubmit(event)">
+          <div class="auth-form-group">
+            <label for="inAuthUsername">會員帳號 (Username / Email)：</label>
+            <input type="text" id="inAuthUsername" class="auth-input" placeholder="例：clinic_user1" required autocomplete="username">
+          </div>
+          <div class="auth-form-group">
+            <label for="inAuthPassword">授權密碼 / 金鑰 (Password)：</label>
+            <input type="password" id="inAuthPassword" class="auth-input" placeholder="例：DP-20271116-XXXXXXXX" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="auth-submit-btn">立即登入系統</button>
+        </form>
+        <div class="auth-help-hint">
+          💡 系統將依據您的帳號獨立儲存所有個案與菜單資料。<br>
+          如需開通或展延會員使用期限，請聯繫系統管理員。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 管理員專屬發卡工具彈窗 -->
+  <div class="modal-overlay" id="modalAdminKeyGen">
+    <div class="modal-box" style="max-width: 520px;">
+      <div class="modal-header bg-teal">
+        <div class="modal-title">
+          <span>🔑 管理員發卡工具 (生成帳號授權密碼)</span>
+          <small>設定會員帳號與使用期限，一鍵生成專屬授權密碼發給客戶</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalAdminKeyGen')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px;">客戶帳號名稱 (Username)：</label>
+          <input type="text" id="inGenUsername" class="form-input" style="width: 100%;" placeholder="例：user1 或客戶 Email" value="user1">
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px;">授權到期日期：</label>
+          <input type="date" id="inGenExpireDate" class="form-input" style="width: 100%;" value="2027-11-16">
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(7)">試用 7 天</button>
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(30)">使用 1 個月</button>
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(180)">使用 6 個月</button>
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(365)">使用 1 年 (365天)</button>
+        </div>
+        <button type="button" class="btn btn-teal" style="width: 100%; padding: 8px; font-weight: bold;" onclick="generateKeyAndDisplay()">⚡ 立即生成授權密碼</button>
+        
+        <div id="genResultBox" style="display: none; margin-top: 16px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 12px;">
+          <div style="font-size: 12.5px; color: #166534; font-weight: bold; margin-bottom: 4px;">核發專屬授權密碼：</div>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="outGeneratedKey" class="form-input font-bold" readonly style="flex: 1; color: #0f766e; background: #ffffff;">
+            <button type="button" class="btn btn-primary" onclick="copyGeneratedKey()">複製</button>
+          </div>
+          <div id="outGenDesc" style="font-size: 11.5px; color: #15803d; margin-top: 6px;"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 10px 18px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modalAdminKeyGen')">關閉</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
