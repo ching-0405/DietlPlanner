@@ -1168,6 +1168,8 @@ body:not(.mobile-mode) .exchange-table {
 
 .sidebar-header {
   height: 188px;
+  min-height: 188px;
+  flex-shrink: 0;
   padding: 0;
   background-image: url("Assets/dietlplanner-banner.jpg");
   background-size: cover;
@@ -1178,6 +1180,11 @@ body:not(.mobile-mode) .exchange-table {
   border-radius: 8px;
   margin-bottom: 16px;
   overflow: hidden;
+}
+
+.sidebar-desktop {
+  overflow-y: auto !important;
+  scrollbar-width: thin;
 }
 
 .sidebar-header > * {

@@ -156,14 +156,23 @@ function initAssessment() {
     inTargetKcal.addEventListener("input", syncSidebarClientCard);
   }
 
+  // 以50大卡為基準：<50捨去，>=50進位至百位
+  function roundTo50Kcal(val) {
+    const num = Math.round(Number(val) || 0);
+    const remainder = num % 100;
+    const base = Math.floor(num / 100) * 100;
+    return remainder >= 50 ? base + 100 : base;
+  }
+
   document.getElementById("btnApplyTdee").addEventListener("click", () => {
     const tdeeText = document.getElementById("valTdee").innerText;
     const tdee = parseFloat(tdeeText) || 2000;
-    document.getElementById("inTargetKcal").value = Math.round(tdee);
+    const roundedTdee = roundTo50Kcal(tdee);
+    document.getElementById("inTargetKcal").value = roundedTdee;
     calcMacroTargets();
     calcExchangeTotals();
     syncSidebarClientCard();
-    alert(`已將 TDEE (${Math.round(tdee)} kcal) 套用至第 2 頁目標熱量！`);
+    alert(`已將 TDEE (${Math.round(tdee)} kcal → 取整為 ${roundedTdee} kcal) 套用至第 2 頁目標熱量！`);
   });
 
   calcAssessment();
@@ -869,12 +878,17 @@ function calcExchangeTotals() {
   // 計算每公斤體重蛋白質 (蛋白質 g / 實際體重 kg)
   const userWeight = parseFloat(document.getElementById("inWeight")?.value) || 0;
   const proPerKgEl = document.getElementById("valProteinPerKg");
+  const proPerKgDescEl = document.getElementById("valProteinPerKgDesc");
   if (proPerKgEl) {
     if (userWeight > 0) {
       const proPerKg = totalP / userWeight;
       proPerKgEl.innerText = `${proPerKg.toFixed(2)} g/kg`;
+      if (proPerKgDescEl) {
+        proPerKgDescEl.innerText = `(${formatNutrientVal(totalP)}g 蛋白質 ÷ ${userWeight}kg 體重)`;
+      }
     } else {
       proPerKgEl.innerText = "— g/kg";
+      if (proPerKgDescEl) proPerKgDescEl.innerText = "(請先於第1頁輸入體重)";
     }
   }
 

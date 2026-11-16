@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261111-1910">
+  <link rel="stylesheet" href="style.css?v=1794839452">
 </head>
 <body>
 
@@ -625,9 +625,9 @@
               <tr class="subtotal-row protein-per-kg-row" style="background: #f0fdf4; border-top: 1px solid #bbf7d0;">
                 <td colspan="5" class="subtotal-title" style="color: #0f766e;"><strong>每公斤體重蛋白質</strong></td>
                 <td class="text-muted"></td>
-                <td id="mealSummaryPlaceholderProPerKg" colspan="6"></td>
+                <td id="mealSummaryPlaceholderProPerKg" colspan="6" class="text-center font-sm text-muted" style="font-size: 11.5px; color: #64748b;">(計算公式：總蛋白質 / 實際體重)</td>
                 <td class="val-green font-bold" id="valProteinPerKg" style="font-size: 14px; color: #047857; text-align: center;">0.0 g/kg</td>
-                <td colspan="3"></td>
+                <td colspan="3" class="text-muted" style="font-size: 11.5px; color: #64748b; text-align: left; padding-left: 8px;" id="valProteinPerKgDesc"></td>
               </tr>
             </tbody>
           </table>
@@ -1365,7 +1365,7 @@
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
 <script src="auth.js?v=1794839165"></script>
-<script src="app.js?v=20261116-2230"></script>
+<script src="app.js?v=1794839452"></script>
   <!-- 設定菜單天數彈窗 (Modal) -->
   <div class="modal-overlay" id="modalDaySettings">
     <div class="modal-box" style="max-width: 440px;">
