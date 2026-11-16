@@ -69,7 +69,7 @@ async function loginUser(username, password) {
   }
 
   // 1. 本地管理員專屬通道（黃惟擎 / admin888 永久管理者無到期限制）
-  if (pwd === AUTH_CONFIG.ADMIN_CODE || (user === "黃惟擎" && pwd === "19930405")) {
+  if (pwd === AUTH_CONFIG.ADMIN_CODE || ((user === "黃惟擎" || user === "黃帷擎") && pwd === "19930405")) {
     currentAuthSession = {
       username: "黃惟擎",
       role: "系統管理員",
