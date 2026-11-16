@@ -71,7 +71,7 @@ async function loginUser(username, password) {
   // 1. 本地管理員專屬通道（黃惟擎 / admin888 永久管理者無到期限制）
   if (pwd === AUTH_CONFIG.ADMIN_CODE || ((user === "黃惟擎" || user === "黃帷擎") && pwd === "19930405")) {
     currentAuthSession = {
-      username: "黃惟擎",
+      username: "黃帷擎",
       role: "系統管理員",
       isAdmin: true,
       expireDate: "永久有效 (無到期日)",
@@ -247,6 +247,12 @@ function loadUserDataForCurrentUser() {
 // ==========================================
 function updateAuthStatusUI() {
   const user = getCurrentAuthUser();
+  if (user && user.username === "黃惟擎") {
+    user.username = "黃帷擎";
+    try {
+      localStorage.setItem(AUTH_CONFIG.STORAGE_CURRENT_USER, JSON.stringify(user));
+    } catch(e) {}
+  }
   const authBar = document.getElementById("authStatusBar");
   const modal = document.getElementById("modalAuthLogin");
 
