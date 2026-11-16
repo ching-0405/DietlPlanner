@@ -25,6 +25,30 @@ const mealCountMap = {
 };
 let currentMenuDay = 1;
 let totalMenuDays = 7;
+// 以50大卡為基準：<50捨去，>=50進位至百位
+function roundTo50Kcal(val) {
+  const num = Math.round(Number(val) || 0);
+  const remainder = num % 100;
+  const base = Math.floor(num / 100) * 100;
+  return remainder >= 50 ? base + 100 : base;
+}
+
+// 確保菜單食材依標準餐次順序 (早餐 -> 早點 -> 午餐 -> 午點 -> 晚餐 -> 晚點) 穩定分組排列，避免不同餐次穿插在一起
+function sortMenuRecipesByMealOrder() {
+  const standardMealOrder = ["早餐", "早點", "午餐", "午點", "晚餐", "晚點"];
+  const getMealOrder = (meal) => {
+    const idx = standardMealOrder.indexOf(meal);
+    return idx !== -1 ? idx : 99;
+  };
+
+  menuRecipes.sort((a, b) => {
+    const dayA = a.day || 1;
+    const dayB = b.day || 1;
+    if (dayA !== dayB) return dayA - dayB;
+    return getMealOrder(a.meal) - getMealOrder(b.meal);
+  });
+}
+
 let menuRecipes = [
   { day: 1, meal: "早餐", dish: "香蕉堅果燕麥粥", food: "香蕉", category: "水果類", ex: 1, rawWeight: 70, color: "黃色" },
   { day: 1, meal: "早餐", dish: "", food: "牛奶", category: "乳品類", ex: 1, rawWeight: 240, color: "白色" },
@@ -156,13 +180,7 @@ function initAssessment() {
     inTargetKcal.addEventListener("input", syncSidebarClientCard);
   }
 
-  // 以50大卡為基準：<50捨去，>=50進位至百位
-  function roundTo50Kcal(val) {
-    const num = Math.round(Number(val) || 0);
-    const remainder = num % 100;
-    const base = Math.floor(num / 100) * 100;
-    return remainder >= 50 ? base + 100 : base;
-  }
+
 
   document.getElementById("btnApplyTdee").addEventListener("click", () => {
     const tdeeText = document.getElementById("valTdee").innerText;
@@ -298,7 +316,7 @@ function calcAssessment() {
   const act = parseFloat(document.getElementById("inActivity").value) || 1.3;
   const stress = parseFloat(document.getElementById("inStress").value) || 1.0;
   const tdee = Math.round(bee * act * stress);
-  document.getElementById("valTdee").innerText = `${tdee} kcal`;
+  document.getElementById("valTdee").innerText = `${tdee} kcal (${roundTo50Kcal(tdee)})`;
 
   // 臨床速算按鈕動態熱量生成
   renderQuickCalcButtons(ibw, weight);
@@ -968,6 +986,7 @@ function applyDaySettings() {
   updateAllCompositionNutrientSummary();
 }
 function initMenu() {
+  sortMenuRecipesByMealOrder();
   document.getElementById("cboMealFilter").addEventListener("change", () => {
     renderMenuRecipes();
     updateMealChipsBar();
@@ -1877,10 +1896,10 @@ function updateMenuSummaryCards() {
 function updateRecipeMeal(index, val) {
   if (menuRecipes[index]) {
     menuRecipes[index].meal = val;
-    const curFilter = document.getElementById("cboMealFilter").value;
-    if (curFilter !== "全部" && curFilter !== val) {
-      renderMenuRecipes();
-    }
+    sortMenuRecipesByMealOrder();
+    renderMenuRecipes();
+    updateMealChipsBar();
+    updateAllCompositionNutrientSummary();
   }
 }
 
@@ -2432,7 +2451,8 @@ function addCustomRecipeItem() {
     color: ""
   };
 
-  menuRecipes.unshift(newItem);
+  menuRecipes.push(newItem);
+  sortMenuRecipesByMealOrder();
   renderMenuRecipes();
 }
 
@@ -3338,7 +3358,10 @@ function insertRecipeItemAfter(index) {
   };
 
   menuRecipes.splice(index + 1, 0, newItem);
+  sortMenuRecipesByMealOrder();
   renderMenuRecipes();
+  updateMealChipsBar();
+  updateAllCompositionNutrientSummary();
 }
 
 /**
@@ -3759,6 +3782,7 @@ function addNewRecipeItem() {
   };
 
   menuRecipes.push(newItem);
+  sortMenuRecipesByMealOrder();
   renderMenuRecipes();
   updateMealChipsBar();
   updateAllCompositionNutrientSummary();

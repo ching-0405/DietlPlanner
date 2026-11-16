@@ -224,6 +224,9 @@ function loadUserDataForCurrentUser() {
 
     if (Array.isArray(data.menuRecipes) && typeof menuRecipes !== "undefined") {
       menuRecipes = data.menuRecipes;
+      if (typeof sortMenuRecipesByMealOrder === "function") {
+        sortMenuRecipesByMealOrder();
+      }
     }
 
     if (typeof calcAssessment === "function") calcAssessment();
