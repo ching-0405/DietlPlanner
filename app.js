@@ -1295,6 +1295,23 @@ function renderMenuRecipes() {
     `;
   }).join("");
 
+  if (filtered.length === 0) {
+    const currentMealName = document.getElementById("cboMealFilter").value;
+    const targetMealText = currentMealName === "全部" ? "當前天數" : `【${currentMealName}】`;
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 32px 16px; background: #f8fafc; border-radius: 8px;">
+          <div style="font-size: 15px; color: #64748b; margin-bottom: 12px;">
+            📝 第 ${currentMenuDay} 天 ${targetMealText} 目前尚未開立任何食材
+          </div>
+          <button type="button" class="btn btn-teal" style="font-size: 14px; padding: 8px 18px; border-radius: 6px; box-shadow: 0 2px 6px rgba(13,148,136,0.25);" onclick="addNewRecipeItem()">
+            ➕ 立即新增第一筆餐次與食材
+          </button>
+        </td>
+      </tr>
+    `;
+  }
+
   // 更新表格 Footer 加總列
   const elEx = document.getElementById("recipeSumEx");
   const elWeight = document.getElementById("recipeSumWeight");
@@ -2409,7 +2426,15 @@ function filterFoodQuery() {
   document.getElementById("lblQueryCount").innerText = filtered.length;
   const tbody = document.getElementById("queryResultBody");
 
-  tbody.innerHTML = filtered.map(item => {
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: #94a3b8; padding: 36px 16px; font-size: 14px;">查無符合的食物代換項目，請更換搜尋關鍵字或分類</td></tr>';
+    return;
+  }
+
+  // 呈現前 150 筆以保證極致流暢度與穩定度
+  const displayItems = filtered.slice(0, 150);
+
+  tbody.innerHTML = displayItems.map(item => {
     const cooked = item.cookedWeight ? ` (熟 ${item.cookedWeight}g)` : "";
     return `
       <tr ondblclick="addQueryItemToMenu('${item.foodName}', '${item.category}', ${item.rawWeight})">
@@ -3676,4 +3701,27 @@ function nextGuidedStep() {
     switchTab("tab-menu");
     alert("🎉 恭喜！引導式菜單設計已順序完成！\n\n已為您切換至「菜單開立」分頁，您可檢視完整菜單、調整克數與菜名，或查看營養素比對。");
   }
+}
+
+
+function addNewRecipeItem() {
+  let meal = document.getElementById("cboMealFilter") ? document.getElementById("cboMealFilter").value : "早餐";
+  if (meal === "全部") meal = "早餐";
+
+  const newItem = {
+    day: currentMenuDay,
+    meal: meal,
+    dish: "",
+    food: "",
+    category: "自訂食材",
+    ex: 1,
+    rawWeight: 100,
+    color: "白色",
+    sampleName: null
+  };
+
+  menuRecipes.push(newItem);
+  renderMenuRecipes();
+  updateMealChipsBar();
+  updateAllCompositionNutrientSummary();
 }

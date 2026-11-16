@@ -2016,10 +2016,32 @@ body.mobile-mode .meal-guidance-table td:nth-child(n + 3) {
 }
 
 .table-scroll-container {
-  max-height: 55vh;
-  overflow-y: auto;
+  height: 52vh;
+  min-height: 380px;
+  overflow-y: scroll;
+  overflow-x: auto;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
+  background: #ffffff;
+}
+
+#modalExchangeQuery .modal-box {
+  height: 85vh;
+  max-height: 85vh;
+}
+
+#modalExchangeQuery .modal-body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 16px;
+}
+
+#modalExchangeQuery .table-scroll-container {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 300px;
+  max-height: none;
 }
 
 .overflow-x {
@@ -2929,4 +2951,134 @@ body.mobile-mode .query-search-bar,
     width: 100% !important;
     flex: none !important;
   }
+}
+@media (max-width: 768px) {
+  .menu-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+  }
+
+  .toolbar-left {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .toolbar-right {
+    width: 100% !important;
+    display: block !important;
+    overflow: visible !important;
+    margin-left: 0 !important;
+  }
+
+  .toolbar-controls {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    white-space: normal !important;
+  }
+
+  .toolbar-controls .meal-filter-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .toolbar-controls .meal-filter-row label {
+    flex-shrink: 0 !important;
+  }
+
+  .toolbar-controls .meal-filter-row select {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .toolbar-controls .toolbar-action-buttons {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .toolbar-controls .toolbar-action-buttons .btn {
+    width: 100% !important;
+    padding: 8px 6px !important;
+    font-size: 13px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  .meal-pending-toolbar-note {
+    width: 100% !important;
+  }
+}
+
+body.mobile-mode .menu-toolbar {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+}
+
+body.mobile-mode .toolbar-left {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+body.mobile-mode .toolbar-right {
+  width: 100% !important;
+  display: block !important;
+  overflow: visible !important;
+  margin-left: 0 !important;
+}
+
+body.mobile-mode .toolbar-controls {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  white-space: normal !important;
+}
+
+body.mobile-mode .toolbar-controls .meal-filter-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+body.mobile-mode .toolbar-controls .meal-filter-row select {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+}
+
+body.mobile-mode .toolbar-controls .toolbar-action-buttons {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+body.mobile-mode .toolbar-controls .toolbar-action-buttons .btn {
+  width: 100% !important;
+  padding: 8px 6px !important;
+  font-size: 13px !important;
+  justify-content: center !important;
+  text-align: center !important;
+  white-space: nowrap !important;
 }
