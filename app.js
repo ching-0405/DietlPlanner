@@ -2383,6 +2383,10 @@ function initFoodExchangeQuery() {
   const inSearch = document.getElementById("inFoodSearch");
   const cboCat = document.getElementById("cboCategoryFilter");
 
+  if (!inSearch || !cboCat) return;
+
+  inSearch.removeEventListener("input", filterFoodQuery);
+  cboCat.removeEventListener("change", filterFoodQuery);
   inSearch.addEventListener("input", filterFoodQuery);
   cboCat.addEventListener("change", filterFoodQuery);
 
@@ -2390,19 +2394,26 @@ function initFoodExchangeQuery() {
 }
 
 function filterFoodQuery() {
-  if (typeof FOOD_EXCHANGE_DB === "undefined") return;
+  const searchInput = document.getElementById("inFoodSearch");
+  const categorySelect = document.getElementById("cboCategoryFilter");
+  const countLabel = document.getElementById("lblQueryCount");
+  const tbody = document.getElementById("queryResultBody");
+  if (typeof FOOD_EXCHANGE_DB === "undefined" || !searchInput || !categorySelect || !countLabel || !tbody) return;
 
-  const keyword = document.getElementById("inFoodSearch").value.trim().toLowerCase();
-  const cat = document.getElementById("cboCategoryFilter").value;
+  const keyword = searchInput.value.trim().toLowerCase();
+  const cat = categorySelect.value;
 
   const filtered = FOOD_EXCHANGE_DB.filter(item => {
-    const matchCat = cat === "全部" || item.category === cat || item.subCategory.includes(cat);
-    const matchText = !keyword || item.foodName.toLowerCase().includes(keyword) || item.subCategory.toLowerCase().includes(keyword) || item.notes.toLowerCase().includes(keyword);
+    const category = String(item.category || "");
+    const subCategory = String(item.subCategory || "");
+    const foodName = String(item.foodName || "");
+    const notes = String(item.notes || "");
+    const matchCat = cat === "全部" || category === cat || subCategory.includes(cat);
+    const matchText = !keyword || foodName.toLowerCase().includes(keyword) || subCategory.toLowerCase().includes(keyword) || notes.toLowerCase().includes(keyword);
     return matchCat && matchText;
   });
 
-  document.getElementById("lblQueryCount").innerText = filtered.length;
-  const tbody = document.getElementById("queryResultBody");
+  countLabel.innerText = filtered.length;
 
   tbody.innerHTML = filtered.map(item => {
     const cooked = item.cookedWeight ? ` (熟 ${item.cookedWeight}g)` : "";
