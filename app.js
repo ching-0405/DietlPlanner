@@ -67,12 +67,39 @@ document.addEventListener("DOMContentLoaded", () => {
   initDeviceMode();
   initTabs();
   initAssessment();
+  initEstimationToggle();
   initExchanges();
   initMenu();
   initFormulas();
   initFoodExchangeQuery();
   initFoodComposition();
 });
+
+function initEstimationToggle() {
+  const card = document.getElementById("estimationCard");
+  const toggle = document.getElementById("btnToggleEstimation");
+  const content = document.getElementById("estimationContent");
+  if (!card || !toggle || !content) return;
+
+  const optionalInputs = ["inCreatinine", "inKneeHeight", "inUlnaLength", "inCalfCirc", "inArmCirc"];
+
+  const setEnabled = enabled => {
+    card.classList.toggle("estimation-inactive", !enabled);
+    toggle.setAttribute("aria-pressed", String(enabled));
+    toggle.setAttribute("aria-label", enabled ? "停用身高與腎功能推估" : "啟用身高與腎功能推估");
+    toggle.title = enabled ? "點擊停用推估功能" : "點擊啟用推估功能";
+    optionalInputs.forEach(id => {
+      const input = document.getElementById(id);
+      if (input) input.disabled = !enabled;
+    });
+    if (enabled) calcAssessment();
+  };
+
+  toggle.addEventListener("click", () => {
+    setEnabled(card.classList.contains("estimation-inactive"));
+  });
+  setEnabled(false);
+}
 
 // ==========================================
 // 0. 手機版 / 電腦版自動辨識與切換
