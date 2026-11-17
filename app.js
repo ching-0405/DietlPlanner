@@ -85,9 +85,8 @@ function initEstimationToggle() {
 
   const setEnabled = enabled => {
     card.classList.toggle("estimation-inactive", !enabled);
-    toggle.setAttribute("aria-pressed", String(enabled));
-    toggle.setAttribute("aria-label", enabled ? "停用身高與腎功能推估" : "啟用身高與腎功能推估");
-    toggle.title = enabled ? "點擊停用推估功能" : "點擊啟用推估功能";
+    toggle.checked = enabled;
+    toggle.setAttribute("aria-label", enabled ? "取消勾選以停用身高與腎功能推估" : "勾選以啟用身高與腎功能推估");
     optionalInputs.forEach(id => {
       const input = document.getElementById(id);
       if (input) input.disabled = !enabled;
@@ -95,9 +94,7 @@ function initEstimationToggle() {
     if (enabled) calcAssessment();
   };
 
-  toggle.addEventListener("click", () => {
-    setEnabled(card.classList.contains("estimation-inactive"));
-  });
+  toggle.addEventListener("change", () => setEnabled(toggle.checked));
   setEnabled(false);
 }
 

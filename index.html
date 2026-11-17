@@ -319,7 +319,10 @@
       <div class="card mt-4 estimation-card estimation-inactive" id="estimationCard">
         <div class="card-header bg-slate">
           <div class="card-header-left">
-            <button type="button" class="estimation-toggle" id="btnToggleEstimation" aria-label="啟用身高與腎功能推估" aria-pressed="false" title="點擊啟用推估功能">⚙️</button>
+            <label class="estimation-toggle" title="勾選啟用推估功能">
+              <input type="checkbox" id="btnToggleEstimation" aria-label="啟用身高與腎功能推估">
+              <span aria-hidden="true">⚙️</span>
+            </label>
             <h2>身高與腎功能推估</h2>
           </div>
         </div>
@@ -1365,7 +1368,7 @@
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
 <script src="auth.js?v=1794840284"></script>
-<script src="app.js?v=20261117-1735"></script>
+<script src="app.js?v=20261117-1740"></script>
   <!-- 設定菜單天數彈窗 (Modal) -->
   <div class="modal-overlay" id="modalDaySettings">
     <div class="modal-box" style="max-width: 440px;">
