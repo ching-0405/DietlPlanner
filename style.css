@@ -1024,9 +1024,23 @@ body {
 }
 
 body:not(.mobile-mode) .exchange-table {
-  min-width: 980px; /* 電腦版寬敞大器，防止擠壓 */
-  table-layout: auto !important;
+  min-width: 0;
+  width: 100%;
+  table-layout: fixed !important;
   font-size: 14px;
+}
+
+body:not(.mobile-mode) .exchange-table-fixed {
+  overflow-x: hidden;
+}
+
+body:not(.mobile-mode) .exchange-table col {
+  min-width: 0;
+}
+
+body:not(.mobile-mode) .exchange-table th,
+body:not(.mobile-mode) .exchange-table td {
+  overflow-wrap: anywhere;
 }
 
 /* 欄位寬度智慧分配 */
