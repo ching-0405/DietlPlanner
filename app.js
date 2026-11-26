@@ -1048,19 +1048,13 @@ function calcExchangeTotals() {
   // 計算每公斤體重蛋白質 (蛋白質 g / 實際體重 kg)
   const userWeight = parseFloat(document.getElementById("inWeight")?.value) || 0;
   const proPerKgEl = document.getElementById("valProteinPerKg");
-  const proPerKgDescEl = document.getElementById("valProteinPerKgDesc");
 
   if (proPerKgEl) {
     if (userWeight > 0) {
       const proPerKg = totalP / userWeight;
       proPerKgEl.innerText = `${proPerKg.toFixed(2)} g/kg`;
-      if (proPerKgDescEl) {
-        proPerKgDescEl.innerText = `(${formatNutrientVal(totalP)}g 蛋白質 ÷ ${userWeight}kg 體重)`;
-      }
     } else {
       proPerKgEl.innerText = "— g/kg";
-      if (proPerKgDescEl) proPerKgDescEl.innerText = "(請先於第1頁輸入體重)";
-
     }
   }
 
