@@ -2239,7 +2239,17 @@ body.mobile-mode .exchange-table-fixed {
   display: block;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+
+body.mobile-mode .exchange-table-fixed::-webkit-scrollbar {
+  height: 10px;
+}
+
+body.mobile-mode .exchange-table-fixed::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 6px;
 }
 
 body.mobile-mode .exchange-table-fixed .exchange-table {
