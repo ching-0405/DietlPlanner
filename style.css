@@ -2231,6 +2231,20 @@ body.mobile-mode .exchange-table {
   table-layout: auto; /* 手機版自適應欄寬，不被固定 16 欄擠壓 */
 }
 
+body.mobile-mode .exchange-table-fixed {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+body.mobile-mode .exchange-table-fixed .exchange-table {
+  width: max-content !important;
+  min-width: 720px !important;
+}
+
 body.mobile-mode .exchange-table th,
 body.mobile-mode .exchange-table td {
   padding: 4px 2px !important;
