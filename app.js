@@ -69,11 +69,50 @@ document.addEventListener("DOMContentLoaded", () => {
   initAssessment();
   initEstimationToggle();
   initExchanges();
+  initExchangeTableTouchScroll();
   initMenu();
   initFormulas();
   initFoodExchangeQuery();
   initFoodComposition();
 });
+
+function initExchangeTableTouchScroll() {
+  const container = document.querySelector(".exchange-table-fixed");
+  if (!container) return;
+
+  let startX = 0;
+  let startY = 0;
+  let startScrollLeft = 0;
+  let isHorizontalDrag = false;
+
+  container.addEventListener("touchstart", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startScrollLeft = container.scrollLeft;
+    isHorizontalDrag = false;
+  }, { passive: true });
+
+  container.addEventListener("touchmove", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+
+    if (!isHorizontalDrag && Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      isHorizontalDrag = true;
+    }
+    if (isHorizontalDrag) {
+      event.preventDefault();
+      container.scrollLeft = startScrollLeft - deltaX;
+    }
+  }, { passive: false });
+
+  container.addEventListener("touchend", () => {
+    isHorizontalDrag = false;
+  }, { passive: true });
+}
 
 function initEstimationToggle() {
   const card = document.getElementById("estimationCard");
