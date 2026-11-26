@@ -112,6 +112,40 @@ function initExchangeTableTouchScroll() {
   container.addEventListener("touchend", () => {
     isHorizontalDrag = false;
   }, { passive: true });
+
+  let pointerStartX = 0;
+  let pointerStartY = 0;
+  let pointerStartScrollLeft = 0;
+  let pointerDragging = false;
+
+  container.addEventListener("pointerdown", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.pointerType === "mouse") return;
+    pointerStartX = event.clientX;
+    pointerStartY = event.clientY;
+    pointerStartScrollLeft = container.scrollLeft;
+    pointerDragging = false;
+  });
+
+  container.addEventListener("pointermove", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.pointerType === "mouse") return;
+    const deltaX = event.clientX - pointerStartX;
+    const deltaY = event.clientY - pointerStartY;
+    if (!pointerDragging && Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      pointerDragging = true;
+      container.setPointerCapture?.(event.pointerId);
+    }
+    if (pointerDragging) {
+      event.preventDefault();
+      container.scrollLeft = pointerStartScrollLeft - deltaX;
+    }
+  });
+
+  const stopPointerDrag = event => {
+    if (pointerDragging) container.releasePointerCapture?.(event.pointerId);
+    pointerDragging = false;
+  };
+  container.addEventListener("pointerup", stopPointerDrag);
+  container.addEventListener("pointercancel", stopPointerDrag);
 }
 
 function initEstimationToggle() {
