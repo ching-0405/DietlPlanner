@@ -80,6 +80,7 @@ function initExchangeTableTouchScroll() {
   const container = document.querySelector(".exchange-table-fixed");
   if (!container) return;
   const scrollbar = document.getElementById("exchangeTableScrollbar");
+  const table = document.getElementById("exchangeTable");
 
   const syncScrollbar = () => {
     if (!scrollbar) return;
@@ -96,7 +97,38 @@ function initExchangeTableTouchScroll() {
   window.addEventListener("resize", syncScrollbar);
   if (typeof ResizeObserver === "function") {
     new ResizeObserver(syncScrollbar).observe(container);
+    if (table) new ResizeObserver(syncScrollbar).observe(table);
   }
+  requestAnimationFrame(syncScrollbar);
+  setTimeout(syncScrollbar, 0);
+
+  let scrollbarDragging = false;
+  const setScrollFromPointer = clientX => {
+    if (!scrollbar || scrollbar.disabled) return;
+    const rect = scrollbar.getBoundingClientRect();
+    const maxScroll = Number(scrollbar.max) || 0;
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    scrollbar.value = String(Math.round(maxScroll * ratio));
+    container.scrollLeft = Number(scrollbar.value);
+  };
+  scrollbar?.addEventListener("pointerdown", event => {
+    if (scrollbar.disabled) return;
+    scrollbarDragging = true;
+    scrollbar.setPointerCapture?.(event.pointerId);
+    setScrollFromPointer(event.clientX);
+    event.preventDefault();
+  });
+  scrollbar?.addEventListener("pointermove", event => {
+    if (!scrollbarDragging) return;
+    setScrollFromPointer(event.clientX);
+    event.preventDefault();
+  });
+  const stopScrollbarDrag = event => {
+    if (scrollbarDragging) scrollbar.releasePointerCapture?.(event.pointerId);
+    scrollbarDragging = false;
+  };
+  scrollbar?.addEventListener("pointerup", stopScrollbarDrag);
+  scrollbar?.addEventListener("pointercancel", stopScrollbarDrag);
   syncScrollbar();
 
   let startX = 0;
