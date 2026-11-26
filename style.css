@@ -2158,6 +2158,58 @@ body.mobile-mode .mobile-macro-specs-card {
   border: 1px solid #e2e8f0;
 }
 
+.exchange-table-scrollbar {
+  display: none;
+}
+
+body.mobile-mode .exchange-table-scrollbar {
+  display: block;
+  width: calc(100% - 16px);
+  height: 20px;
+  margin: 6px 8px 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #e2e8f0;
+  accent-color: #64748b;
+  cursor: grab;
+  touch-action: pan-x;
+}
+
+body.mobile-mode .exchange-table-scrollbar:active {
+  cursor: grabbing;
+}
+
+body.mobile-mode .exchange-table-scrollbar::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+body.mobile-mode .exchange-table-scrollbar::-webkit-slider-thumb {
+  width: 44px;
+  height: 16px;
+  margin-top: -4px;
+  border: 1px solid #64748b;
+  border-radius: 999px;
+  background: #64748b;
+  -webkit-appearance: none;
+}
+
+body.mobile-mode .exchange-table-scrollbar::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+body.mobile-mode .exchange-table-scrollbar::-moz-range-thumb {
+  width: 44px;
+  height: 16px;
+  border: 1px solid #64748b;
+  border-radius: 999px;
+  background: #64748b;
+}
+
 .mobile-specs-table {
   width: 100%;
   border-collapse: collapse;
