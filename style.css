@@ -2234,10 +2234,12 @@ body.mobile-mode .exchange-table {
 body.mobile-mode .exchange-table-fixed {
   width: 100%;
   max-width: 100%;
-  overflow-x: auto;
+  overflow-x: scroll;
   overflow-y: hidden;
+  display: block;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
 }
 
 body.mobile-mode .exchange-table-fixed .exchange-table {
