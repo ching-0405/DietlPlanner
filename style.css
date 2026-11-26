@@ -2234,12 +2234,12 @@ body.mobile-mode .exchange-table {
 body.mobile-mode .exchange-table-fixed {
   width: 100%;
   max-width: 100%;
-  overflow-x: scroll;
+  overflow-x: auto;
   overflow-y: hidden;
   display: block;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  touch-action: pan-y;
+  overscroll-behavior-x: auto;
+  touch-action: pan-x pan-y;
   scrollbar-gutter: stable;
 }
 
@@ -2777,8 +2777,8 @@ body.mobile-mode .tab-mobile-title {
 
 /* 手機版模式下：食物代換表大小修正還原回精緻緊湊尺寸 */
 body.mobile-mode .exchange-table {
-  min-width: 0 !important;
-  width: 100% !important;
+  min-width: 720px !important;
+  width: max-content !important;
   font-size: 12px !important;
   table-layout: auto !important;
 }
