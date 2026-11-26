@@ -2593,6 +2593,25 @@ body.mobile-mode .subtotal-title {
   }
 }
 
+body.mobile-mode .food-guide-body {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 12px;
+}
+
+body.mobile-mode .food-guide-img-box {
+  width: 100%;
+  max-width: 100%;
+}
+
+body.mobile-mode .food-guide-principles {
+  width: 100%;
+  flex: 0 1 auto;
+  box-sizing: border-box;
+}
+
 
 /* ==========================================
    衛教處方單預覽與列印樣式 (相容手機與列印輸出)
