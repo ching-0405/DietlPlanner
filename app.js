@@ -67,12 +67,109 @@ document.addEventListener("DOMContentLoaded", () => {
   initDeviceMode();
   initTabs();
   initAssessment();
+  initEstimationToggle();
   initExchanges();
+  initExchangeTableTouchScroll();
   initMenu();
   initFormulas();
   initFoodExchangeQuery();
   initFoodComposition();
 });
+
+function initExchangeTableTouchScroll() {
+  const container = document.querySelector(".exchange-table-fixed");
+  if (!container) return;
+
+  let startX = 0;
+  let startY = 0;
+  let startScrollLeft = 0;
+  let isHorizontalDrag = false;
+
+  container.addEventListener("touchstart", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startScrollLeft = container.scrollLeft;
+    isHorizontalDrag = false;
+  }, { passive: true });
+
+  container.addEventListener("touchmove", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+
+    if (!isHorizontalDrag && Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      isHorizontalDrag = true;
+    }
+    if (isHorizontalDrag) {
+      event.preventDefault();
+      container.scrollLeft = startScrollLeft - deltaX;
+    }
+  }, { passive: false });
+
+  container.addEventListener("touchend", () => {
+    isHorizontalDrag = false;
+  }, { passive: true });
+
+  let pointerStartX = 0;
+  let pointerStartY = 0;
+  let pointerStartScrollLeft = 0;
+  let pointerDragging = false;
+
+  container.addEventListener("pointerdown", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.pointerType === "mouse") return;
+    pointerStartX = event.clientX;
+    pointerStartY = event.clientY;
+    pointerStartScrollLeft = container.scrollLeft;
+    pointerDragging = false;
+  });
+
+  container.addEventListener("pointermove", event => {
+    if (!document.body.classList.contains("mobile-mode") || event.pointerType === "mouse") return;
+    const deltaX = event.clientX - pointerStartX;
+    const deltaY = event.clientY - pointerStartY;
+    if (!pointerDragging && Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      pointerDragging = true;
+      container.setPointerCapture?.(event.pointerId);
+    }
+    if (pointerDragging) {
+      event.preventDefault();
+      container.scrollLeft = pointerStartScrollLeft - deltaX;
+    }
+  });
+
+  const stopPointerDrag = event => {
+    if (pointerDragging) container.releasePointerCapture?.(event.pointerId);
+    pointerDragging = false;
+  };
+  container.addEventListener("pointerup", stopPointerDrag);
+  container.addEventListener("pointercancel", stopPointerDrag);
+}
+
+function initEstimationToggle() {
+  const card = document.getElementById("estimationCard");
+  const toggle = document.getElementById("btnToggleEstimation");
+  const content = document.getElementById("estimationContent");
+  if (!card || !toggle || !content) return;
+
+  const optionalInputs = ["inCreatinine", "inKneeHeight", "inUlnaLength", "inCalfCirc", "inArmCirc"];
+
+  const setEnabled = enabled => {
+    card.classList.toggle("estimation-inactive", !enabled);
+    toggle.checked = enabled;
+    toggle.setAttribute("aria-label", enabled ? "取消勾選以停用身高與腎功能推估" : "勾選以啟用身高與腎功能推估");
+    optionalInputs.forEach(id => {
+      const input = document.getElementById(id);
+      if (input) input.disabled = !enabled;
+    });
+    if (enabled) calcAssessment();
+  };
+
+  toggle.addEventListener("change", () => setEnabled(toggle.checked));
+  setEnabled(false);
+}
 
 // ==========================================
 // 0. 手機版 / 電腦版自動辨識與切換
@@ -897,6 +994,7 @@ function calcExchangeTotals() {
   const userWeight = parseFloat(document.getElementById("inWeight")?.value) || 0;
   const proPerKgEl = document.getElementById("valProteinPerKg");
   const proPerKgDescEl = document.getElementById("valProteinPerKgDesc");
+
   if (proPerKgEl) {
     if (userWeight > 0) {
       const proPerKg = totalP / userWeight;
@@ -907,6 +1005,7 @@ function calcExchangeTotals() {
     } else {
       proPerKgEl.innerText = "— g/kg";
       if (proPerKgDescEl) proPerKgDescEl.innerText = "(請先於第1頁輸入體重)";
+
     }
   }
 
