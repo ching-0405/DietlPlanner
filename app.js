@@ -88,6 +88,10 @@ function initExchangeTableTouchScroll() {
     scrollbar.max = String(maxScroll);
     scrollbar.value = String(Math.min(container.scrollLeft, maxScroll));
     scrollbar.disabled = maxScroll === 0;
+    scrollbar.style.setProperty(
+      "--scrollbar-thumb-width",
+      `${Math.max(44, scrollbar.clientWidth * container.clientWidth / Math.max(container.scrollWidth, 1))}px`
+    );
   };
 
   container.addEventListener("scroll", syncScrollbar, { passive: true });
