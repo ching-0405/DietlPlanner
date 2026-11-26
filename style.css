@@ -2175,6 +2175,8 @@ body.mobile-mode .exchange-table-scrollbar {
   accent-color: #64748b;
   cursor: grab;
   touch-action: pan-x;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 body.mobile-mode .exchange-table-scrollbar:active {
