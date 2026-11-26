@@ -79,6 +79,25 @@ document.addEventListener("DOMContentLoaded", () => {
 function initExchangeTableTouchScroll() {
   const container = document.querySelector(".exchange-table-fixed");
   if (!container) return;
+  const scrollbar = document.getElementById("exchangeTableScrollbar");
+
+  const syncScrollbar = () => {
+    if (!scrollbar) return;
+    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+    scrollbar.max = String(maxScroll);
+    scrollbar.value = String(Math.min(container.scrollLeft, maxScroll));
+    scrollbar.disabled = maxScroll === 0;
+  };
+
+  container.addEventListener("scroll", syncScrollbar, { passive: true });
+  scrollbar?.addEventListener("input", () => {
+    container.scrollLeft = Number(scrollbar.value);
+  });
+  window.addEventListener("resize", syncScrollbar);
+  if (typeof ResizeObserver === "function") {
+    new ResizeObserver(syncScrollbar).observe(container);
+  }
+  syncScrollbar();
 
   let startX = 0;
   let startY = 0;

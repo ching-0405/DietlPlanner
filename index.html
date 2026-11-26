@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261126-1836">
+  <link rel="stylesheet" href="style.css?v=20261126-1841">
 </head>
 <body>
 
@@ -540,8 +540,9 @@
 
       <!-- 六大類食物代換規劃表格 -->
       <div class="card mt-3">
-        <div class="card-body p-0 exchange-table-fixed">
-          <table class="exchange-table" id="exchangeTable">
+        <div class="card-body p-0 exchange-table-shell">
+          <div class="exchange-table-fixed">
+            <table class="exchange-table" id="exchangeTable">
             <colgroup>
               <col class="col-category">
               <col class="col-macro">
@@ -634,7 +635,10 @@
 
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
+          <input type="range" id="exchangeTableScrollbar" class="exchange-table-scrollbar"
+            min="0" max="0" value="0" step="1" aria-label="食物代換表水平捲軸">
         </div>
       </div>
 
