@@ -1,0 +1,25 @@
+        <button class="btn-device-toggle active" id="btnModeDesktop" onclick="setDeviceMode('desktop')">💻 電腦版</button>
+        <button class="btn-device-toggle" id="btnModeMobile" onclick="setDeviceMode('mobile')">📱 手機版</button>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
+        <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
+        <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- PAGE 1: 個案評估與熱量設定 -->
+    <section id="tab-assessment" class="tab-content active">
+      
+      <!-- 個案資料與體位測量 -->
+      <div class="card">
+        <div class="card-header bg-teal">
+          <span class="icon">📋</span>
+          <h2>個案基本資料與體位測量表（身高、體重、BMI、IBW）</h2>
+        </div>
+        <div class="card-body grid-2col">
+          <!-- 基本輸入 -->
+          <div class="table-container">

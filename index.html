@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>飲食營養菜單設計系統</title>
-  <link rel="stylesheet" href="style.css?v=20261108-fix-overlap-v7">
+  <link rel="stylesheet" href="style.css?v=1794840284">
 </head>
 <body>
 
@@ -23,14 +23,45 @@
       </div>
       <!-- 導航分頁 (手機版在下方，電腦版於左側面板) -->
       <div class="nav-tabs" id="mainNavTabs">
-        <button class="nav-tab active" data-tab="tab-assessment">📋 1. 個案評估與熱量設定</button>
-        <button class="nav-tab" data-tab="tab-exchange">⚖️ 2. 六大類食物代換設計</button>
-        <button class="nav-tab" data-tab="tab-menu">🍲 3. 菜單開立與食材辨識</button>
-        <button class="nav-tab" data-tab="tab-composition">📗 4. 食品營養成分資料庫</button>
-        <button class="nav-tab" data-tab="tab-formulas">🍼 5. 商業配方庫</button>
+        <button class="nav-tab active" data-tab="tab-assessment">
+          <span class="tab-full-title">📋 1. 個案評估與熱量設定</span>
+          <span class="tab-mobile-title">📋 個案評估</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-exchange">
+          <span class="tab-full-title">⚖️ 2. 六大類食物代換設計</span>
+          <span class="tab-mobile-title">⚖️ 食物代換</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-menu">
+          <span class="tab-full-title">🍲 3. 菜單開立與食材辨識</span>
+          <span class="tab-mobile-title">🍲 菜單開立</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-composition">
+          <span class="tab-full-title">📗 4. 食品營養成分資料庫</span>
+          <span class="tab-mobile-title">📗 營養成分</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-formulas">
+          <span class="tab-full-title">🍼 5. 商業配方庫</span>
+          <span class="tab-mobile-title">🍼 商業配方</span>
+        </button>
       </div>
     </div>
   </header>
+
+  <!-- 會員登入與有效期限狀態列 (支援依帳號獨立存檔) -->
+  <div id="authStatusBar" class="auth-status-bar" style="display: none;">
+    <div class="auth-status-left">
+      <div class="auth-user-group" style="display: inline-flex; align-items: center; gap: 6px;">
+        <div class="auth-info-badge">
+          <span class="auth-user-icon">👤</span>
+          <span id="lblAuthUsername" class="auth-username">未登入</span>
+        </div>
+        <button type="button" class="btn btn-outline auth-logout-btn" style="padding: 2px 8px; font-size: 11.5px; color: #dc2626; border-color: #fca5a5; background: #fff; border-radius: 12px; cursor: pointer;" onclick="logoutUser()" title="切換帳號或登出">登出</button>
+      </div>
+      <div id="lblAuthExpireDesc" class="auth-expire-badge">
+        <span>會員有效期限：<strong style="color: #059669;">剩餘 365 天</strong>（有效至 2027/11/16）</span>
+      </div>
+    </div>
+  </div>
 
   <!-- 電腦版整體佈局：左側系統選單 + 右側工作區 -->
   <div class="app-layout">
@@ -109,10 +140,10 @@
                 <td><input type="text" id="inName" class="form-input" value="小明"></td>
                 <td class="unit">必填</td>
               </tr>
-              <tr>
-                <td class="lbl">病歷號 / 編號</td>
+              <tr class="row-chart-no">
+                <td class="lbl">編號</td>
                 <td><input type="text" id="inChartNo" class="form-input" value="P001"></td>
-                <td class="unit">編號</td>
+                <td class="unit"></td>
               </tr>
               <tr>
                 <td class="lbl">生理性別</td>
@@ -122,7 +153,7 @@
                     <option value="女">女</option>
                   </select>
                 </td>
-                <td class="unit">男 / 女</td>
+                <td class="unit"></td>
               </tr>
               <tr>
                 <td class="lbl">年齡</td>
@@ -274,7 +305,7 @@
                 <td class="lbl"><strong class="teal">TDEE 每日熱量需求</strong></td>
                 <td>
                   <div class="tdee-action-row">
-                    <strong class="tdee-number teal" id="valTdee">2137 kcal</strong>
+                    <strong class="tdee-number teal" id="valTdee">2137 kcal (2100)</strong>
                     <button class="btn btn-teal" id="btnApplyTdee">✨ 套用為目標熱量</button>
                   </div>
                 </td>
@@ -373,19 +404,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-        <!-- 食物代換表下方：引導設計菜單按鈕 -->
-        <div class="guided-btn-toolbar" style="padding: 14px 20px; background: #f0fdfa; border-top: 2px solid #ccfbf1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 20px;">💡</span>
-            <div>
-              <strong style="color: #0f766e; font-size: 14px;">智慧配餐引導助理</strong>
-              <div style="font-size: 12px; color: #64748b;">依序引導開立【乳製品 ➔ 蔬菜 ➔ 水果 ➔ 豆魚蛋肉類、油脂類及堅果種子】，快速完成全日營養菜單！</div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-teal btn-guided-start" id="btnStartGuidedWizard" onclick="startGuidedMenuWizard()" style="font-size: 15px; font-weight: 700; padding: 10px 22px; border-radius: 8px; box-shadow: 0 3px 8px rgba(13,148,136,0.3); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-            ✨ 請引導我設計菜單
-          </button>
         </div>
       </div>
 
@@ -489,6 +507,20 @@
         </div>
       </div>
 
+      <!-- 三大營養素計算下方：引導設計菜單按鈕 -->
+      <div class="guided-btn-toolbar" style="padding: 14px 20px; background: #f0fdfa; border-top: 2px solid #ccfbf1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">💡</span>
+          <div>
+            <strong style="color: #0f766e; font-size: 14px;">智慧配餐引導助理</strong>
+            <div style="font-size: 12px; color: #64748b;">依序引導開立【乳製品 ➔ 蔬菜 ➔ 水果 ➔ 豆魚蛋肉類、油脂類及堅果種子】，快速完成全日營養菜單！</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-teal btn-guided-start" id="btnStartGuidedWizard" onclick="startGuidedMenuWizard()" style="font-size: 15px; font-weight: 700; padding: 10px 22px; border-radius: 8px; box-shadow: 0 3px 8px rgba(13,148,136,0.3); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+          ✨ 請引導我設計菜單
+        </button>
+      </div>
+
       <!-- 手機版專屬：每份三大營養素規格表 (依使用者需求放置於熱量計算下方) -->
       <div class="card mb-3 mobile-macro-specs-card" id="mobileMacroSpecsCard">
         <div class="card-header bg-teal">
@@ -534,17 +566,19 @@
                   各餐次分配份數
                   <label class="meal-count-selector">餐次：
                     <select id="mealCountSelect" class="meal-count-select" aria-label="選擇餐次數量">
-                      <option value="3" selected>3 餐</option>
-                      <option value="4">4 餐</option>
-                      <option value="5">5 餐</option>
-                      <option value="6">6 餐</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3" selected>3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
                     </select>
                   </label>
-                  <small>(可輸入小數點如 1.5、2.5)</small>
+                  
                 </th>
-                <th rowspan="2" class="col-total-p">總蛋白質 (g)</th>
-                <th rowspan="2" class="col-total-f">總脂肪 (g)</th>
-                <th rowspan="2" class="col-total-c">總醣類 (g)</th>
+                <th rowspan="2" class="col-total-p">蛋白質 (g)</th>
+                <th rowspan="2" class="col-total-f">脂肪 (g)</th>
+                <th rowspan="2" class="col-total-c">醣類 (g)</th>
                 <th rowspan="2" class="col-total-kcal">總熱量 (kcal)</th>
               </tr>
               <tr class="header-sub">
@@ -567,13 +601,13 @@
             <tbody class="subtotal-tbody">
               <tr class="subtotal-row grams-row">
                 <td colspan="5" class="subtotal-title"><strong>三大營養素加總克數</strong></td>
-                <td class="val-blue" id="sumTotalEx">23</td>
-                <td class="meal-summary-cell meal-summary-b" id="sumB">5</td>
-                <td class="meal-summary-cell meal-summary-ms" id="sumMs">1</td>
-                <td class="meal-summary-cell meal-summary-l" id="sumL">11</td>
-                <td class="meal-summary-cell meal-summary-as" id="sumAs">2</td>
-                <td class="meal-summary-cell meal-summary-d" id="sumD">11</td>
-                <td class="meal-summary-cell meal-summary-ns" id="sumNs">1</td>
+                <td class="val-blue count-summary-value" id="sumTotalEx" aria-hidden="true"></td>
+                <td class="meal-summary-cell meal-summary-b count-summary-value" id="sumB" aria-hidden="true"></td>
+                <td class="meal-summary-cell meal-summary-ms count-summary-value" id="sumMs" aria-hidden="true"></td>
+                <td class="meal-summary-cell meal-summary-l count-summary-value" id="sumL" aria-hidden="true"></td>
+                <td class="meal-summary-cell meal-summary-as count-summary-value" id="sumAs" aria-hidden="true"></td>
+                <td class="meal-summary-cell meal-summary-d count-summary-value" id="sumD" aria-hidden="true"></td>
+                <td class="meal-summary-cell meal-summary-ns count-summary-value" id="sumNs" aria-hidden="true"></td>
                 <td class="val-green" id="sumProteinGrams">65</td>
                 <td class="val-orange" id="sumFatGrams">43</td>
                 <td class="val-red" id="sumCarbGrams">187</td>
@@ -581,12 +615,19 @@
               </tr>
               <tr class="subtotal-row percent-row">
                 <td colspan="5" class="subtotal-title"><strong>三大營養素百分比</strong></td>
-                <td class="text-muted">—</td>
+                <td class="text-muted"></td>
                 <td id="mealSummaryPlaceholder" colspan="6" class="text-center font-sm text-muted"></td>
                 <td class="val-green" id="pctProtein">18.6 %</td>
                 <td class="val-orange" id="pctFat">27.7 %</td>
                 <td class="val-red" id="pctCarb">53.6 %</td>
                 <td class="val-blue" id="pctTotal">0 kcal</td>
+              </tr>
+              <tr class="subtotal-row protein-per-kg-row" style="background: #f0fdf4; border-top: 1px solid #bbf7d0;">
+                <td colspan="5" class="subtotal-title" style="color: #0f766e;"><strong>每公斤體重蛋白質</strong></td>
+                <td class="text-muted"></td>
+                <td id="mealSummaryPlaceholderProPerKg" colspan="6" class="text-center font-sm text-muted" style="font-size: 11.5px; color: #64748b;">(計算公式：總蛋白質 / 實際體重)</td>
+                <td class="val-green font-bold" id="valProteinPerKg" style="font-size: 14px; color: #047857; text-align: center;">0.0 g/kg</td>
+                <td colspan="3" class="text-muted" style="font-size: 11.5px; color: #64748b; text-align: left; padding-left: 8px;" id="valProteinPerKgDesc"></td>
               </tr>
             </tbody>
           </table>
@@ -611,8 +652,10 @@
             <ul>
               <li><strong>全穀雜糧為主食</strong>：每天 1.5 ~ 4 碗，建議未精製全穀雜糧佔 1/3 以上（如糙米、燕麥、地瓜、紫米）。</li>
               <li><strong>豆魚蛋肉適量吃</strong>：每天 3 ~ 8 份，選擇順序為「先豆、再魚、後蛋肉」，少吃加工肉品。</li>
-              <li><strong>蔬果彩虹原則</strong>：蔬菜類每天 3 ~ 8 份，多選深綠色與當季蔬菜；水果類每天 2 ~ 6 份，在地當季新鮮攝取。</li>
-              <li><strong>乳品每天 1.5 ~ 2 杯</strong>：提供優質鈣質與蛋白質；<strong>油脂 3 ~ 7 茶匙及堅果種子類 1 份</strong>，補充不飽和脂肪酸與維生素 E。</li>
+              <li><strong>蔬菜類</strong>：每天 3 ~ 8 份，多選深綠色與當季蔬菜。</li>
+              <li><strong>水果類</strong>：每天 2 ~ 4 份，在地當季新鮮攝取。</li>
+              <li><strong>乳品每天 1.5 ~ 2 杯</strong>：提供優質鈣質與蛋白質。</li>
+              <li><strong>油脂 3 ~ 7 茶匙及堅果種子類 1 份</strong>：補充不飽和脂肪酸與維生素 E。</li>
               <li><strong>多喝水多運動</strong>：維持良好新陳代謝與健康體位。</li>
             </ul>
           </div>
@@ -623,35 +666,59 @@
 
     <!-- PAGE 3: 菜單開立與食材辨識 -->
     <section id="tab-menu" class="tab-content">
-      
-      <!-- 頂部餐次篩選工具列 -->
-      <div class="menu-toolbar">
-        <div class="toolbar-left">
-          <span class="icon">📝</span>
-          <strong>菜單開立 &amp; AI 食材顏色智慧辨識</strong>
-          <small class="text-muted">（相同菜名自動合併顯示｜AI 自動辨識食材純色膠囊標籤）</small>
-        </div>
-        <div class="toolbar-right" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <label style="font-weight: 600;">預設餐次：</label>
-            <select id="cboMealFilter" class="form-select">
-              <option value="全部">全部餐次 (顯示所有)</option>
-              <option value="早餐" selected>早餐</option>
-              <option value="午餐">午餐</option>
-              <option value="晚餐">晚餐</option>
-            </select>
-            <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
-            <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
-          </div>
+
+      <!-- 菜單規劃天數切換列（位於食物大類表格正上方） -->
+      <div class="menu-day-header-bar" style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%); border: 1.5px solid #0d9488; border-radius: 8px; padding: 10px 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(13, 148, 136, 0.08); flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span style="font-size: 20px;">📅</span>
           <div>
-            <button class="btn btn-teal" id="btnAddCustomItem">➕ 新增自訂菜式食材</button>
+            <span style="font-weight: 700; color: #0f766e; font-size: 15px;">菜單規劃天數：</span>
+            <span style="font-size: 12px; color: #64748b;">可依不同天數分別開立菜單與獨立計算份數</span>
           </div>
+          <div style="display: inline-flex; align-items: center; gap: 8px; margin-left: 6px;">
+            <select id="cboMenuDay" class="form-select" style="min-width: 120px; font-weight: 700; color: #0f766e; border: 2px solid #0d9488; background: #ffffff; padding: 4px 10px; font-size: 14px; border-radius: 6px; cursor: pointer;" onchange="onMenuDayChanged(this.value)">
+              <option value="1" selected>第 1 天</option>
+            </select>
+            <button type="button" class="btn btn-primary" id="btnManageDays" onclick="openDaySettingModal()" style="background: #0f766e; border-color: #0f766e; color: #ffffff; padding: 5px 12px; font-size: 13px; font-weight: 600; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" title="新增或自訂天數">
+              <span>⚙️ 設定天數 (新增/修改)</span>
+            </button>
+          </div>
+        </div>
+        <div id="dayStatusBadge" style="background: #ffffff; padding: 4px 12px; border-radius: 20px; border: 1px solid #99f6e4; font-size: 13px; color: #0f766e; font-weight: 600;">
+          當前規劃：<span id="lblCurrentDayText" style="color: #0d9488;">第 1 天</span> / 共 <span id="lblTotalDaysText">1</span> 天
         </div>
       </div>
-
+      
       <!-- 餐次設計份數卡片（點擊可快速切換篩選） -->
       <div class="meal-chips-bar" id="mealChipsBar">
         <!-- 動態由第2頁份數聯動更新 -->
+      </div>
+
+      <!-- 頂部餐次篩選工具列（位於菜單表格正上方；列印衛教單不受影響） -->
+      <div class="menu-toolbar">
+        <div class="toolbar-left">
+          <span class="icon">📝</span>
+          <strong>菜單開立</strong>
+          <span id="mealPendingSummary" class="meal-pending-toolbar-note" hidden></span>
+        </div>
+        <div class="toolbar-right">
+                    <div class="toolbar-controls">
+            <div class="meal-filter-row">
+              <label for="cboMealFilter" style="font-weight: 600; white-space: nowrap;">預設餐次：</label>
+              <select id="cboMealFilter" class="form-select">
+                <option value="全部">全部餐次 (顯示所有)</option>
+                <option value="早餐" selected>早餐</option>
+                <option value="午餐">午餐</option>
+                <option value="晚餐">晚餐</option>
+              </select>
+            </div>
+            <div class="toolbar-action-buttons">
+              <button class="btn btn-teal" id="btnAddCustomRecipeItem" onclick="addNewRecipeItem()" title="為當前天數與餐次新增一列食材菜式">➕ 新增自訂菜式食材</button>
+              <button class="btn btn-orange" id="btnOpenExchangeQuery">📖 衛福部食物代換表查詢</button>
+              <button class="btn btn-purple" id="btnPrintPrescription" onclick="printPrescriptionReport()">🖨️ 列印衛教單張</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 菜單列表 -->
@@ -663,10 +730,10 @@
                 <th style="width: 100px;">餐次</th>
                 <th style="width: 170px;">菜名</th>
                 <th style="width: 160px;">食材名稱</th>
-                <th style="width: 110px;">食物類別</th>
                 <th style="width: 85px;">份數 (Ex)</th>
                 <th style="width: 95px;">生重克數 (g)</th>
-                <th style="width: 110px; text-align: center;">食材顏色</th>
+                <th class="col-color-th" style="width: 65px; text-align: center;">食材顏色</th>
+                <th class="col-cat-th" style="width: 180px;">食物類別</th>
                 <th style="width: 70px; text-align: center;">操作</th>
               </tr>
             </thead>
@@ -685,39 +752,6 @@
               </tr>
             </tfoot>
           </table>
-        </div>
-      </div>
-
-      <!-- 菜單食材營養素即時總結卡片 -->
-      <div class="card mt-2" style="background: linear-gradient(135deg, #f0fdf4 0%, #e6f6f3 100%); border: 1px solid #99dcd0;">
-        <div class="card-body" style="padding: 12px 18px;">
-          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 22px;">🥗</span>
-              <div>
-                <strong style="color: #0f766e; font-size: 14px;">已由衛福部食品營養成分資料庫 (2025版) 自動比對計算</strong>
-                <div style="font-size: 12px; color: #475569;" id="recipeNutrientRatioDesc">三大營養素熱量佔比：碳水化合物 0% ｜ 蛋白質 0% ｜ 脂肪 0%</div>
-              </div>
-            </div>
-            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">總熱量</div>
-                <strong id="cardRecipeTotalKcal" style="color: #dc2626; font-size: 16px;">0 kcal</strong>
-              </div>
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">蛋白質</div>
-                <strong id="cardRecipeTotalProtein" style="color: #16a34a; font-size: 16px;">0 g</strong>
-              </div>
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">脂肪</div>
-                <strong id="cardRecipeTotalFat" style="color: #d97706; font-size: 16px;">0 g</strong>
-              </div>
-              <div style="background: #ffffff; padding: 6px 14px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-                <div style="font-size: 11px; color: #64748b;">醣類 (碳水)</div>
-                <strong id="cardRecipeTotalCarbs" style="color: #2563eb; font-size: 16px;">0 g</strong>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1126,9 +1160,9 @@
         <button class="modal-close" onclick="closeModal('modalExchangeQuery')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="query-search-bar" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-          <input type="text" id="inFoodSearch" class="form-input flex-1" style="min-width: 140px; flex: 1 1 180px; width: 100%; box-sizing: border-box;" placeholder="敹恍?撠??抬?靘????暻乓??貉?????..嚗?>
-          <select id="cboCategoryFilter" class="form-select" style="min-width: 130px; flex: 1 1 130px; width: auto; box-sizing: border-box;">
+        <div class="query-search-bar">
+          <input type="text" id="inFoodSearch" class="form-input flex-1" placeholder="輸入食材名稱、次分類或關鍵字搜尋（例：高麗菜、雞胸肉、豆腐）">
+          <select id="cboCategoryFilter" class="form-select">
             <option value="全部">全部類別</option>
             <option value="乳品類">乳品類</option>
             <option value="豆魚蛋肉">豆魚蛋肉</option>
@@ -1150,7 +1184,7 @@
                 <th>食物大類</th>
                 <th>細項分類</th>
                 <th>食物名稱</th>
-                <th>【每 1 份】份量與計量說明</th>
+                <th>每1份計量</th>
                 <th>生重 (g)</th>
                 <th>熱量 (kcal)</th>
                 <th>蛋白質 (g)</th>
@@ -1330,6 +1364,114 @@
   <script src="food_exchange_db.js?v=20261108-dris-v2"></script>
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
-<script src="app.js?v=20261108-prescription-v8"></script>
+<script src="auth.js?v=1794840284"></script>
+<script src="app.js?v=1794840284"></script>
+  <!-- 設定菜單天數彈窗 (Modal) -->
+  <div class="modal-overlay" id="modalDaySettings">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header bg-teal" style="background: linear-gradient(135deg, #0f766e, #14b8a6); color: white;">
+        <div class="modal-title">
+          <span style="font-size: 16px; font-weight: 700;">📅 設定菜單規劃天數</span>
+          <small style="font-size: 12px; opacity: 0.9;">自訂菜單開立的規劃天數（自由自訂天數）</small>
+        </div>
+        <button class="modal-close" style="color: white;" onclick="closeModal('modalDaySettings')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #334155;">菜單規劃總天數：</label>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="number" id="inTotalMenuDays" class="form-input" min="1" max="365" value="1" style="width: 100px; font-size: 16px; font-weight: 700; text-align: center;">
+            <span style="font-size: 14px; color: #64748b;">天 (可自行輸入任意規劃天數)</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(1)">1 天</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(3)">3 天</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(5)">5 天</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(7)">7 天 (一週)</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(14)">14 天 (雙週)</button>
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="quickSetDays(30)">30 天 (整月)</button>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #64748b; line-height: 1.5;">
+          💡 提示：切換天數時，下方的菜單食材、每餐開立份數比對、全日營養計算將自動連動顯示該天的規劃內容！
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 12px 18px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modalDaySettings')">取消</button>
+        <button type="button" class="btn btn-teal" onclick="applyDaySettings()" style="background: #0f766e; color: white;">儲存並套用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 會員登入與授權啟用彈窗 -->
+  <div class="modal-overlay" id="modalAuthLogin" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);">
+    <div class="modal-box modal-auth-box">
+      <div class="auth-header">
+        <h3>🔐 會員系統登入</h3>
+        <p>請輸入您的專屬會員帳號與授權密碼</p>
+      </div>
+      <div class="auth-form-body">
+        <div id="authErrorMessage" class="auth-error-msg"></div>
+        <form onsubmit="handleLoginSubmit(event)">
+          <div class="auth-form-group">
+            <label for="inAuthUsername">會員帳號 (Username / Email)：</label>
+            <input type="text" id="inAuthUsername" class="auth-input" placeholder="例：clinic_user1" required autocomplete="username">
+          </div>
+          <div class="auth-form-group">
+            <label for="inAuthPassword">授權密碼 / 金鑰 (Password)：</label>
+            <input type="password" id="inAuthPassword" class="auth-input" placeholder="例：DP-20271116-XXXXXXXX" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="auth-submit-btn">立即登入系統</button>
+        </form>
+        <div class="auth-help-hint">
+          💡 系統將依據您的帳號獨立儲存所有個案與菜單資料。<br>
+          如需開通或展延會員使用期限，請聯繫系統管理員。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 管理員專屬發卡工具彈窗 -->
+  <div class="modal-overlay" id="modalAdminKeyGen">
+    <div class="modal-box" style="max-width: 520px;">
+      <div class="modal-header bg-teal">
+        <div class="modal-title">
+          <span>🔑 管理員發卡工具 (生成帳號授權密碼)</span>
+          <small>設定會員帳號與使用期限，一鍵生成專屬授權密碼發給客戶</small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalAdminKeyGen')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px;">客戶帳號名稱 (Username)：</label>
+          <input type="text" id="inGenUsername" class="form-input" style="width: 100%;" placeholder="例：user1 或客戶 Email" value="user1">
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px;">授權到期日期：</label>
+          <input type="date" id="inGenExpireDate" class="form-input" style="width: 100%;" value="2027-11-16">
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(7)">試用 7 天</button>
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(30)">使用 1 個月</button>
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(180)">使用 6 個月</button>
+          <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 3px 8px;" onclick="setGenDays(365)">使用 1 年 (365天)</button>
+        </div>
+        <button type="button" class="btn btn-teal" style="width: 100%; padding: 8px; font-weight: bold;" onclick="generateKeyAndDisplay()">⚡ 立即生成授權密碼</button>
+        
+        <div id="genResultBox" style="display: none; margin-top: 16px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 12px;">
+          <div style="font-size: 12.5px; color: #166534; font-weight: bold; margin-bottom: 4px;">核發專屬授權密碼：</div>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="outGeneratedKey" class="form-input font-bold" readonly style="flex: 1; color: #0f766e; background: #ffffff;">
+            <button type="button" class="btn btn-primary" onclick="copyGeneratedKey()">複製</button>
+          </div>
+          <div id="outGenDesc" style="font-size: 11.5px; color: #15803d; margin-top: 6px;"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 10px 18px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modalAdminKeyGen')">關閉</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
