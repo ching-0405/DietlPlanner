@@ -387,6 +387,17 @@ function saveClientData() {
     const user = typeof getCurrentAuthUser === "function" ? getCurrentAuthUser() : null;
     const uname = user ? user.username : "當前帳號";
     if (success) {
+      if (typeof saveNamedCaseForCurrentUser === "function") {
+        const caseResult = saveNamedCaseForCurrentUser(name);
+        if (caseResult && caseResult.success) {
+          alert(`已成功將個案【${caseResult.name}】的評估與菜單資料儲存至帳號【${uname}】！`);
+          return;
+        }
+        if (caseResult && caseResult.reason === "limit") {
+          alert("目前資料已更新，但個案存檔已達 3 筆上限，請先刪除舊存檔再新增。");
+          return;
+        }
+      }
       alert(`已成功將個案【${name}】的評估與菜單資料儲存至帳號【${uname}】！`);
       return;
     }
