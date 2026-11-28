@@ -2814,6 +2814,11 @@ function renderFormulasTable(list) {
     const quantity = Math.max(0, Math.floor(Number(formulaQuantities[f.name]) || 0));
     return `
     <tr>
+      <td>
+        <input class="formula-quantity-input" type="number" min="0" step="0.1"
+          value="${quantity}" aria-label="${formulaKey}數量"
+          oninput="updateFormulaQuantity('${formulaKey}', this.value)">
+      </td>
       <td><strong style="color: #4338ca; font-size: 14px;">${f.name}</strong></td>
       <td>
         <input class="formula-quantity-input" type="number" min="0" step="1"
