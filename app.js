@@ -2917,9 +2917,9 @@ function getPrescriptionReportHtml() {
   const targetCarbGrams = parseFloat(document.getElementById("lblTargetCarbGrams")?.innerText) || 0;
   const targetFatGrams = parseFloat(document.getElementById("lblTargetFatGrams")?.innerText) || 0;
   const targetProtGrams = parseFloat(document.getElementById("lblTargetProteinGrams")?.innerText) || 0;
-  const targetCarbPct = document.getElementById("inRatioCarb")?.value || "—";
-  const targetFatPct = document.getElementById("inRatioFat")?.value || "—";
-  const targetProtPct = document.getElementById("inRatioProtein")?.value || "—";
+  const targetCarbPct = document.getElementById("inRatioC")?.value || "0";
+  const targetFatPct = document.getElementById("inRatioF")?.value || "0";
+  const targetProtPct = document.getElementById("inRatioP")?.value || "0";
 
   // 食物代換表實際設計數值
   const actualProtGrams = parseFloat(document.getElementById("sumProteinGrams")?.innerText) || 0;
