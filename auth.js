@@ -9,6 +9,7 @@ const AUTH_CONFIG = {
   STORAGE_PREFIX: "diet_user_data_",
   ADMIN_CODE: "admin888" // 管理員快捷萬用通行密碼
 };
+const MAX_SAVED_CASES = 3;
 
 // ==========================================
 // 會員 Session 管理
@@ -241,25 +242,33 @@ function getSavedCasesForCurrentUser() {
 function saveNamedCaseForCurrentUser(caseName) {
   const user = getCurrentAuthUser();
   const name = String(caseName || "").trim();
-  if (!user || !name) return false;
+  if (!user || !name) return { success: false, reason: "invalid" };
 
   try {
     const cases = getSavedCasesForCurrentUser();
+    if (cases.length >= MAX_SAVED_CASES) {
+      return { success: false, reason: "limit" };
+    }
+
     const payload = collectCurrentUserData(user);
-    const existingIndex = cases.findIndex(item => item.name === name);
+    let savedName = name;
+    let copyNumber = 2;
+    while (cases.some(item => item.name === savedName)) {
+      savedName = `${name} (${copyNumber})`;
+      copyNumber += 1;
+    }
     const savedCase = {
-      id: existingIndex >= 0 ? cases[existingIndex].id : `case-${Date.now()}`,
-      name,
+      id: `case-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: savedName,
       updatedAt: payload.updatedAt,
       payload
     };
-    if (existingIndex >= 0) cases[existingIndex] = savedCase;
-    else cases.unshift(savedCase);
+    cases.unshift(savedCase);
     localStorage.setItem(`${getUserStorageKey()}_cases`, JSON.stringify(cases));
-    return true;
+    return { success: true, name: savedName };
   } catch (e) {
     console.error("Saved case error:", e);
-    return false;
+    return { success: false, reason: "storage" };
   }
 }
 

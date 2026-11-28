@@ -439,13 +439,22 @@ function saveNamedCase() {
     alert("請輸入個案存檔名稱。");
     return;
   }
-  if (typeof saveNamedCaseForCurrentUser !== "function" || !saveNamedCaseForCurrentUser(caseName)) {
-    alert("個案存檔失敗，請確認目前已登入。");
+  if (typeof saveNamedCaseForCurrentUser !== "function") {
+    alert("個案存檔功能尚未載入，請重新整理頁面後再試。");
+    return;
+  }
+  const result = saveNamedCaseForCurrentUser(caseName);
+  if (!result || !result.success) {
+    if (result && result.reason === "limit") {
+      alert("每個登入帳號最多只能儲存 3 個個案，請先刪除舊存檔再新增。");
+    } else {
+      alert("個案存檔失敗，請確認目前已登入。");
+    }
     return;
   }
   if (input) input.value = "";
   renderSavedCasesList();
-  alert(`已儲存個案存檔「${caseName}」。`);
+  alert(`已儲存個案存檔「${result.name}」。`);
 }
 
 function loadSavedCase(caseId) {
