@@ -2873,13 +2873,14 @@ function renderFormulaSummary(elementId) {
   const percent = value => macroKcal > 0 ? `${(value / macroKcal * 100).toFixed(1)}%` : "0.0%";
 
   summary.innerHTML = `
-    <div class="formula-summary-title">數量加總營養摘要</div>
-    <div class="formula-summary-values">
-      <span class="formula-total-kcal">總熱量：${totals.kcal.toFixed(1)} kcal</span>
-      <span class="formula-total-protein">蛋白質：${totals.p.toFixed(1)} g（${percent(proteinKcal)}）</span>
-      <span class="formula-total-fat">脂肪：${totals.f.toFixed(1)} g（${percent(fatKcal)}）</span>
-      <span class="formula-total-carb">醣類：${totals.c.toFixed(1)} g（${percent(carbKcal)}）</span>
-    </div>
+    <tr>
+      <td colspan="3" class="formula-summary-title">數量加總營養摘要</td>
+      <td class="formula-total-protein">蛋白質：${totals.p.toFixed(1)} g（${percent(proteinKcal)}）</td>
+      <td class="formula-total-fat">脂肪：${totals.f.toFixed(1)} g（${percent(fatKcal)}）</td>
+      <td class="formula-total-carb">醣類：${totals.c.toFixed(1)} g（${percent(carbKcal)}）</td>
+      <td class="formula-total-kcal">總熱量：${totals.kcal.toFixed(1)} kcal</td>
+      <td></td>
+    </tr>
   `;
 }
 
