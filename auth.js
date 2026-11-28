@@ -169,7 +169,8 @@ function collectCurrentUserData(user) {
     activeMealKeys: activeMealKeys,
     totalMenuDays: typeof totalMenuDays !== "undefined" ? totalMenuDays : 7,
     currentMenuDay: typeof currentMenuDay !== "undefined" ? currentMenuDay : 1,
-    menuRecipes: typeof menuRecipes !== "undefined" ? menuRecipes : []
+    menuRecipes: typeof menuRecipes !== "undefined" ? menuRecipes : [],
+    formulaQuantities: typeof formulaQuantities !== "undefined" ? formulaQuantities : {}
   };
   return payload;
 }
@@ -203,6 +204,11 @@ function applyUserDataPayload(data) {
     if (typeof sortMenuRecipesByMealOrder === "function") sortMenuRecipesByMealOrder();
   }
 
+  if (data.formulaQuantities && typeof formulaQuantities !== "undefined") {
+    Object.keys(formulaQuantities).forEach(key => delete formulaQuantities[key]);
+    Object.assign(formulaQuantities, data.formulaQuantities);
+  }
+
   if (typeof calcAssessment === "function") calcAssessment();
   if (typeof calcMacroTargets === "function") calcMacroTargets();
   if (typeof renderExchangeTable === "function") renderExchangeTable();
@@ -210,6 +216,10 @@ function applyUserDataPayload(data) {
   if (typeof renderMenuRecipes === "function") renderMenuRecipes();
   if (typeof updateMealChipsBar === "function") updateMealChipsBar();
   if (typeof updateAllCompositionNutrientSummary === "function") updateAllCompositionNutrientSummary();
+  if (typeof renderFormulaSummary === "function") {
+    renderFormulaSummary("pageFormulaSummary");
+    renderFormulaSummary("formulaSummary");
+  }
   if (typeof syncSidebarClientCard === "function") syncSidebarClientCard();
   return true;
 }

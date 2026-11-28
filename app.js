@@ -2792,6 +2792,8 @@ function addQueryItemToMenu(foodName, category, rawWeight) {
 // ==========================================
 // 6. 商業配方庫彈窗
 // ==========================================
+const formulaQuantities = {};
+
 function initFormulas() {
   const btn = document.getElementById("btnOpenFormulaWindow");
   if (btn) {
@@ -2807,8 +2809,16 @@ function initFormulas() {
 function renderFormulasTable(list) {
   if (!Array.isArray(list)) return;
 
-  const rowHtml = list.map(f => `
+  const rowHtml = list.map((f, index) => {
+    const formulaKey = String(f.name).replace(/"/g, "&quot;");
+    const quantity = Number(formulaQuantities[f.name]) || 0;
+    return `
     <tr>
+      <td>
+        <input class="formula-quantity-input" type="number" min="0" step="0.1"
+          value="${quantity}" aria-label="${formulaKey}數量"
+          oninput="updateFormulaQuantity('${formulaKey}', this.value)">
+      </td>
       <td><strong style="color: #4338ca; font-size: 14px;">${f.name}</strong></td>
       <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:600;">${f.spec}</span></td>
       <td class="val-green" style="font-weight:700;">${f.p}</td>
@@ -2817,19 +2827,59 @@ function renderFormulasTable(list) {
       <td class="val-blue" style="font-weight:700; font-size: 13px;">${f.kcal}</td>
       <td class="text-muted" style="font-size: 12px;">${f.note}</td>
     </tr>
-  `).join("");
+  `;
+  }).join("");
 
   // 渲染第 5 頁主畫面表格
   const pageTbody = document.getElementById("pageFormulaTableBody");
   if (pageTbody) {
-    pageTbody.innerHTML = rowHtml || `<tr><td colspan="7" class="text-center text-muted" style="padding: 24px;">查無符合的商業配方</td></tr>`;
+    pageTbody.innerHTML = rowHtml || `<tr><td colspan="8" class="text-center text-muted" style="padding: 24px;">查無符合的商業配方</td></tr>`;
+    renderFormulaSummary("pageFormulaSummary");
   }
 
   // 同步彈窗表格 (若彈窗仍被調用)
   const modalTbody = document.getElementById("formulaTableBody");
   if (modalTbody) {
     modalTbody.innerHTML = rowHtml;
+    renderFormulaSummary("formulaSummary");
   }
+}
+
+function updateFormulaQuantity(name, value) {
+  const quantity = Math.max(0, Number(value) || 0);
+  formulaQuantities[name] = quantity;
+  renderFormulaSummary("pageFormulaSummary");
+  renderFormulaSummary("formulaSummary");
+}
+
+function renderFormulaSummary(elementId) {
+  const summary = document.getElementById(elementId);
+  if (!summary || typeof COMMERCIAL_FORMULAS_DB === "undefined") return;
+
+  const totals = COMMERCIAL_FORMULAS_DB.reduce((result, formula) => {
+    const quantity = Number(formulaQuantities[formula.name]) || 0;
+    result.kcal += formula.kcal * quantity;
+    result.p += formula.p * quantity;
+    result.f += formula.f * quantity;
+    result.c += formula.c * quantity;
+    return result;
+  }, { kcal: 0, p: 0, f: 0, c: 0 });
+
+  const proteinKcal = totals.p * 4;
+  const fatKcal = totals.f * 9;
+  const carbKcal = totals.c * 4;
+  const macroKcal = proteinKcal + fatKcal + carbKcal;
+  const percent = value => macroKcal > 0 ? `${(value / macroKcal * 100).toFixed(1)}%` : "0.0%";
+
+  summary.innerHTML = `
+    <div class="formula-summary-title">數量加總營養摘要</div>
+    <div class="formula-summary-values">
+      <span class="formula-total-kcal">總熱量：${totals.kcal.toFixed(1)} kcal</span>
+      <span class="formula-total-protein">蛋白質：${totals.p.toFixed(1)} g（${percent(proteinKcal)}）</span>
+      <span class="formula-total-fat">脂肪：${totals.f.toFixed(1)} g（${percent(fatKcal)}）</span>
+      <span class="formula-total-carb">醣類：${totals.c.toFixed(1)} g（${percent(carbKcal)}）</span>
+    </div>
+  `;
 }
 
 function filterFormulasPage() {
