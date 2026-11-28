@@ -146,12 +146,7 @@ function getUserStorageKey() {
   return `${AUTH_CONFIG.STORAGE_PREFIX}${uname}`;
 }
 
-function saveUserDataForCurrentUser() {
-  const user = getCurrentAuthUser();
-  if (!user) return false;
-
-  const storageKey = getUserStorageKey();
-  
+function collectCurrentUserData(user) {
   const assessmentData = {};
   const inputIds = [
     'inName', 'inChartNo', 'inGender', 'inAge', 'inHeight', 'inWeight',
@@ -175,14 +170,110 @@ function saveUserDataForCurrentUser() {
     currentMenuDay: typeof currentMenuDay !== "undefined" ? currentMenuDay : 1,
     menuRecipes: typeof menuRecipes !== "undefined" ? menuRecipes : []
   };
+  return payload;
+}
+
+function applyUserDataPayload(data) {
+  if (!data || typeof data !== "object") return false;
+
+  if (data.assessment) {
+    Object.keys(data.assessment).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = data.assessment[id];
+    });
+  }
+
+  if (Array.isArray(data.exchanges)) exchangesData = data.exchanges;
+  if (Array.isArray(data.activeMealKeys)) activeMealKeys = data.activeMealKeys;
+
+  if (data.totalMenuDays && typeof totalMenuDays !== "undefined") {
+    totalMenuDays = data.totalMenuDays;
+    const daysInput = document.getElementById("inTotalMenuDays");
+    if (daysInput) daysInput.value = totalMenuDays;
+    if (typeof updateMenuDayOptions === "function") updateMenuDayOptions();
+  }
+
+  if (data.currentMenuDay && typeof currentMenuDay !== "undefined") {
+    currentMenuDay = data.currentMenuDay;
+  }
+
+  if (Array.isArray(data.menuRecipes) && typeof menuRecipes !== "undefined") {
+    menuRecipes = data.menuRecipes;
+    if (typeof sortMenuRecipesByMealOrder === "function") sortMenuRecipesByMealOrder();
+  }
+
+  if (typeof calcAssessment === "function") calcAssessment();
+  if (typeof calcMacroTargets === "function") calcMacroTargets();
+  if (typeof renderExchangeTable === "function") renderExchangeTable();
+  if (typeof calcExchangeTotals === "function") calcExchangeTotals();
+  if (typeof renderMenuRecipes === "function") renderMenuRecipes();
+  if (typeof updateMealChipsBar === "function") updateMealChipsBar();
+  if (typeof updateAllCompositionNutrientSummary === "function") updateAllCompositionNutrientSummary();
+  if (typeof syncSidebarClientCard === "function") syncSidebarClientCard();
+  return true;
+}
+
+function saveUserDataForCurrentUser() {
+  const user = getCurrentAuthUser();
+  if (!user) return false;
 
   try {
-    localStorage.setItem(storageKey, JSON.stringify(payload));
+    localStorage.setItem(getUserStorageKey(), JSON.stringify(collectCurrentUserData(user)));
     return true;
   } catch (e) {
     console.error("Save error:", e);
     return false;
   }
+}
+
+function getSavedCasesForCurrentUser() {
+  const user = getCurrentAuthUser();
+  if (!user) return [];
+  try {
+    const cases = JSON.parse(localStorage.getItem(`${getUserStorageKey()}_cases`) || "[]");
+    return Array.isArray(cases) ? cases : [];
+  } catch (e) {
+    console.error("Saved cases parse error:", e);
+    return [];
+  }
+}
+
+function saveNamedCaseForCurrentUser(caseName) {
+  const user = getCurrentAuthUser();
+  const name = String(caseName || "").trim();
+  if (!user || !name) return false;
+
+  try {
+    const cases = getSavedCasesForCurrentUser();
+    const payload = collectCurrentUserData(user);
+    const existingIndex = cases.findIndex(item => item.name === name);
+    const savedCase = {
+      id: existingIndex >= 0 ? cases[existingIndex].id : `case-${Date.now()}`,
+      name,
+      updatedAt: payload.updatedAt,
+      payload
+    };
+    if (existingIndex >= 0) cases[existingIndex] = savedCase;
+    else cases.unshift(savedCase);
+    localStorage.setItem(`${getUserStorageKey()}_cases`, JSON.stringify(cases));
+    return true;
+  } catch (e) {
+    console.error("Saved case error:", e);
+    return false;
+  }
+}
+
+function loadNamedCaseForCurrentUser(caseId) {
+  const savedCase = getSavedCasesForCurrentUser().find(item => item.id === caseId);
+  return savedCase ? applyUserDataPayload(savedCase.payload) : false;
+}
+
+function deleteNamedCaseForCurrentUser(caseId) {
+  const user = getCurrentAuthUser();
+  if (!user) return false;
+  const cases = getSavedCasesForCurrentUser().filter(item => item.id !== caseId);
+  localStorage.setItem(`${getUserStorageKey()}_cases`, JSON.stringify(cases));
+  return true;
 }
 
 function loadUserDataForCurrentUser() {
@@ -195,50 +286,7 @@ function loadUserDataForCurrentUser() {
 
   try {
     const data = JSON.parse(raw);
-    
-    if (data.assessment) {
-      Object.keys(data.assessment).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = data.assessment[id];
-      });
-    }
-
-    if (Array.isArray(data.exchanges)) {
-      exchangesData = data.exchanges;
-    }
-
-    if (Array.isArray(data.activeMealKeys)) {
-      activeMealKeys = data.activeMealKeys;
-    }
-
-    if (data.totalMenuDays && typeof totalMenuDays !== "undefined") {
-      totalMenuDays = data.totalMenuDays;
-      const daysInput = document.getElementById("inTotalMenuDays");
-      if (daysInput) daysInput.value = totalMenuDays;
-      if (typeof updateMenuDayOptions === "function") updateMenuDayOptions();
-    }
-
-    if (data.currentMenuDay && typeof currentMenuDay !== "undefined") {
-      currentMenuDay = data.currentMenuDay;
-    }
-
-    if (Array.isArray(data.menuRecipes) && typeof menuRecipes !== "undefined") {
-      menuRecipes = data.menuRecipes;
-      if (typeof sortMenuRecipesByMealOrder === "function") {
-        sortMenuRecipesByMealOrder();
-      }
-    }
-
-    if (typeof calcAssessment === "function") calcAssessment();
-    if (typeof calcMacroTargets === "function") calcMacroTargets();
-    if (typeof renderExchangeTable === "function") renderExchangeTable();
-    if (typeof calcExchangeTotals === "function") calcExchangeTotals();
-    if (typeof renderMenuRecipes === "function") renderMenuRecipes();
-    if (typeof updateMealChipsBar === "function") updateMealChipsBar();
-    if (typeof updateAllCompositionNutrientSummary === "function") updateAllCompositionNutrientSummary();
-    if (typeof syncSidebarClientCard === "function") syncSidebarClientCard();
-
-    return true;
+    return applyUserDataPayload(data);
   } catch (e) {
     console.error("Load user data error:", e);
     return false;

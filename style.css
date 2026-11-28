@@ -883,6 +883,34 @@ body {
   background: #7c3aed;
 }
 
+.saved-case-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.saved-case-row + .saved-case-row {
+  margin-top: 8px;
+}
+
+.saved-case-row small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.saved-case-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
 .btn-orange {
   background: #ea580c;
   color: #ffffff;

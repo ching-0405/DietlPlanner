@@ -394,6 +394,78 @@ function saveClientData() {
   alert(`個案【${name}】的評估與菜單資料已儲存！`);
 }
 
+function openSavedCasesModal() {
+  const user = typeof getCurrentAuthUser === "function" ? getCurrentAuthUser() : null;
+  if (!user) {
+    alert("請先登入會員帳號，再使用個案存檔功能。");
+    return;
+  }
+  const username = document.getElementById("savedCasesUsername");
+  if (username) username.innerText = user.username;
+  renderSavedCasesList();
+  openModal("modalSavedCases");
+}
+
+function renderSavedCasesList() {
+  const list = document.getElementById("savedCasesList");
+  if (!list || typeof getSavedCasesForCurrentUser !== "function") return;
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+  }[char]));
+  const cases = getSavedCasesForCurrentUser();
+  if (cases.length === 0) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:#64748b;">目前帳號尚無個案存檔</div>';
+    return;
+  }
+  list.innerHTML = cases.map(savedCase => `
+    <div class="saved-case-row">
+      <div>
+        <strong>${escapeHtml(savedCase.name)}</strong>
+        <small>更新時間：${escapeHtml(new Date(savedCase.updatedAt).toLocaleString("zh-TW"))}</small>
+      </div>
+      <div class="saved-case-actions">
+        <button class="btn btn-teal" type="button" onclick="loadSavedCase('${escapeHtml(savedCase.id)}')">載入</button>
+        <button class="btn btn-danger" type="button" onclick="deleteSavedCase('${escapeHtml(savedCase.id)}')">刪除</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function saveNamedCase() {
+  const input = document.getElementById("savedCaseName");
+  const defaultName = document.getElementById("inName")?.value || "未命名個案";
+  const caseName = (input?.value || defaultName).trim();
+  if (!caseName) {
+    alert("請輸入個案存檔名稱。");
+    return;
+  }
+  if (typeof saveNamedCaseForCurrentUser !== "function" || !saveNamedCaseForCurrentUser(caseName)) {
+    alert("個案存檔失敗，請確認目前已登入。");
+    return;
+  }
+  if (input) input.value = "";
+  renderSavedCasesList();
+  alert(`已儲存個案存檔「${caseName}」。`);
+}
+
+function loadSavedCase(caseId) {
+  if (typeof loadNamedCaseForCurrentUser !== "function" || !loadNamedCaseForCurrentUser(caseId)) {
+    alert("找不到此個案存檔。");
+    return;
+  }
+  closeModal("modalSavedCases");
+  switchTab("tab-assessment");
+  alert("個案存檔已載入。");
+}
+
+function deleteSavedCase(caseId) {
+  if (!confirm("確定要刪除此個案存檔嗎？")) return;
+  if (typeof deleteNamedCaseForCurrentUser === "function") {
+    deleteNamedCaseForCurrentUser(caseId);
+    renderSavedCasesList();
+  }
+}
+
 function calcAssessment() {
   const gender = document.getElementById("inGender").value;
   const age = parseFloat(document.getElementById("inAge").value) || 30;
