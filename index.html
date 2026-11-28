@@ -108,7 +108,7 @@
         <div class="sidebar-nav-title">快捷操作</div>
         <button class="sidebar-action-btn btn-blue" onclick="resetNewClient()">➕ 新增個案</button>
         <button class="sidebar-action-btn btn-green" onclick="saveClientData()">💾 儲存存檔</button>
-        
+        <button class="sidebar-action-btn btn-purple" onclick="openSavedCasesModal()">📂 個案存檔</button>
       </div>
     </aside>
 
@@ -1372,7 +1372,7 @@
   <script src="app_data.js?v=20261108-dris-v2"></script>
   <script src="dris_data.js?v=20261108-sticky-v3"></script>
 <script src="auth.js?v=1794840284"></script>
-<script src="app.js?v=20261128-multiday-print"></script>
+<script src="app.js?v=20261128-saved-cases"></script>
 
   <!-- 設定菜單天數彈窗 (Modal) -->
   <div class="modal-overlay" id="modalDaySettings">
@@ -1407,6 +1407,26 @@
       <div class="modal-footer" style="padding: 12px 18px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px;">
         <button type="button" class="btn btn-outline" onclick="closeModal('modalDaySettings')">取消</button>
         <button type="button" class="btn btn-teal" onclick="applyDaySettings()" style="background: #0f766e; color: white;">儲存並套用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 會員個案存檔彈窗 -->
+  <div class="modal-overlay" id="modalSavedCases">
+    <div class="modal-box" style="max-width: 620px;">
+      <div class="modal-header bg-purple">
+        <div class="modal-title">
+          <span>📂 個案存檔</span>
+          <small>目前登入帳號：<strong id="savedCasesUsername">—</strong></small>
+        </div>
+        <button class="modal-close" onclick="closeModal('modalSavedCases')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+          <input type="text" id="savedCaseName" class="form-input" placeholder="輸入個案存檔名稱（預設使用個案姓名）" style="flex:1;">
+          <button type="button" class="btn btn-teal" onclick="saveNamedCase()">儲存目前個案</button>
+        </div>
+        <div id="savedCasesList"></div>
       </div>
     </div>
   </div>
