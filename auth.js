@@ -4,7 +4,7 @@
 
 const AUTH_CONFIG = {
   // Google Apps Script 雲端試算表 Web App URL
-  API_URL: "https://script.google.com/macros/s/AKfycbyxmeB8NCJFKF4iY2Yu7dIBHUluQF8zMnJASJ_WRZq2DUSRlqcoey4b7UfkuiRW_FYeaA/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbw_bXEkkeh4bFJPxCjrq-MIXuieYFocqmRQOF7yuU9aWtnZ2vvrI8S3ZF96_x71NlAukw/exec",
   STORAGE_CURRENT_USER: "diet_current_user_session",
   STORAGE_PREFIX: "diet_user_data_",
   ADMIN_CODE: "admin888" // 管理員快捷萬用通行密碼
