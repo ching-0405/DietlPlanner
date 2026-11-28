@@ -213,6 +213,8 @@ function initEstimationToggle() {
 
   const setEnabled = enabled => {
     card.classList.toggle("estimation-inactive", !enabled);
+    content.hidden = !enabled;
+    content.setAttribute("aria-hidden", enabled ? "false" : "true");
     toggle.checked = enabled;
     toggle.setAttribute("aria-label", enabled ? "取消勾選以停用身高與腎功能推估" : "勾選以啟用身高與腎功能推估");
     optionalInputs.forEach(id => {
@@ -2908,7 +2910,10 @@ function getPrescriptionReportHtml() {
   const weight = document.getElementById("inWeight")?.value || "—";
   const bmi = document.getElementById("valBmi")?.innerText || "—";
   const ibw = document.getElementById("valIbw")?.innerText || "—";
-  const egfr = document.getElementById("valEgfr")?.innerText || "—";
+  const estimationEnabled = document.getElementById("btnToggleEstimation")?.checked === true;
+  const egfr = estimationEnabled
+    ? (document.getElementById("valEgfr")?.innerText || "—")
+    : "";
   const actLevel = document.getElementById("cboActivity")?.options[document.getElementById("cboActivity")?.selectedIndex]?.text || "輕度工作";
   const diseaseNote = isDiseaseMode ? "疾病飲食模式 (自由調配)" : "標準健康平衡模式";
 
@@ -3091,8 +3096,8 @@ function getPrescriptionReportHtml() {
         <tr>
           <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">活動量度</th>
           <td style="padding:6px 8px;border:1px solid #cbd5e1;">${actLevel}</td>
-          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">腎功能 (eGFR)</th>
-          <td style="padding:6px 8px;border:1px solid #cbd5e1;">${egfr} ml/min</td>
+          <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">${estimationEnabled ? "腎功能 (eGFR)" : ""}</th>
+          <td style="padding:6px 8px;border:1px solid #cbd5e1;">${estimationEnabled ? `${egfr} ml/min` : ""}</td>
           <th style="background:#f1f5f9;padding:6px 8px;border:1px solid #cbd5e1;">飲食模式</th>
           <td style="padding:6px 8px;border:1px solid #cbd5e1;font-size:11.5px;color:#0f766e;">${diseaseNote}</td>
         </tr>
