@@ -2811,15 +2811,15 @@ function renderFormulasTable(list) {
 
   const rowHtml = list.map((f, index) => {
     const formulaKey = String(f.name).replace(/"/g, "&quot;");
-    const quantity = Number(formulaQuantities[f.name]) || 0;
+    const quantity = Math.max(0, Math.floor(Number(formulaQuantities[f.name]) || 0));
     return `
     <tr>
-      <td>
-        <input class="formula-quantity-input" type="number" min="0" step="0.1"
-          value="${quantity}" aria-label="${formulaKey}數量"
-          oninput="updateFormulaQuantity('${formulaKey}', this.value)">
-      </td>
       <td><strong style="color: #4338ca; font-size: 14px;">${f.name}</strong></td>
+      <td>
+        <input class="formula-quantity-input" type="number" min="0" step="1"
+          value="${quantity}" aria-label="${formulaKey}數量"
+          oninput="updateFormulaQuantity('${formulaKey}', this.value, this)">
+      </td>
       <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:600;">${f.spec}</span></td>
       <td class="val-green" style="font-weight:700;">${f.p}</td>
       <td class="val-orange" style="font-weight:700;">${f.f}</td>
@@ -2845,9 +2845,10 @@ function renderFormulasTable(list) {
   }
 }
 
-function updateFormulaQuantity(name, value) {
-  const quantity = Math.max(0, Number(value) || 0);
+function updateFormulaQuantity(name, value, input) {
+  const quantity = Math.max(0, Math.floor(Number(value) || 0));
   formulaQuantities[name] = quantity;
+  if (input) input.value = quantity;
   renderFormulaSummary("pageFormulaSummary");
   renderFormulaSummary("formulaSummary");
 }
