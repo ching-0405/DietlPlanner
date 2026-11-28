@@ -2954,60 +2954,70 @@ function getPrescriptionReportHtml() {
     `;
   }).join("");
 
-  // 4. 客製化菜單開立明細（依餐次分組，含生重克數與份數）
-  const mealGroups = {};
-  menuRecipes.forEach(r => {
-    const m = r.meal || "其他";
-    if (!mealGroups[m]) mealGroups[m] = [];
-    mealGroups[m].push(r);
-  });
-
-  let menuDetailsHtml = "";
-  let menuRowsHtml = "";
+  // 4. 客製化菜單開立明細（依天數、餐次分組，含生重克數與份數）
   const formatMenuPortion = (value) => {
     const number = Number(value) || 0;
     return Number.isInteger(number) ? String(number) : number.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
   };
   const formatMenuWeight = (value) => String(Math.ceil(Number(value) || 0));
-  activeMeals.forEach(m => {
-    const items = mealGroups[m.name] || [];
-    if (items.length > 0) {
+  const reportDayCount = Math.max(
+    Number(totalMenuDays) || 1,
+    ...menuRecipes.map(item => Number(item.day) || 1)
+  );
+  const menuDetailsHtml = Array.from({ length: reportDayCount }, (_, index) => {
+    const day = index + 1;
+    const dayRecipes = menuRecipes.filter(item => (Number(item.day) || 1) === day);
+    const mealGroups = {};
+    dayRecipes.forEach(item => {
+      const meal = item.meal || "其他";
+      if (!mealGroups[meal]) mealGroups[meal] = [];
+      mealGroups[meal].push(item);
+    });
+
+    let menuRowsHtml = "";
+    activeMeals.forEach(mealDefinition => {
+      const items = mealGroups[mealDefinition.name] || [];
+      if (items.length === 0) return;
+
       let rowIndex = 0;
       groupPrintableMenuItems(items).forEach(group => {
-        group.items.forEach((it, groupIndex) => {
+        group.items.forEach((item, groupIndex) => {
           menuRowsHtml += `
-          <tr>
-            ${rowIndex === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${m.name}</td>` : ""}
-            ${groupIndex === 0 ? `<td rowspan="${group.items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;vertical-align:middle;">${group.name || "—"}</td>` : ""}
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;">${it.food || ""}</td>
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuPortion(it.ex)}</td>
-            <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuWeight(it.rawWeight)}</td>
-          </tr>
-        `;
+            <tr>
+              ${rowIndex === 0 ? `<td rowspan="${items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:600;vertical-align:middle;">${mealDefinition.name}</td>` : ""}
+              ${groupIndex === 0 ? `<td rowspan="${group.items.length}" style="padding:6px 8px;border:1px solid #cbd5e1;vertical-align:middle;">${group.name || "—"}</td>` : ""}
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;">${item.food || ""}</td>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuPortion(item.ex)}</td>
+              <td style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;white-space:nowrap;">${formatMenuWeight(item.rawWeight)}</td>
+            </tr>
+          `;
           rowIndex += 1;
         });
       });
-    }
-  });
+    });
 
-  if (menuRowsHtml) {
-    menuDetailsHtml = `
-      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px;">
-        <thead>
-          <tr style="background:#f1f5f9;">
-            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">餐次</th>
-            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">菜名</th>
-            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">食材名稱</th>
-            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">份數 (Ex)</th>
-            <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">克數 (g)</th>
-          </tr>
-        </thead>
-        <tbody>${menuRowsHtml}</tbody>
-      </table>
+    const dayContent = menuRowsHtml
+      ? `
+        <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px;">
+          <thead>
+            <tr style="background:#f1f5f9;">
+              <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">餐次</th>
+              <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">菜名</th>
+              <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left;">食材名稱</th>
+              <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">份數 (Ex)</th>
+              <th style="padding:6px 8px;border:1px solid #cbd5e1;text-align:right;">克數 (g)</th>
+            </tr>
+          </thead>
+          <tbody>${menuRowsHtml}</tbody>
+        </table>
+      `
+      : '<div style="text-align:center;color:#94a3b8;padding:16px;">本日尚未開立食材</div>';
+
+    return `
+      <div style="font-size:13px;font-weight:bold;color:#0f766e;margin:10px 0 6px;">第 ${day} 天</div>
+      ${dayContent}
     `;
-  } else {
-    menuDetailsHtml = '<div style="text-align:center;color:#94a3b8;padding:16px;">目前菜單尚未開立食材</div>';
-  }
+  }).join("");
 
   // 5. 食品營養成分資料庫加總 (2025 官方資料庫依生重精確換算)
   const compSum = {
